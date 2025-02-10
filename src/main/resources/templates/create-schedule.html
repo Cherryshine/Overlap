@@ -61,7 +61,7 @@
 
         /* 전체 레이아웃을 flex로 설정하여 푸터를 하단에 고정 */
         body, html {
-            height: 100%;
+            height: auto;  /* 고정 높이 대신 자동으로 조정 */
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -162,12 +162,18 @@
             align-items: center;
         }
         
+        /* 그라데이션 배경 설정 */
+        body {
+            background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
+            background-repeat: no-repeat;
+            min-height: 100%;  /* 최소 높이를 100%로 설정 */
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+<body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
 
     <nav class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
-        <img src="../../../../../../Documents/Folders/코딩/Html/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
+        <img src="/imeages/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
     </nav>
     
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">

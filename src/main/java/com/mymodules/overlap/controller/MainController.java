@@ -21,7 +21,10 @@ public class MainController {
         return new ModelAndView("create-schedule" );
     }
 
-
+    @GetMapping("/main")
+    public ModelAndView main(){
+        return new ModelAndView("template" );
+    }
 //    // Create Board
 //    @PostMapping("/create")
 //    public ResponseEntity<BoardResponseDto> createBoard(@RequestBody BoardRequestDto req) {

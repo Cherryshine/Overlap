@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>메인 페이지</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.3.2"></script>
+    <style>
+        body {
+            background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
+            background-repeat: no-repeat;
+            min-height: 100%;  /* 최소 높이를 100%로 설정 */
+        }
+
+        body, html {
+            height: auto;  /* 고정 높이 대신 자동으로 조정 */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center">
+<div id="app" class="max-w-5xl w-full bg-white p-4 rounded-lg shadow"></div>
+
+<!-- (1) 스크립트 파일 로드 (schedule.js) -->
+<script src="/js/main.js"></script>
+
+<!-- (2) 이 페이지에서 사용할 JSON + 초기화 로직 -->
+<script>
+    // 예시 JSON
+    const jsonData = {
+        startTime: "09:00",
+        endTime: "16:00",
+        interval: 15,
+        days: [
+            { label: "Tue", date: "Feb 11" },
+            { label: "Wed", date: "Feb 12" },
+            { label: "Thu", date: "Feb 13" },
+            { label: "Fri", date: "Feb 14" },
+            { label: "Sat", date: "Feb 15" }
+        ]
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1) 테이블 HTML 생성
+        const tableHTML = buildScheduleTable(jsonData);
+        // 2) 화면에 삽입
+        const app = document.getElementById("app");
+        app.innerHTML = tableHTML;
+        // 3) 드래그 이벤트 연결(열 수 = days.length)
+        initDragEvents(jsonData.days.length);
+    });
+</script>
+</body>
+</html>
