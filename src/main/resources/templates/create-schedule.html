@@ -1,497 +1,1019 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>OverLap - 메인 랜딩페이지</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
-    
-    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
-    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
-    <style>
-        .glass-effect { 
-            background: rgba(255, 255, 255, 0.2); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.3); 
-            border-radius: 1rem; /* 동일한 곡률을 적용 */
-        }
-        @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-2px); }
-            100% { transform: translateY(0); }
-        }
-        .logo-animation {
-            animation: float 2s ease-in-out infinite;
-        }
-        .full-screen {
-            min-height: 100vh;
-        }
-        .chat-message {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-        }
-        @keyframes expand {
-            0% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .animate-expand {
-            animation: expand 0.6s ease-out;
-            transform-origin: top;
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>OverLap - 메인 랜딩페이지</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
 
-        /* 버튼 애니메이션 */
-        .btn-animate {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-        }
-        .btn-show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+  <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+  <style>
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 1rem; /* 동일한 곡률을 적용 */
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+      100% { transform: translateY(0); }
+    }
+    .logo-animation {
+      animation: float 2s ease-in-out infinite;
+    }
+    .full-screen {
+      min-height: 100vh;
+    }
+    .chat-message {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    @keyframes expand {
+      0% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .animate-expand {
+      animation: expand 0.6s ease-out;
+      transform-origin: top;
+    }
 
-        /* 전체 레이아웃을 flex로 설정하여 푸터를 하단에 고정 */
-        body, html {
-            height: auto;  /* 고정 높이 대신 자동으로 조정 */
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
+    /* 버튼 애니메이션 */
+    .btn-animate {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .btn-show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        .content {
-            flex-grow: 1;
-        }
+    /* 전체 레이아웃을 flex로 설정하여 푸터를 하단에 고정 */
+    body, html {
+      height: auto;  /* 고정 높이 대신 자동으로 조정 */
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
 
-        footer {
-            margin-top: auto; /* 푸터를 하단에 고정 */
-        }
+    .content {
+      flex-grow: 1;
+    }
 
-        /* 커스텀 드롭다운 */
-        .custom-dropdown {
-            position: relative;
-            width: 100%; /* 드롭다운 전체가 가로폭을 100% 차지하도록 설정 */
-        }
+    footer {
+      margin-top: auto; /* 푸터를 하단에 고정 */
+    }
 
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            display: none;
-            background-color: #f4eeff;
-            border-radius: 0;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            max-height: 300px;
-            overflow-y: auto;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
+    /* 커스텀 드롭다운 */
+    .custom-dropdown {
+      position: relative;
+      width: 100%; /* 드롭다운 전체가 가로폭을 100% 차지하도록 설정 */
+    }
 
-        .dropdown-menu.show {
-            display: block;
-        }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: none;
+      background-color: #f4eeff;
+      border-radius: 0;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
 
-        .dropdown-menu a:active,
-        .dropdown-menu a:focus {
-            background-color: #8b5cf6; /* 보라색 */
-            color: white; /* 글자 색을 흰색으로 변경 */
-        }
+    .dropdown-menu.show {
+      display: block;
+    }
 
-        /* 선택된 항목에 보라색 배경 추가 */
-        .dropdown-menu a.selected {
-            background-color: #8b5cf6; /* 보라색 */
-            color: white; /* 글자 색을 흰색으로 변경 */
-        }
+    .dropdown-menu a:active,
+    .dropdown-menu a:focus {
+      background-color: #8b5cf6; /* 보라색 */
+      color: white; /* 글자 색을 흰색으로 변경 */
+    }
 
-        .dropdown-menu a {
-            display: block;
-            padding: 8px 16px;
-            color: #866198;
-            text-decoration: none;
-            cursor: pointer;
-            border-bottom: 0.5px solid #b3a6b9; /* 항목 사이에 구분선 추가 */
-        }
-        
-        .dropdown-menu a:last-child {
-            border-bottom: none; /* 마지막 항목은 구분선이 없도록 설정 */
-        }
+    /* 선택된 항목에 보라색 배경 추가 */
+    .dropdown-menu a.selected {
+      background-color: #8b5cf6; /* 보라색 */
+      color: white; /* 글자 색을 흰색으로 변경 */
+    }
 
-        .dropdown-menu a:hover {
-            background-color: #aa8eec;
-            color: white;
-        }
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 16px;
+      color: #866198;
+      text-decoration: none;
+      cursor: pointer;
+      border-bottom: 0.5px solid #b3a6b9; /* 항목 사이에 구분선 추가 */
+    }
 
-        .dropdown-wrapper {
-            display: flex;
-            align-items: center; /* 수직 중앙 정렬 */
-            width: 100%;
-        }
+    .dropdown-menu a:last-child {
+      border-bottom: none; /* 마지막 항목은 구분선이 없도록 설정 */
+    }
 
-        .dropdown-wrapper > .custom-dropdown {
-            flex: 1 1 0%; /* 드롭다운들이 동일한 크기로 분배됨 */
-        }
+    .dropdown-menu a:hover {
+      background-color: #aa8eec;
+      color: white;
+    }
 
-        .dropdown-wrapper > .text-between {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: auto; /* "부터" 텍스트가 가운데 위치하도록 */
-            font-size: 16px;
-            color: #650094;
-            margin: 0 10px; /* 좌우 간격 추가 */
-        }
+    .dropdown-wrapper {
+      display: flex;
+      align-items: center; /* 수직 중앙 정렬 */
+      width: 100%;
+      min-width: 280px; /* 드롭다운의 최소 너비 */
+    }
 
-        /* 드롭다운과 "부터" 텍스트 사이의 간격을 조정 */
-        .dropdown-wrapper > .custom-dropdown:last-child {
-            margin-right: 0; /* 마지막 드롭다운은 오른쪽 여백 없애기 */
-        }
+    .dropdown-wrapper > .custom-dropdown {
+      flex: 1 1 0%; /* 드롭다운들이 동일한 크기로 분배됨 */
+    }
 
-        .custom-dropdown button {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        /* 그라데이션 배경 설정 */
-        body {
-            background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
-            background-repeat: no-repeat;
-            min-height: 100%;  /* 최소 높이를 100%로 설정 */
-        }
-    </style>
+    .dropdown-wrapper > .text-between {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: auto; /* "부터" 텍스트가 가운데 위치하도록 */
+      font-size: 16px;
+      color: #650094;
+      margin: 0 10px; /* 좌우 간격 추가 */
+    }
+
+    /* 드롭다운과 "부터" 텍스트 사이의 간격을 조정 */
+    .dropdown-wrapper > .custom-dropdown:last-child {
+      margin-right: 0; /* 마지막 드롭다운은 오른쪽 여백 없애기 */
+    }
+
+    .custom-dropdown button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 그라데이션 배경 설정 */
+    body {
+      background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
+      background-repeat: no-repeat;
+      min-height: 100%;  /* 최소 높이를 100%로 설정 */
+    }
+
+    /*
+    캘린더
+     */
+
+    #calendar {
+      width: 100%;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    /* 달력 테이블은 부모 너비에 맞춰 조정하고, 내부 셀은 고정 비율 유지 */
+    #calendar table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 3px;
+      table-layout: fixed;
+    }
+
+    th, td {
+      text-align: center;
+      vertical-align: middle;
+      /* 기존에는 고정 픽셀 값(40px, 60px)으로 지정되어 있었으나,
+         만약 셀의 정사각형 비율을 유지하면서 반응형으로 처리하고 싶다면
+         aspect-ratio 속성을 활용하거나, 그리드 레이아웃 및 padding 트릭을 사용할 수 있습니다.
+       */
+    }
+
+    /* 필요에 따라 아래와 같이 미디어 쿼리나 추가 스타일을 통해 셀 크기 및 글자 크기를 조정하실 수 있습니다. */
+
+    .calendar-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    .calendar-nav button {
+      background-color: #e1bee7;
+      border: none;
+      color: #4a148c;
+      font-size: 1em;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-nav button:hover {
+      background-color: #d1aee7;
+    }
+
+    .today-btn {
+      background-color: #e1bee7;
+      border: none;
+      color: #4a148c;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 10px auto 0;
+      padding: 5px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      display: block;
+    }
+
+    .today-btn:hover {
+      background-color: #d1aee7;
+    }
+
+    .calendar-header {
+      font-size: 1.4em;
+      color: #4a148c;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    thead {
+      position: relative;
+      border-bottom: none;
+    }
+
+    th {
+      background-color: transparent;
+      font-weight: normal;
+      border: none;
+      border-bottom: 2px solid #9c27b0; /* 요일 셀 하단 테두리만 유지 */
+      padding-bottom: 8px;
+    }
+
+    thead th:nth-child(1) {
+      color: red;
+    }
+
+    thead th:nth-child(7) {
+      color: blue;
+    }
+
+    td.empty {
+      background-color: transparent;
+      cursor: default;
+    }
+
+    td.day {
+      position: relative;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .circle {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      text-align: center;
+      background-color: #fff;
+      transition: background-color 0.3s, color 0.3s;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+    }
+
+    td.day:hover .circle {
+      background-color: #f3e5f5;
+    }
+
+    td.day.selected .circle {
+      background-color: transparent;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+    }
+
+    td.day.selected .circle::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(156,39,176,0.5);
+      border-radius: 50%;
+      z-index: -1;
+      transition: all 0.3s;
+    }
+
+    td.day.today .circle {
+      border: 2px solid #4a148c;
+      box-sizing: border-box;
+    }
+
+    td.day.today.selected .circle::before {
+      top: 2px;
+      left: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+    }
+
+    td.day.group-start .circle {
+      width: calc(40px + 3px);
+      margin-left: -3px;
+      border-radius: 50% 0 0 50%;
+    }
+
+    td.day.group-end .circle {
+      width: calc(40px + 3px);
+      margin-right: -3px;
+      border-radius: 0 50% 50% 0;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+      100% { transform: translateY(0); }
+    }
+
+    .logo-animation {
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .content {
+      flex-grow: 1;
+    }
+
+    /* 반응형 테이블 셀 크기 조정 */
+    @media (min-width: 768px) {
+      th, td {
+        width: 60px; /* 큰 화면에서는 더 크게 */
+        height: 60px;
+      }
+
+      .circle {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        font-size: 1.1em;
+      }
+
+      td.day.selected .circle::before {
+        width: 60px;
+        height: 60px;
+      }
+
+      td.day.group-start .circle {
+        width: calc(60px + 3px);
+      }
+
+      td.day.group-end .circle {
+        width: calc(60px + 3px);
+      }
+
+      .calendar-header {
+        font-size: 1.6em;
+      }
+
+      .calendar-nav button {
+        padding: 8px 15px;
+        font-size: 1.2em;
+      }
+
+      .today-btn {
+        padding: 8px 20px;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      th, td {
+        width: 40px; /* 작은 화면에서는 더 작게 */
+        height: 40px;
+      }
+
+      .circle {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 0.9em;
+      }
+
+      .calendar-header {
+        font-size: 1.2em;
+      }
+
+      .today-btn {
+        padding: 5px 15px;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+      }
+
+      .today-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .container {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .glass-effect {
+        padding: 15px;
+      }
+    }
+
+    /* 컨테이너 최소 너비 설정 */
+    .container {
+      min-width: 320px; /* 모바일 기기의 일반적인 최소 너비 */
+    }
+
+
+  </style>
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
 
-    <nav class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
-        <img src="/images/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
-    </nav>
-    
-    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
-        <!-- 컨테이너 내부 내용 제거됨 -->
-        <div class="glass-effect rounded-3xl p-8">
-            <p class="text-purple-800 font-bold mb-[15px]">새 일정 만들기</p>
-            <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] mb-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
-            <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p>
+<div th:replace="~{/nav :: nav}"></div>
 
-            <div class="dropdown-wrapper">
-                <div class="custom-dropdown">
-                    <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
-                        옵션을 선택하세요
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div id="dropdownMenu1" class="dropdown-menu">
-                        <!-- 시간 옵션들 추가 -->
-                        <a href="#">12:00 AM</a>
-                        <a href="#">01:00 AM</a>
-                        <a href="#">02:00 AM</a>
-                        <a href="#">03:00 AM</a>
-                        <a href="#">04:00 AM</a>
-                        <a href="#">05:00 AM</a>
-                        <a href="#">06:00 AM</a>
-                        <a href="#">07:00 AM</a>
-                        <a href="#">08:00 AM</a>
-                        <a href="#">09:00 AM</a>
-                        <a href="#">10:00 AM</a>
-                        <a href="#">11:00 AM</a>
-                        <a href="#">12:00 PM</a>
-                        <a href="#">01:00 PM</a>
-                        <a href="#">02:00 PM</a>
-                        <a href="#">03:00 PM</a>
-                        <a href="#">04:00 PM</a>
-                        <a href="#">05:00 PM</a>
-                        <a href="#">06:00 PM</a>
-                        <a href="#">07:00 PM</a>
-                        <a href="#">08:00 PM</a>
-                        <a href="#">09:00 PM</a>
-                        <a href="#">10:00 PM</a>
-                        <a href="#">11:00 PM</a>
-                    </div>
-                </div>
-                <div class="text-between">
-                    <span>부터</span>
-                </div>
-                <div class="custom-dropdown">
-                    <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-900 mt-[10px] placeholder-purple-800">
-                        옵션을 선택하세요
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div id="dropdownMenu2" class="dropdown-menu">
-                        <!-- 시간 옵션들 추가 -->
-                        <a href="#">12:00 AM</a>
-                        <a href="#">01:00 AM</a>
-                        <a href="#">02:00 AM</a>
-                        <a href="#">03:00 AM</a>
-                        <a href="#">04:00 AM</a>
-                        <a href="#">05:00 AM</a>
-                        <a href="#">06:00 AM</a>
-                        <a href="#">07:00 AM</a>
-                        <a href="#">08:00 AM</a>
-                        <a href="#">09:00 AM</a>
-                        <a href="#">10:00 AM</a>
-                        <a href="#">11:00 AM</a>
-                        <a href="#">12:00 PM</a>
-                        <a href="#">01:00 PM</a>
-                        <a href="#">02:00 PM</a>
-                        <a href="#">03:00 PM</a>
-                        <a href="#">04:00 PM</a>
-                        <a href="#">05:00 PM</a>
-                        <a href="#">06:00 PM</a>
-                        <a href="#">07:00 PM</a>
-                        <a href="#">08:00 PM</a>
-                        <a href="#">09:00 PM</a>
-                        <a href="#">10:00 PM</a>
-                        <a href="#">11:00 PM</a>
-                        <a href="#">00:00 AM</a>
-                    </div>
-                </div>
-            </div>
-                    <!-- !!!!!!!!!!! -->
-                <div class="min-h-screen flex flex-col items-center py-8 px-4" style="width: auto !important;">
-                    <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">            <div class="flex items-center justify-between mb-8">
-                            <div class="flex items-center gap-4">
-                                <h2 class="text-2xl font-bold text-gray-800" id="currentDate">2024년 1월</h2>
-                                <button class="!rounded-button bg-custom text-white px-4 py-2 text-sm" id="today">오늘</button>                </div>
-                            <div class="flex items-center gap-2">
-                                <button class="!rounded-button p-2 hover:bg-gray-100" id="prevMonth">                        <i class="fas fa-chevron-left text-gray-600"></i>
-                                </button>
-                                <button class="!rounded-button p-2 hover:bg-gray-100" id="nextMonth">                        <i class="fas fa-chevron-right text-gray-600"></i>
-                                </button>
-                            </div>
-                        </div>            
-                        <div class="grid grid-cols-7 gap-px bg-gray-200">
-                            <div class="text-center py-2 font-medium text-red-500">일</div>
-                            <div class="text-center py-2 font-medium">월</div>
-                            <div class="text-center py-2 font-medium">화</div>
-                            <div class="text-center py-2 font-medium">수</div>
-                            <div class="text-center py-2 font-medium">목</div>
-                            <div class="text-center py-2 font-medium">금</div>
-                            <div class="text-center py-2 font-medium text-blue-500">토</div>
-                        </div>
-                        
-                        <div class="grid grid-cols-7 gap-px bg-gray-200" id="calendar">
-                            <!-- Calendar cells will be dynamically generated here -->            </div>
-                        
-                        <div class="mt-4 text-sm text-gray-600" id="selectedRange"></div>
-                    </div>
-                </div>    <script>
-                    class Calendar {
-                        constructor() {
-                            this.date = new Date();
-                            this.selectedStart = null;
-                            this.selectedEnd = null;
-                            this.isDragging = false;
-                            
-                            this.init();
-                            this.bindEvents();
-                        }
-                        
-                        init() {
-                            this.render();
-                        }
-                        
-                        render() {
-                            const year = this.date.getFullYear();
-                            const month = this.date.getMonth();
-                            
-                            document.getElementById('currentDate').textContent = 
-                                `${year}년 ${this.getKoreanMonth(month)}`;
-                            
-                            const calendar = document.getElementById('calendar');
-                            calendar.innerHTML = '';
-                            
-                            const firstDay = new Date(year, month, 1);
-                            const lastDay = new Date(year, month + 1, 0);
-                            
-                            const startPadding = firstDay.getDay();
-                            const endPadding = 6 - lastDay.getDay();
-                            
-                            // Previous month days
-                            const prevMonthLastDay = new Date(year, month, 0).getDate();
-                            for (let i = startPadding - 1; i >= 0; i--) {
-                                this.createDay(prevMonthLastDay - i, 'text-gray-400', true);
-                            }
-                            
-                            // Current month days
-                            for (let i = 1; i <= lastDay.getDate(); i++) {
-                                const isToday = this.isToday(year, month, i);
-                                const classes = isToday ? 'bg-custom text-white' : '';
-                                this.createDay(i, classes);
-                            }
-                            
-                            // Next month days
-                            for (let i = 1; i <= endPadding; i++) {
-                                this.createDay(i, 'text-gray-400', true);
-                            }
-                        }
-                        
-                        createDay(day, classes = '', isOtherMonth = false) {
-                            const cell = document.createElement('div');
-                            cell.className = `
-                                relative h-16 bg-white
-                                flex items-center justify-center
-                                cursor-pointer hover:bg-gray-50
-                                ${classes}
-                            `;
-                            cell.textContent = day;
-                            cell.dataset.day = day;
-                            cell.dataset.otherMonth = isOtherMonth;
-                            
-                            document.getElementById('calendar').appendChild(cell);
-                        }
-                        
-                        getKoreanMonth(month) {
-                            const months = [
-                                '1월', '2월', '3월', '4월', '5월', '6월',
-                                '7월', '8월', '9월', '10월', '11월', '12월'
-                            ];
-                            return months[month];
-                        }
-                        
-                        isToday(year, month, day) {
-                            const today = new Date();
-                            return (
-                                today.getFullYear() === year &&
-                                today.getMonth() === month &&
-                                today.getDate() === day
-                            );
-                        }
-                        
-                        bindEvents() {
-                            document.getElementById('prevMonth').addEventListener('click', () => {
-                                this.date.setMonth(this.date.getMonth() - 1);
-                                this.render();
-                            });
-                            
-                            document.getElementById('nextMonth').addEventListener('click', () => {
-                                this.date.setMonth(this.date.getMonth() + 1);
-                                this.render();
-                            });
-                            
-                            document.getElementById('today').addEventListener('click', () => {
-                                this.date = new Date();
-                                this.render();
-                            });
-                            
-                            const calendar = document.getElementById('calendar');
-                            
-                            calendar.addEventListener('mousedown', (e) => {
-                                if (e.target.dataset.day) {
-                                    this.isDragging = true;
-                                    this.selectedStart = parseInt(e.target.dataset.day);
-                                    this.selectedEnd = null;
-                                    this.updateSelection();
-                                }
-                            });
-                            
-                            calendar.addEventListener('mousemove', (e) => {
-                                if (this.isDragging && e.target.dataset.day) {
-                                    this.selectedEnd = parseInt(e.target.dataset.day);
-                                    this.updateSelection();
-                                }
-                            });
-                            
-                            document.addEventListener('mouseup', () => {
-                                this.isDragging = false;
-                                this.updateSelectedRange();
-                            });
-                        }
-                        
-                        updateSelection() {
-                            const cells = document.getElementById('calendar').children;
-                            for (let cell of cells) {
-                                const day = parseInt(cell.dataset.day);
-                                if (this.selectedStart && this.selectedEnd) {
-                                    const [start, end] = [
-                                        Math.min(this.selectedStart, this.selectedEnd),
-                                        Math.max(this.selectedStart, this.selectedEnd)
-                                    ];
-                                    if (day >= start && day <= end && cell.dataset.otherMonth !== 'true') {
-                                        cell.classList.add('bg-custom/10');
-                                    } else {
-                                        cell.classList.remove('bg-custom/10');
-                                    }
-                                }
-                            }
-                        }
-                        
-                        updateSelectedRange() {
-                            const rangeElement = document.getElementById('selectedRange');
-                            if (this.selectedStart && this.selectedEnd) {
-                                const [start, end] = [
-                                    Math.min(this.selectedStart, this.selectedEnd),
-                                    Math.max(this.selectedStart, this.selectedEnd)
-                                ];
-                                rangeElement.textContent = `선택된 기간: ${start}일 - ${end}일`;
-                            } else {
-                                rangeElement.textContent = '';
-                            }
-                        }
-                    }
-            
-                    new Calendar();
-                </script>
-        <!--  !!!!!!!!!!!!!  -->
+<div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
+  <!-- 컨테이너 내부 내용 제거됨 -->
+  <div class="glass-effect rounded-3xl p-8">
+    <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
+    <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
+    <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p>
+
+    <div class="dropdown-wrapper">
+      <div class="custom-dropdown">
+        <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
+          옵션을 선택하세요
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div id="dropdownMenu1" class="dropdown-menu">
+          <!-- 시간 옵션들 추가 -->
+          <a href="#">12:00 AM</a>
+          <a href="#">01:00 AM</a>
+          <a href="#">02:00 AM</a>
+          <a href="#">03:00 AM</a>
+          <a href="#">04:00 AM</a>
+          <a href="#">05:00 AM</a>
+          <a href="#">06:00 AM</a>
+          <a href="#">07:00 AM</a>
+          <a href="#">08:00 AM</a>
+          <a href="#">09:00 AM</a>
+          <a href="#">10:00 AM</a>
+          <a href="#">11:00 AM</a>
+          <a href="#">12:00 PM</a>
+          <a href="#">01:00 PM</a>
+          <a href="#">02:00 PM</a>
+          <a href="#">03:00 PM</a>
+          <a href="#">04:00 PM</a>
+          <a href="#">05:00 PM</a>
+          <a href="#">06:00 PM</a>
+          <a href="#">07:00 PM</a>
+          <a href="#">08:00 PM</a>
+          <a href="#">09:00 PM</a>
+          <a href="#">10:00 PM</a>
+          <a href="#">11:00 PM</a>
         </div>
-
+      </div>
+      <div class="text-between">
+        <span>부터</span>
+      </div>
+      <div class="custom-dropdown">
+        <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-900 mt-[10px] placeholder-purple-800">
+          옵션을 선택하세요
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div id="dropdownMenu2" class="dropdown-menu">
+          <!-- 시간 옵션들 추가 -->
+          <a href="#">12:00 AM</a>
+          <a href="#">01:00 AM</a>
+          <a href="#">02:00 AM</a>
+          <a href="#">03:00 AM</a>
+          <a href="#">04:00 AM</a>
+          <a href="#">05:00 AM</a>
+          <a href="#">06:00 AM</a>
+          <a href="#">07:00 AM</a>
+          <a href="#">08:00 AM</a>
+          <a href="#">09:00 AM</a>
+          <a href="#">10:00 AM</a>
+          <a href="#">11:00 AM</a>
+          <a href="#">12:00 PM</a>
+          <a href="#">01:00 PM</a>
+          <a href="#">02:00 PM</a>
+          <a href="#">03:00 PM</a>
+          <a href="#">04:00 PM</a>
+          <a href="#">05:00 PM</a>
+          <a href="#">06:00 PM</a>
+          <a href="#">07:00 PM</a>
+          <a href="#">08:00 PM</a>
+          <a href="#">09:00 PM</a>
+          <a href="#">10:00 PM</a>
+          <a href="#">11:00 PM</a>
+          <a href="#">00:00 AM</a>
+        </div>
+      </div>
     </div>
+    <p class="text-purple-800 font-bold mt-[10px] mb-[10px]">날짜를 선택해 주세요</p>
+    <div id="calendar">
+      <div class="calendar-nav">
+        <button id="prevBtn" aria-label="이전 달">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <polyline points="10,3 5,8 10,13" fill="none" stroke="#4a148c" stroke-width="2"/>
+          </svg>
+        </button>
+        <div class="calendar-header" id="calendarHeader"></div>
+        <button id="nextBtn" aria-label="다음 달">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <polyline points="6,3 11,8 6,13" fill="none" stroke="#4a148c" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+      <table id="calendarTable"></table>
+      <button id="todayBtn" class="today-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:5px;">
+          <circle cx="8" cy="8" r="7" fill="none" stroke="#4a148c" stroke-width="2"/>
+        </svg>
+        오늘
+      </button>
+    </div>
+    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;">다음</button>
+  </div>
 
-    <footer class="bg-purple-800 text-white py-6">
-        <div class="container mx-auto text-center">
-            <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
-        </div>
-    </footer>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdown1 = document.getElementById("dropdownMenu1");
-            const dropdown1Button = document.getElementById("dropdownMenu1Button");
-        
-            const dropdown2 = document.getElementById("dropdownMenu2");
-            const dropdown2Button = document.getElementById("dropdownMenu2Button");
-        
-            // 드롭다운 열기/닫기
-            dropdown1Button.addEventListener("click", () => {
-                dropdown1.classList.toggle("show");
-            });
-        
-            dropdown2Button.addEventListener("click", () => {
-                dropdown2.classList.toggle("show");
-            });
-        
-            // 드롭다운 메뉴 항목 클릭 시 선택한 값 반영 및 selected 클래스 추가
-            dropdown1.querySelectorAll("a").forEach((item) => {
-                item.addEventListener("click", () => {
-                    dropdown1Button.textContent = item.textContent;
-                    dropdown1.classList.remove("show");
-                    
-                    // 선택된 항목에 selected 클래스 추가
-                    dropdown1.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
-                    item.classList.add("selected");
-                });
-            });
-        
-            dropdown2.querySelectorAll("a").forEach((item) => {
-                item.addEventListener("click", () => {
-                    dropdown2Button.textContent = item.textContent;
-                    dropdown2.classList.remove("show");
-                    
-                    // 선택된 항목에 selected 클래스 추가
-                    dropdown2.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
-                    item.classList.add("selected");
-                });
-            });
+
+<footer class="bg-purple-800 text-white py-6">
+  <div class="container mx-auto text-center">
+    <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdown1 = document.getElementById("dropdownMenu1");
+    const dropdown1Button = document.getElementById("dropdownMenu1Button");
+
+    const dropdown2 = document.getElementById("dropdownMenu2");
+    const dropdown2Button = document.getElementById("dropdownMenu2Button");
+
+    // 시간 문자열("12:00 AM" 등)을 분 단위로 변환하는 헬퍼 함수
+    function convertTimeStringToMinutes(timeStr) {
+      timeStr = timeStr.trim();
+      // "00:00 AM"인 경우는 자정 다음날로 간주하여 1440분(24시간)을 리턴
+      if(timeStr === "00:00 AM") {
+        return 1440;
+      }
+      var parts = timeStr.split(' ');
+      if(parts.length < 2) return 0;
+      var timePart = parts[0];
+      var meridiem = parts[1].toUpperCase();
+      var timeParts = timePart.split(':');
+      var hour = parseInt(timeParts[0], 10);
+      var minute = parseInt(timeParts[1], 10);
+      if (meridiem === "AM") {
+        if(hour === 12 || hour === 0) {
+          hour = 0;
+        }
+      } else if (meridiem === "PM") {
+        if(hour !== 12) {
+          hour += 12;
+        }
+      }
+      return hour * 60 + minute;
+    }
+
+    // 드롭다운 메뉴 옵션들을 필터링하는 함수
+    function updateDropdownFilters() {
+      // 모든 옵션을 먼저 보이도록 초기화
+      dropdown1.querySelectorAll("a").forEach(option => {
+        option.style.display = "block";
+      });
+      dropdown2.querySelectorAll("a").forEach(option => {
+        option.style.display = "block";
+      });
+
+      // 시작시간이 선택되어 있다면, 종료시간 드롭다운에는 시작시간보다 이후의 옵션만 보이도록 필터링
+      if (dropdown1Button.textContent.trim() !== "옵션을 선택하세요") {
+        let startMinutes = convertTimeStringToMinutes(dropdown1Button.textContent);
+        dropdown2.querySelectorAll("a").forEach(option => {
+          let optionMinutes = convertTimeStringToMinutes(option.textContent);
+          if(optionMinutes <= startMinutes) {
+            option.style.display = "none";
+          }
         });
-        
-    </script>
+      }
+
+      // 종료시간이 선택되어 있다면, 시작시간 드롭다운에는 종료시간보다 이전의 옵션만 보이도록 필터링
+      if (dropdown2Button.textContent.trim() !== "옵션을 선택하세요") {
+        let endMinutes = convertTimeStringToMinutes(dropdown2Button.textContent);
+        dropdown1.querySelectorAll("a").forEach(option => {
+          let optionMinutes = convertTimeStringToMinutes(option.textContent);
+          if(optionMinutes >= endMinutes) {
+            option.style.display = "none";
+          }
+        });
+      }
+    }
+
+    // 드롭다운 열기/닫기 시 필터 업데이트
+    dropdown1Button.addEventListener("click", () => {
+      updateDropdownFilters();
+      dropdown1.classList.toggle("show");
+    });
+
+    dropdown2Button.addEventListener("click", () => {
+      updateDropdownFilters();
+      dropdown2.classList.toggle("show");
+    });
+
+    // 드롭다운 메뉴 항목 클릭 시 선택한 값 반영 및 selected 클래스 추가 후 필터 업데이트
+    dropdown1.querySelectorAll("a").forEach((item) => {
+      item.addEventListener("click", () => {
+        dropdown1Button.textContent = item.textContent;
+        dropdown1.classList.remove("show");
+
+        // 기존 선택 삭제 후 현재 항목에 selected 클래스 추가
+        dropdown1.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
+        item.classList.add("selected");
+
+        updateDropdownFilters();
+        // 드롭다운 선택 시 오류 제거
+        const existingStartError = document.getElementById("startDropdownError");
+        if(existingStartError) existingStartError.remove();
+        dropdown1Button.style.border = "";
+      });
+    });
+
+    dropdown2.querySelectorAll("a").forEach((item) => {
+      item.addEventListener("click", () => {
+        dropdown2Button.textContent = item.textContent;
+        dropdown2.classList.remove("show");
+
+        // 기존 선택 삭제 후 현재 항목에 selected 클래스 추가
+        dropdown2.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
+        item.classList.add("selected");
+
+        updateDropdownFilters();
+        // 드롭다운 선택 시 오류 제거
+        const existingEndError = document.getElementById("endDropdownError");
+        if(existingEndError) existingEndError.remove();
+        dropdown2Button.style.border = "";
+      });
+    });
+
+    (function(){
+      const calendarTable = document.getElementById("calendarTable");
+      const header = document.getElementById("calendarHeader");
+      const todayDate = new Date();
+      let currentYear = todayDate.getFullYear();
+      let currentMonth = todayDate.getMonth();
+
+      function getSelectionKey(year, month) {
+        return year + "-" + (month + 1);
+      }
+
+      function saveCurrentSelection() {
+        const key = getSelectionKey(currentYear, currentMonth);
+        const selections = [];
+        const dayCells = calendarTable.querySelectorAll("td.day");
+        dayCells.forEach(cell => {
+          if(cell.classList.contains("selected")) {
+            selections.push(cell.dataset.date);
+          }
+        });
+        localStorage.setItem(key, JSON.stringify(selections));
+      }
+
+      function loadSelections(year, month) {
+        const key = getSelectionKey(year, month);
+        let selections = JSON.parse(localStorage.getItem(key));
+        if(selections && selections.length) {
+          const dayCells = calendarTable.querySelectorAll("td.day");
+          dayCells.forEach(cell => {
+            if(selections.indexOf(cell.dataset.date) !== -1) {
+              cell.classList.add("selected");
+            } else {
+              cell.classList.remove("selected");
+            }
+          });
+        }
+      }
+
+      function renderCalendar(year, month) {
+        const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+        header.textContent = year + "년 " + monthNames[month];
+
+        calendarTable.innerHTML = "";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+        weekDays.forEach(day => {
+          const th = document.createElement("th");
+          th.textContent = day;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        calendarTable.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+
+        let date = 1;
+        for(let i = 0; i < 6; i++){
+          const tr = document.createElement("tr");
+          for(let j = 0; j < 7; j++){
+            const td = document.createElement("td");
+            if(i === 0 && j < firstDay) {
+              td.className = "empty";
+              td.textContent = "";
+            } else if(date > totalDays) {
+              td.className = "empty";
+              td.textContent = "";
+            } else {
+              td.dataset.date = date;
+              td.classList.add("day");
+              const circle = document.createElement("div");
+              circle.classList.add("circle");
+              circle.textContent = date;
+              td.appendChild(circle);
+              if(year === todayDate.getFullYear() && month === todayDate.getMonth() && date === todayDate.getDate()){
+                td.classList.add("today");
+              }
+              date++;
+            }
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+        calendarTable.appendChild(tbody);
+
+        loadSelections(year, month);
+      }
+
+      renderCalendar(currentYear, currentMonth);
+
+      document.getElementById("prevBtn").addEventListener("click", function(){
+        saveCurrentSelection();
+        currentMonth--;
+        if(currentMonth < 0){
+          currentMonth = 11;
+          currentYear--;
+        }
+        renderCalendar(currentYear, currentMonth);
+      });
+
+      document.getElementById("nextBtn").addEventListener("click", function(){
+        saveCurrentSelection();
+        currentMonth++;
+        if(currentMonth > 11){
+          currentMonth = 0;
+          currentYear++;
+        }
+        renderCalendar(currentYear, currentMonth);
+      });
+
+      document.getElementById("todayBtn").addEventListener("click", function(){
+        saveCurrentSelection();
+        currentYear = todayDate.getFullYear();
+        currentMonth = todayDate.getMonth();
+        renderCalendar(currentYear, currentMonth);
+      });
+
+      let isMouseDown = false;
+      let isTouchActive = false;
+      let dragStartDay = null;
+      let dragMode = "add";
+      let initialSelected = new Map();
+
+      function findDayCell(target) {
+        if(target.classList.contains("day")) return target;
+        if(target.parentElement && target.parentElement.classList.contains("day")) return target.parentElement;
+        return null;
+      }
+
+      function handleDragStart(e) {
+        const touch = e.type.includes('touch') ? e.touches[0] : e;
+        const dayCell = findDayCell(document.elementFromPoint(touch.clientX, touch.clientY));
+
+        if(dayCell && dayCell.classList.contains("day")){
+          isMouseDown = true;
+          isTouchActive = e.type.includes('touch');
+          dragStartDay = parseInt(dayCell.dataset.date);
+          initialSelected.clear();
+
+          const dayCells = calendarTable.querySelectorAll("td.day");
+          dayCells.forEach(cell => {
+            initialSelected.set(cell, cell.classList.contains("selected"));
+          });
+
+          dragMode = dayCell.classList.contains("selected") ? "remove" : "add";
+          if(dragMode === "add") {
+            dayCell.classList.add("selected");
+          } else {
+            dayCell.classList.remove("selected");
+          }
+          e.preventDefault();
+        }
+      }
+
+      function handleDragMove(e) {
+        if(!isMouseDown) return;
+
+        const touch = e.type.includes('touch') ? e.touches[0] : e;
+        const dayCell = findDayCell(document.elementFromPoint(touch.clientX, touch.clientY));
+
+        if(dayCell && dayCell.classList.contains("day")) {
+          const currentDay = parseInt(dayCell.dataset.date);
+          const minDay = Math.min(dragStartDay, currentDay);
+          const maxDay = Math.max(dragStartDay, currentDay);
+
+          const dayCells = calendarTable.querySelectorAll("td.day");
+          dayCells.forEach(cell => {
+            const cellDay = parseInt(cell.dataset.date);
+            if(cellDay >= minDay && cellDay <= maxDay) {
+              if(dragMode === "add") {
+                cell.classList.add("selected");
+              } else {
+                cell.classList.remove("selected");
+              }
+            } else {
+              if(initialSelected.get(cell)){
+                cell.classList.add("selected");
+              } else {
+                cell.classList.remove("selected");
+              }
+            }
+          });
+        }
+        e.preventDefault();
+      }
+
+      function handleDragEnd() {
+        if(isMouseDown){
+          isMouseDown = false;
+          isTouchActive = false;
+          dragStartDay = null;
+          initialSelected.clear();
+          saveCurrentSelection();
+        }
+      }
+
+      calendarTable.addEventListener("mousedown", handleDragStart);
+      calendarTable.addEventListener("mousemove", handleDragMove);
+      document.addEventListener("mouseup", handleDragEnd);
+
+      calendarTable.addEventListener("touchstart", handleDragStart, { passive: false });
+      calendarTable.addEventListener("touchmove", handleDragMove, { passive: false });
+      document.addEventListener("touchend", handleDragEnd);
+      document.addEventListener("touchcancel", handleDragEnd);
+
+      // 캘린더 클릭 시, 선택된 날짜 수가 올바르면 오류 제거
+      calendarTable.addEventListener("click", function(e) {
+        const calendarDiv = document.getElementById("calendar");
+        const calendarError = document.getElementById("calendarError");
+        const selectedDays = calendarTable.querySelectorAll("td.day.selected");
+        if(selectedDays.length > 0 && selectedDays.length <= 31) {
+          calendarDiv.style.border = "";
+          if(calendarError) {
+            calendarError.remove();
+          }
+        }
+      });
+    })();
+
+    // --- 검증 및 경고문구 출력 ---
+    function validateForm() {
+      let isValid = true;
+
+      // 일정 제목 검증
+      const titleInput = document.getElementById("titleInput");
+      const existingTitleError = document.getElementById("titleError");
+      if(existingTitleError) {
+        existingTitleError.remove();
+      }
+      titleInput.style.border = "";
+      if(titleInput.value.trim() === ""){
+        isValid = false;
+        titleInput.style.border = "2px solid #d32f2f";
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "titleError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "일정 제목을 입력해주세요.";
+        titleInput.parentNode.insertBefore(errorMsg, titleInput.nextSibling);
+      }
+
+      // 시작시간 드롭다운 검증
+      const startTimeButton = document.getElementById("dropdownMenu1Button");
+      const existingStartError = document.getElementById("startDropdownError");
+      if(existingStartError) {
+        existingStartError.remove();
+      }
+      startTimeButton.style.border = "";
+      if(startTimeButton.textContent.trim() === "옵션을 선택하세요"){
+        isValid = false;
+        startTimeButton.style.border = "2px solid #d32f2f";
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "startDropdownError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "시작시간을 선택해주세요.";
+        startTimeButton.parentNode.insertBefore(errorMsg, startTimeButton.nextSibling);
+      }
+
+      // 종료시간 드롭다운 검증
+      const endTimeButton = document.getElementById("dropdownMenu2Button");
+      const existingEndError = document.getElementById("endDropdownError");
+      if(existingEndError) {
+        existingEndError.remove();
+      }
+      endTimeButton.style.border = "";
+      if(endTimeButton.textContent.trim() === "옵션을 선택하세요"){
+        isValid = false;
+        endTimeButton.style.border = "2px solid #d32f2f";
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "endDropdownError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "종료시간을 선택해주세요.";
+        endTimeButton.parentNode.insertBefore(errorMsg, endTimeButton.nextSibling);
+      }
+
+      // 날짜 선택 검증 (캘린더)
+      const calendarDiv = document.getElementById("calendar");
+      const existingCalendarError = document.getElementById("calendarError");
+      if(existingCalendarError) {
+        existingCalendarError.remove();
+      }
+      calendarDiv.style.border = "";
+      const calendarTable = document.getElementById("calendarTable");
+      const selectedDays = calendarTable.querySelectorAll("td.day.selected");
+      if(selectedDays.length === 0){
+        isValid = false;
+        calendarDiv.style.border = "2px solid #d32f2f";
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "calendarError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "날짜를 선택해주세요.";
+        calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
+      } else if(selectedDays.length > 31){
+        isValid = false;
+        calendarDiv.style.border = "2px solid #d32f2f";
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "calendarError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "선택한 날짜가 31일을 초과합니다.";
+        calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
+      }
+      return isValid;
+    }
+
+    document.getElementById("nextButton").addEventListener("click", function(e) {
+      e.preventDefault();
+      if (validateForm()) {
+        location.href='/create-schedule';
+      }
+    });
+  });
+</script>
 </body>
 </html>
