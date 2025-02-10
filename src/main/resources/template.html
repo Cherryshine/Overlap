@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OverLap - 메인 랜딩페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <style>
+        .glass-effect { 
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 1rem; /* 동일한 곡률을 적용 */
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        .logo-animation {
+            animation: float 2s ease-in-out infinite;
+        }
+        .full-screen {
+            min-height: 100vh;
+        }
+        .chat-message {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        @keyframes expand {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-expand {
+            animation: expand 0.6s ease-out;
+            transform-origin: top;
+        }
+
+        /* 버튼 애니메이션 */
+        .btn-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .btn-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 전체 레이아웃을 flex로 설정하여 푸터를 하단에 고정 */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        footer {
+            margin-top: auto; /* 푸터를 하단에 고정 */
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com/3.3.2"></script>
+
+    <style>
+      /* iOS에서 더블탭 확대 방지 */
+      * {
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      /* 페이지 버튼 (공통) */
+      .page-button {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 4px; /* 둥근 모서리 사각형 형태 */
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .page-button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      /* 스크롤 영역 내에 상단과 하단에 고정될 버튼 */
+      .page-button-prev {
+          position: sticky;
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+      }
+
+      .page-button-next {
+          position: sticky;
+          bottom: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+      }
+
+      /* 반응형 설정 */
+      @media (max-width: 629px) {
+        .page-button {
+          width: 28px;
+          height: 28px;
+        }
+      }
+      .grid-cell {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      /* 시간 구분선을 위한 가상 요소 */
+      .grid-cell::before {
+        content: '';
+        position: absolute;
+
+        left: -8px; /* 부모의 패딩만큼 음수값 */
+        right: -8px; /* 부모의 패딩만큼 음수값 */
+        top: 0;
+        height: 1px;
+        background-color: rgb(209, 213, 219);
+        z-index: 1;
+      }
+      
+      /* 시간대 구분선(검은색 굵은 선)의 경우 */
+      .grid-cell.hour-mark::before {
+        height: 1.2px;
+        background-color: rgb(157, 101, 203);
+      }
+      
+      /* 첫 번째 행의 셀은 border 제거 */
+      .grid-row-first .grid-cell::before {
+        display: none;
+      }
+
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+
+    <nav class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <img src="../../../../../../Documents/Folders/코딩/Html/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
+    </nav>
+    
+    <!-- main 태그로 콘텐츠 영역을 감싸 flex-grow 속성을 적용 -->
+    <main class="content pt-[84px] sm:pt-[150px]">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pb-[50px] max-w-4xl">
+            <div class="glass-effect rounded-3xl p-8">
+                <p class="text-purple-800 font-bold mb-[15px]">시간대 선택</p>
+                <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative"></div>
+                    <!-- (1) 스크립트 파일 로드 -->
+                    <script src="main.js"></script>
+
+                    <!-- (2) JSON 데이터 및 초기화 로직 -->
+                    <script>
+                        const jsonData = {
+                            startTime: "09:00",
+                            endTime: "16:00",
+                            interval: 15,
+                            days: [
+                                { label: "Sun", date: "Feb 9" },
+                                { label: "Mon", date: "Feb 10" },
+                                { label: "Tue", date: "Feb 11" },
+                                { label: "Wed", date: "Feb 12" },
+                                { label: "Thu", date: "Feb 13" },
+                                { label: "Fri", date: "Feb 14" },
+                                { label: "Sat", date: "Feb 15" },
+                                { label: "Sun", date: "Feb 16" },
+                                { label: "Mon", date: "Feb 17" },
+                                { label: "Tue", date: "Feb 18" },
+                                { label: "Wed", date: "Feb 19" },
+                                { label: "Thu", date: "Feb 20" },
+                                { label: "Fri", date: "Feb 21" },
+                                { label: "Sat", date: "Feb 22" },
+                                { label: "Wed", date: "Feb 12" },
+                                { label: "Thu", date: "Feb 13" },
+                                { label: "Fri", date: "Feb 14" },
+                                { label: "Sat", date: "Feb 15" },
+                                { label: "Sun", date: "Feb 16" },
+                                { label: "Mon", date: "Feb 17" },
+                                { label: "Tue", date: "Feb 18" },
+                                { label: "Wed", date: "Feb 19" },
+                                { label: "Thu", date: "Feb 20" },
+                                { label: "Fri", date: "Feb 21" }
+                            ]
+                        };
+
+                        let currentPage = 0;
+                        let itemsPerPage = window.innerWidth <= 629 ? 3 : 5; // 629px 이하에서는 3개, 그 이상에서는 7개
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                            updateSchedule();
+
+                            // 반응형 리사이징 감지
+                            window.addEventListener("resize", function () {
+                                const newItemsPerPage = window.innerWidth <= 629 ? 3 : 7;
+                                if (newItemsPerPage !== itemsPerPage) {
+                                    itemsPerPage = newItemsPerPage; // 새로운 요일 개수 적용
+                                    currentPage = 0; // 페이지 초기화
+                                    updateSchedule();
+                                }
+                            });
+                        });
+                    </script>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-purple-800 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
+            setTimeout(function() {
+                window.scrollTo(0, 0); // 스크롤을 최상단으로
+            }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
+        });
+    </script>
+</body>
+</html>

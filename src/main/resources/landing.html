@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OverLap - 메인 랜딩페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <style>
+        .glass-effect { 
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 1rem; /* 동일한 곡률을 적용 */
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        .logo-animation {
+            animation: float 2s ease-in-out infinite;
+        }
+        .full-screen {
+            min-height: 100vh;
+        }
+        .chat-message {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        @keyframes expand {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-expand {
+            animation: expand 0.6s ease-out;
+            transform-origin: top;
+        }
+
+        /* 버튼 애니메이션 */
+        .btn-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .btn-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+
+    <nav class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <img src="../../../../../../Documents/Folders/코딩/Html/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
+    </nav>
+    
+
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl">
+        <header id="header" class="mb-12 text-center sm:text-left animate-expand">
+            <h1 class="text-4xl lg:text-5xl text-purple-800 mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                Let's OverLap it !<br>
+                <a class="text-4xl lg:text-5xl text-purple-700 whitespace-nowrap overflow-hidden text-ellipsis">
+                    만날 시간을 찾아보세요
+                </a>
+            </h1>
+            <p class="text-purple-700">링크만 보내세요, <a class="text-purple-700 font-bold">시간은 저희가 찾을게요 😙</a></p>
+        </header>
+
+        <div class="glass-effect rounded-3xl p-8">
+            <div id="chatContainer">
+                <!-- 채팅 메시지들 -->
+                <div class="chat-message" id="chat1">
+                    <div class="flex items-start mb-4">
+                        <img src="https://ai-public.creatie.ai/gen_page/logo_placeholder.png" class="w-8 h-8 rounded-full mr-2">
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">김지수</div>
+                            <div class="bg-white rounded-lg p-3 max-w-[70%] inline-block">
+                                <p>저희 회의 날짜는 언제가 좋을까요?</p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">오전 09:41</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-message" id="chat2">
+                    <div class="flex justify-end mb-4">
+                        <div class="flex flex-col items-end">
+                            <div class="bg-[#FEE500] rounded-lg p-3 max-w-[70%] pb-4 mb-2">
+                                <p>오버랩 해요!</p>
+                            </div>
+                            <div class="flex flex-col w-[280px] mb-1">
+                                <img src="../../../../../../Documents/Folders/코딩/Html/thumbnail.png" class="w-[280px] h-48 object-cover rounded-tl-lg rounded-tr-lg rounded-bl-none rounded-br-none">
+                                <div class="p-2 bg-[#FEE500] rounded-b-lg">
+                                    <h3 class="text-sm font-medium mb-1">오버랩 - 약속잡는 최적의 방법</h3>
+                                    <a href="#" class="text-blue-500 text-xs">https://www.overlap.com/</a>
+                                </div>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-500">오전 09:43</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="chat-message" id="chat3">
+                    <div class="flex items-start mb-4">
+                        <img src="https://ai-public.creatie.ai/gen_page/logo_placeholder.png" class="w-8 h-8 rounded-full mr-2">
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1">정성문</div>
+                            <div class="bg-white rounded-lg p-3 max-w-[100%] inline-block">
+                                <p>오버랩을 사용하면 정말 편하네요!<br>그럼 내일 모레 한시에 뵈요!</p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">오전 09:52</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 일정 만들러 가기 버튼 -->
+                <div id="scheduleBtn" class="btn-animate mt-8">
+                    <button class="w-full py-3 bg-purple-700 text-white rounded-xl">일정 만들러 가기</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-purple-800 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
+            setTimeout(function() {
+                window.scrollTo(0, 0); // 스크롤을 최상단으로
+            }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
+            showMessages();
+        });
+        // 메시지들을 순차적으로 나타나게 하는 함수
+        function showMessages() {
+            setTimeout(function() {
+                setTimeout(function() {
+                    document.getElementById('chat1').style.opacity = '1';
+                    document.getElementById('chat1').style.transform = 'translateY(0)';
+                    document.getElementById('chat1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 0); // 첫 번째 메시지는 바로 나타나도록 설정
+
+                setTimeout(function() {
+                    document.getElementById('chat2').style.opacity = '1';
+                    document.getElementById('chat2').style.transform = 'translateY(0)';
+                    document.getElementById('chat2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 700); // 두 번째 메시지는 0.7초 후에 나타남
+
+                setTimeout(function() {
+                    document.getElementById('chat3').style.opacity = '1';
+                    document.getElementById('chat3').style.transform = 'translateY(0)';
+                    document.getElementById('chat3').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 1400); // 세 번째 메시지는 1.4초 후에 나타남
+
+                // 버튼 애니메이션 시작
+                setTimeout(function() {
+                    document.getElementById('scheduleBtn').classList.add('btn-show');
+                }, 2100); // 메시지 후 2.1초 뒤에 버튼 나타남
+            }, 1000); // 1초 후에 애니메이션 시작
+        }
+    </script>
+</body>
+</html>

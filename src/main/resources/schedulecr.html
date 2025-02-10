@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OverLap - 메인 랜딩페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
+    
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <style>
+        .glass-effect { 
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 1rem; /* 동일한 곡률을 적용 */
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        .logo-animation {
+            animation: float 2s ease-in-out infinite;
+        }
+        .full-screen {
+            min-height: 100vh;
+        }
+        .chat-message {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        @keyframes expand {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-expand {
+            animation: expand 0.6s ease-out;
+            transform-origin: top;
+        }
+
+        /* 버튼 애니메이션 */
+        .btn-animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .btn-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 전체 레이아웃을 flex로 설정하여 푸터를 하단에 고정 */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        footer {
+            margin-top: auto; /* 푸터를 하단에 고정 */
+        }
+
+        /* 커스텀 드롭다운 */
+        .custom-dropdown {
+            position: relative;
+            width: 100%; /* 드롭다운 전체가 가로폭을 100% 차지하도록 설정 */
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: none;
+            background-color: #f4eeff;
+            border-radius: 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a:active,
+        .dropdown-menu a:focus {
+            background-color: #8b5cf6; /* 보라색 */
+            color: white; /* 글자 색을 흰색으로 변경 */
+        }
+
+        /* 선택된 항목에 보라색 배경 추가 */
+        .dropdown-menu a.selected {
+            background-color: #8b5cf6; /* 보라색 */
+            color: white; /* 글자 색을 흰색으로 변경 */
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 8px 16px;
+            color: #866198;
+            text-decoration: none;
+            cursor: pointer;
+            border-bottom: 0.5px solid #b3a6b9; /* 항목 사이에 구분선 추가 */
+        }
+        
+        .dropdown-menu a:last-child {
+            border-bottom: none; /* 마지막 항목은 구분선이 없도록 설정 */
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #aa8eec;
+            color: white;
+        }
+
+        .dropdown-wrapper {
+            display: flex;
+            align-items: center; /* 수직 중앙 정렬 */
+            width: 100%;
+        }
+
+        .dropdown-wrapper > .custom-dropdown {
+            flex: 1 1 0%; /* 드롭다운들이 동일한 크기로 분배됨 */
+        }
+
+        .dropdown-wrapper > .text-between {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto; /* "부터" 텍스트가 가운데 위치하도록 */
+            font-size: 16px;
+            color: #650094;
+            margin: 0 10px; /* 좌우 간격 추가 */
+        }
+
+        /* 드롭다운과 "부터" 텍스트 사이의 간격을 조정 */
+        .dropdown-wrapper > .custom-dropdown:last-child {
+            margin-right: 0; /* 마지막 드롭다운은 오른쪽 여백 없애기 */
+        }
+
+        .custom-dropdown button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+
+    <nav class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
+        <img src="../../../../../../Documents/Folders/코딩/Html/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation">
+    </nav>
+    
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
+        <!-- 컨테이너 내부 내용 제거됨 -->
+        <div class="glass-effect rounded-3xl p-8">
+            <p class="text-purple-800 font-bold mb-[15px]">새 일정 만들기</p>
+            <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] mb-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
+            <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p>
+
+            <div class="dropdown-wrapper">
+                <div class="custom-dropdown">
+                    <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
+                        옵션을 선택하세요
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="dropdownMenu1" class="dropdown-menu">
+                        <!-- 시간 옵션들 추가 -->
+                        <a href="#">12:00 AM</a>
+                        <a href="#">01:00 AM</a>
+                        <a href="#">02:00 AM</a>
+                        <a href="#">03:00 AM</a>
+                        <a href="#">04:00 AM</a>
+                        <a href="#">05:00 AM</a>
+                        <a href="#">06:00 AM</a>
+                        <a href="#">07:00 AM</a>
+                        <a href="#">08:00 AM</a>
+                        <a href="#">09:00 AM</a>
+                        <a href="#">10:00 AM</a>
+                        <a href="#">11:00 AM</a>
+                        <a href="#">12:00 PM</a>
+                        <a href="#">01:00 PM</a>
+                        <a href="#">02:00 PM</a>
+                        <a href="#">03:00 PM</a>
+                        <a href="#">04:00 PM</a>
+                        <a href="#">05:00 PM</a>
+                        <a href="#">06:00 PM</a>
+                        <a href="#">07:00 PM</a>
+                        <a href="#">08:00 PM</a>
+                        <a href="#">09:00 PM</a>
+                        <a href="#">10:00 PM</a>
+                        <a href="#">11:00 PM</a>
+                    </div>
+                </div>
+                <div class="text-between">
+                    <span>부터</span>
+                </div>
+                <div class="custom-dropdown">
+                    <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-900 mt-[10px] placeholder-purple-800">
+                        옵션을 선택하세요
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="dropdownMenu2" class="dropdown-menu">
+                        <!-- 시간 옵션들 추가 -->
+                        <a href="#">12:00 AM</a>
+                        <a href="#">01:00 AM</a>
+                        <a href="#">02:00 AM</a>
+                        <a href="#">03:00 AM</a>
+                        <a href="#">04:00 AM</a>
+                        <a href="#">05:00 AM</a>
+                        <a href="#">06:00 AM</a>
+                        <a href="#">07:00 AM</a>
+                        <a href="#">08:00 AM</a>
+                        <a href="#">09:00 AM</a>
+                        <a href="#">10:00 AM</a>
+                        <a href="#">11:00 AM</a>
+                        <a href="#">12:00 PM</a>
+                        <a href="#">01:00 PM</a>
+                        <a href="#">02:00 PM</a>
+                        <a href="#">03:00 PM</a>
+                        <a href="#">04:00 PM</a>
+                        <a href="#">05:00 PM</a>
+                        <a href="#">06:00 PM</a>
+                        <a href="#">07:00 PM</a>
+                        <a href="#">08:00 PM</a>
+                        <a href="#">09:00 PM</a>
+                        <a href="#">10:00 PM</a>
+                        <a href="#">11:00 PM</a>
+                        <a href="#">00:00 AM</a>
+                    </div>
+                </div>
+            </div>
+                    <!-- !!!!!!!!!!! -->
+                <div class="min-h-screen flex flex-col items-center py-8 px-4" style="width: auto !important;">
+                    <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">            <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <h2 class="text-2xl font-bold text-gray-800" id="currentDate">2024년 1월</h2>
+                                <button class="!rounded-button bg-custom text-white px-4 py-2 text-sm" id="today">오늘</button>                </div>
+                            <div class="flex items-center gap-2">
+                                <button class="!rounded-button p-2 hover:bg-gray-100" id="prevMonth">                        <i class="fas fa-chevron-left text-gray-600"></i>
+                                </button>
+                                <button class="!rounded-button p-2 hover:bg-gray-100" id="nextMonth">                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>            
+                        <div class="grid grid-cols-7 gap-px bg-gray-200">
+                            <div class="text-center py-2 font-medium text-red-500">일</div>
+                            <div class="text-center py-2 font-medium">월</div>
+                            <div class="text-center py-2 font-medium">화</div>
+                            <div class="text-center py-2 font-medium">수</div>
+                            <div class="text-center py-2 font-medium">목</div>
+                            <div class="text-center py-2 font-medium">금</div>
+                            <div class="text-center py-2 font-medium text-blue-500">토</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-px bg-gray-200" id="calendar">
+                            <!-- Calendar cells will be dynamically generated here -->            </div>
+                        
+                        <div class="mt-4 text-sm text-gray-600" id="selectedRange"></div>
+                    </div>
+                </div>    <script>
+                    class Calendar {
+                        constructor() {
+                            this.date = new Date();
+                            this.selectedStart = null;
+                            this.selectedEnd = null;
+                            this.isDragging = false;
+                            
+                            this.init();
+                            this.bindEvents();
+                        }
+                        
+                        init() {
+                            this.render();
+                        }
+                        
+                        render() {
+                            const year = this.date.getFullYear();
+                            const month = this.date.getMonth();
+                            
+                            document.getElementById('currentDate').textContent = 
+                                `${year}년 ${this.getKoreanMonth(month)}`;
+                            
+                            const calendar = document.getElementById('calendar');
+                            calendar.innerHTML = '';
+                            
+                            const firstDay = new Date(year, month, 1);
+                            const lastDay = new Date(year, month + 1, 0);
+                            
+                            const startPadding = firstDay.getDay();
+                            const endPadding = 6 - lastDay.getDay();
+                            
+                            // Previous month days
+                            const prevMonthLastDay = new Date(year, month, 0).getDate();
+                            for (let i = startPadding - 1; i >= 0; i--) {
+                                this.createDay(prevMonthLastDay - i, 'text-gray-400', true);
+                            }
+                            
+                            // Current month days
+                            for (let i = 1; i <= lastDay.getDate(); i++) {
+                                const isToday = this.isToday(year, month, i);
+                                const classes = isToday ? 'bg-custom text-white' : '';
+                                this.createDay(i, classes);
+                            }
+                            
+                            // Next month days
+                            for (let i = 1; i <= endPadding; i++) {
+                                this.createDay(i, 'text-gray-400', true);
+                            }
+                        }
+                        
+                        createDay(day, classes = '', isOtherMonth = false) {
+                            const cell = document.createElement('div');
+                            cell.className = `
+                                relative h-16 bg-white
+                                flex items-center justify-center
+                                cursor-pointer hover:bg-gray-50
+                                ${classes}
+                            `;
+                            cell.textContent = day;
+                            cell.dataset.day = day;
+                            cell.dataset.otherMonth = isOtherMonth;
+                            
+                            document.getElementById('calendar').appendChild(cell);
+                        }
+                        
+                        getKoreanMonth(month) {
+                            const months = [
+                                '1월', '2월', '3월', '4월', '5월', '6월',
+                                '7월', '8월', '9월', '10월', '11월', '12월'
+                            ];
+                            return months[month];
+                        }
+                        
+                        isToday(year, month, day) {
+                            const today = new Date();
+                            return (
+                                today.getFullYear() === year &&
+                                today.getMonth() === month &&
+                                today.getDate() === day
+                            );
+                        }
+                        
+                        bindEvents() {
+                            document.getElementById('prevMonth').addEventListener('click', () => {
+                                this.date.setMonth(this.date.getMonth() - 1);
+                                this.render();
+                            });
+                            
+                            document.getElementById('nextMonth').addEventListener('click', () => {
+                                this.date.setMonth(this.date.getMonth() + 1);
+                                this.render();
+                            });
+                            
+                            document.getElementById('today').addEventListener('click', () => {
+                                this.date = new Date();
+                                this.render();
+                            });
+                            
+                            const calendar = document.getElementById('calendar');
+                            
+                            calendar.addEventListener('mousedown', (e) => {
+                                if (e.target.dataset.day) {
+                                    this.isDragging = true;
+                                    this.selectedStart = parseInt(e.target.dataset.day);
+                                    this.selectedEnd = null;
+                                    this.updateSelection();
+                                }
+                            });
+                            
+                            calendar.addEventListener('mousemove', (e) => {
+                                if (this.isDragging && e.target.dataset.day) {
+                                    this.selectedEnd = parseInt(e.target.dataset.day);
+                                    this.updateSelection();
+                                }
+                            });
+                            
+                            document.addEventListener('mouseup', () => {
+                                this.isDragging = false;
+                                this.updateSelectedRange();
+                            });
+                        }
+                        
+                        updateSelection() {
+                            const cells = document.getElementById('calendar').children;
+                            for (let cell of cells) {
+                                const day = parseInt(cell.dataset.day);
+                                if (this.selectedStart && this.selectedEnd) {
+                                    const [start, end] = [
+                                        Math.min(this.selectedStart, this.selectedEnd),
+                                        Math.max(this.selectedStart, this.selectedEnd)
+                                    ];
+                                    if (day >= start && day <= end && cell.dataset.otherMonth !== 'true') {
+                                        cell.classList.add('bg-custom/10');
+                                    } else {
+                                        cell.classList.remove('bg-custom/10');
+                                    }
+                                }
+                            }
+                        }
+                        
+                        updateSelectedRange() {
+                            const rangeElement = document.getElementById('selectedRange');
+                            if (this.selectedStart && this.selectedEnd) {
+                                const [start, end] = [
+                                    Math.min(this.selectedStart, this.selectedEnd),
+                                    Math.max(this.selectedStart, this.selectedEnd)
+                                ];
+                                rangeElement.textContent = `선택된 기간: ${start}일 - ${end}일`;
+                            } else {
+                                rangeElement.textContent = '';
+                            }
+                        }
+                    }
+            
+                    new Calendar();
+                </script>
+        <!--  !!!!!!!!!!!!!  -->
+        </div>
+
+    </div>
+
+    <footer class="bg-purple-800 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown1 = document.getElementById("dropdownMenu1");
+            const dropdown1Button = document.getElementById("dropdownMenu1Button");
+        
+            const dropdown2 = document.getElementById("dropdownMenu2");
+            const dropdown2Button = document.getElementById("dropdownMenu2Button");
+        
+            // 드롭다운 열기/닫기
+            dropdown1Button.addEventListener("click", () => {
+                dropdown1.classList.toggle("show");
+            });
+        
+            dropdown2Button.addEventListener("click", () => {
+                dropdown2.classList.toggle("show");
+            });
+        
+            // 드롭다운 메뉴 항목 클릭 시 선택한 값 반영 및 selected 클래스 추가
+            dropdown1.querySelectorAll("a").forEach((item) => {
+                item.addEventListener("click", () => {
+                    dropdown1Button.textContent = item.textContent;
+                    dropdown1.classList.remove("show");
+                    
+                    // 선택된 항목에 selected 클래스 추가
+                    dropdown1.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
+                    item.classList.add("selected");
+                });
+            });
+        
+            dropdown2.querySelectorAll("a").forEach((item) => {
+                item.addEventListener("click", () => {
+                    dropdown2Button.textContent = item.textContent;
+                    dropdown2.classList.remove("show");
+                    
+                    // 선택된 항목에 selected 클래스 추가
+                    dropdown2.querySelectorAll("a").forEach((a) => a.classList.remove("selected"));
+                    item.classList.add("selected");
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>
