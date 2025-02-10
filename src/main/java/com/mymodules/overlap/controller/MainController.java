@@ -10,12 +10,15 @@ import java.util.List;
 @RestController
 public class MainController {
 
-
-    // 게시판 페이지 렌더링
     @GetMapping("/")
     public ModelAndView landingPage()
     {
         return new ModelAndView("landing" );
+    }
+    @GetMapping("/create-schedule")
+    public ModelAndView scheduleCreatePage()
+    {
+        return new ModelAndView("create-schedule" );
     }
 
 
