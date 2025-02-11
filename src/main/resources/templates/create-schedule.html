@@ -136,6 +136,7 @@
       align-items: center; /* 수직 중앙 정렬 */
       width: 100%;
       min-width: 280px; /* 드롭다운의 최소 너비 */
+      margin-bottom: 10px;
     }
 
     .dropdown-wrapper > .custom-dropdown {
@@ -161,6 +162,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+      overflow: hidden; /* 넘치는 텍스트 숨김 */
+      text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
     }
 
     /* 그라데이션 배경 설정 */
@@ -180,269 +184,231 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
+      margin-bottom: 5px !important;
+      overflow: hidden;
     }
 
-    /* 달력 테이블은 부모 너비에 맞춰 조정하고, 내부 셀은 고정 비율 유지 */
     #calendar table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 3px;
+      border-spacing: 2px;
       table-layout: fixed;
     }
 
-    th, td {
-      text-align: center;
-      vertical-align: middle;
-      /* 기존에는 고정 픽셀 값(40px, 60px)으로 지정되어 있었으나,
-         만약 셀의 정사각형 비율을 유지하면서 반응형으로 처리하고 싶다면
-         aspect-ratio 속성을 활용하거나, 그리드 레이아웃 및 padding 트릭을 사용할 수 있습니다.
-       */
+    #calendar thead {
+      border-bottom: 2px solid #8b5cf6; /* 보라색 구분선 추가 */
     }
 
-    /* 필요에 따라 아래와 같이 미디어 쿼리나 추가 스타일을 통해 셀 크기 및 글자 크기를 조정하실 수 있습니다. */
+    #calendar th {
+      padding: 8px 0;
+      font-weight: 600;
+      border-bottom: 2px solid #8b5cf6; /* 보라색 구분선 추가 */
+      margin-bottom: 8px; /* 구분선과 날짜 사이 여백 */
+    }
 
+    #calendar td {
+      width: calc(100% / 7); /* 7일로 균등 분할 */
+      position: relative;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* td에 정사각형 비율 유지 */
+    #calendar td::before {
+      content: '';
+      display: block;
+      padding-top: 100%; /* 1:1 비율 유지 */
+    }
+
+    #calendar td > * {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 반응형 스타일 수정 */
+    @media screen and (max-width: 360px) {
+      #calendar {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      #calendar table {
+        border-spacing: 1px;
+      }
+
+      #calendar th {
+        padding: 6px 0;
+        border-bottom-width: 1px; /* 작은 화면에서는 더 얇은 선 */
+      }
+
+      #calendar td {
+        font-size: 0.7rem;
+      }
+
+      .calendar-nav {
+        margin-bottom: 0.5rem;
+        gap: 4px;
+      }
+
+      .calendar-nav button {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+      }
+
+      .calendar-nav span {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media screen and (min-width: 361px) and (max-width: 480px) {
+      #calendar {
+        padding: 0.75rem;
+      }
+
+      #calendar table {
+        border-spacing: 1.5px;
+      }
+
+      #calendar th {
+        padding: 7px 0;
+        border-bottom-width: 1.5px; /* 중간 크기 화면에서는 중간 두께의 선 */
+      }
+
+      #calendar td {
+        font-size: 0.8rem;
+      }
+
+      .calendar-nav {
+        margin-bottom: 0.75rem;
+        gap: 6px;
+      }
+
+      .calendar-nav button {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+      }
+
+      .calendar-nav span {
+        font-size: 1rem;
+      }
+    }
+
+    /* 캘린더 셀 스타일 수정 */
+    #calendar td.day {
+      cursor: pointer;
+      transition: background-color 0.2s;
+      -webkit-tap-highlight-color: transparent; /* 모바일 터치 시 기본 하이라이트 제거 */
+    }
+
+    /* 호버 효과를 데스크톱에서만 적용 */
+    @media (hover: hover) and (pointer: fine) {
+      #calendar td.day:hover {
+        background-color: #aa8eec;
+        color: white;
+        border-radius: 4px;
+      }
+    }
+
+    /* 터치 디바이스를 위한 활성 상태 스타일 */
+    #calendar td.day:active {
+      background-color: #aa8eec;
+      color: white;
+      border-radius: 4px;
+    }
+
+    /* 선택된 날짜 스타일 */
+    #calendar td.selected {
+      background-color: #8b5cf6;
+      color: white;
+      border-radius: 4px;
+    }
+
+    /* 오늘 날짜 스타일 */
+    #calendar td.today {
+      border: 2px solid #8b5cf6;
+      border-radius: 4px;
+    }
+
+    /* 달력 네비게이션 */
     .calendar-nav {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 15px;
-      gap: 10px;
+      gap: 8px;
+      margin-bottom: 1rem;
+      position: relative;
     }
 
-    .calendar-nav button {
+    /* 월 이동 버튼 컨테이너 */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 오늘 버튼 위치 조정 */
+    #todayBtn {
+      position: relative;
+      margin: 15px auto 5px; /* 하단 여백 추가 */
       background-color: #e1bee7;
-      border: none;
       color: #4a148c;
-      font-size: 1em;
-      cursor: pointer;
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 5px;
+      cursor: pointer;
       transition: background-color 0.3s;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 5px;
+      width: fit-content;
+      z-index: 1; /* 버튼이 다른 요소들 위에 표시되도록 */
     }
 
-    .calendar-nav button:hover {
+    #todayBtn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    #todayBtn svg rect { /* circle을 rect로 변경 */
+      fill: none;
+      stroke: #4a148c;
+      stroke-width: 2;
+    }
+
+    /* #todayBtn:hover {
       background-color: #d1aee7;
-    }
+    } */
 
-    .today-btn {
-      background-color: #e1bee7;
-      border: none;
-      color: #4a148c;
-      font-size: 1em;
-      cursor: pointer;
-      margin: 10px auto 0;
-      padding: 5px 15px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-      display: block;
-    }
-
-    .today-btn:hover {
-      background-color: #d1aee7;
-    }
-
-    .calendar-header {
-      font-size: 1.4em;
-      color: #4a148c;
-      text-align: center;
-      flex-grow: 1;
-    }
-
-    thead {
-      position: relative;
-      border-bottom: none;
-    }
-
-    th {
-      background-color: transparent;
-      font-weight: normal;
-      border: none;
-      border-bottom: 2px solid #9c27b0; /* 요일 셀 하단 테두리만 유지 */
-      padding-bottom: 8px;
-    }
-
-    thead th:nth-child(1) {
-      color: red;
-    }
-
-    thead th:nth-child(7) {
-      color: blue;
-    }
-
-    td.empty {
-      background-color: transparent;
-      cursor: default;
-    }
-
-    td.day {
-      position: relative;
-      overflow: visible;
-      padding: 0;
-    }
-
-    .circle {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
-      border-radius: 50%;
-      text-align: center;
-      background-color: #fff;
-      transition: background-color 0.3s, color 0.3s;
-      box-sizing: border-box;
-      position: relative;
-      z-index: 1;
-    }
-
-    td.day:hover .circle {
-      background-color: #f3e5f5;
-    }
-
-    td.day.selected .circle {
-      background-color: transparent;
-      color: #fff;
-      position: relative;
-      z-index: 1;
-    }
-
-    td.day.selected .circle::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 40px;
-      height: 40px;
-      background-color: rgba(156,39,176,0.5);
-      border-radius: 50%;
-      z-index: -1;
-      transition: all 0.3s;
-    }
-
-    td.day.today .circle {
-      border: 2px solid #4a148c;
-      box-sizing: border-box;
-    }
-
-    td.day.today.selected .circle::before {
-      top: 2px;
-      left: 2px;
-      width: calc(100% - 4px);
-      height: calc(100% - 4px);
-    }
-
-    td.day.group-start .circle {
-      width: calc(40px + 3px);
-      margin-left: -3px;
-      border-radius: 50% 0 0 50%;
-    }
-
-    td.day.group-end .circle {
-      width: calc(40px + 3px);
-      margin-right: -3px;
-      border-radius: 0 50% 50% 0;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
-      100% { transform: translateY(0); }
-    }
-
-    .logo-animation {
-      animation: float 2s ease-in-out infinite;
-    }
-
-    .content {
-      flex-grow: 1;
-    }
-
-    /* 반응형 테이블 셀 크기 조정 */
-    @media (min-width: 768px) {
-      th, td {
-        width: 60px; /* 큰 화면에서는 더 크게 */
-        height: 60px;
+    /* 작은 화면에서 오늘 버튼 스타일 */
+    @media screen and (max-width: 360px) {
+      #calendar {
+        padding-bottom: 45px; /* 캘린더 하단 패딩 증가 */
       }
-
-      .circle {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        font-size: 1.1em;
-      }
-
-      td.day.selected .circle::before {
-        width: 60px;
-        height: 60px;
-      }
-
-      td.day.group-start .circle {
-        width: calc(60px + 3px);
-      }
-
-      td.day.group-end .circle {
-        width: calc(60px + 3px);
-      }
-
-      .calendar-header {
-        font-size: 1.6em;
-      }
-
-      .calendar-nav button {
-        padding: 8px 15px;
-        font-size: 1.2em;
-      }
-
-      .today-btn {
-        padding: 8px 20px;
-        font-size: 1.1em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
+      
+      #todayBtn {
+        margin: 10px auto 0;
+        padding: 4px 8px;
+        font-size: 0.8rem;
       }
     }
 
-    @media (max-width: 767px) {
-      th, td {
-        width: 40px; /* 작은 화면에서는 더 작게 */
-        height: 40px;
+    @media screen and (min-width: 361px) and (max-width: 480px) {
+      #calendar {
+        padding-bottom: 50px; /* 캘린더 하단 패딩 증가 */
       }
-
-      .circle {
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        font-size: 0.9em;
-      }
-
-      .calendar-header {
-        font-size: 1.2em;
-      }
-
-      .today-btn {
-        padding: 5px 15px;
-        font-size: 0.9em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-      }
-
-      .today-btn svg {
-        width: 14px;
-        height: 14px;
-      }
-
-      .container {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-
-      .glass-effect {
-        padding: 15px;
+      
+      #todayBtn {
+        margin: 12px auto 0;
+        padding: 5px 10px;
+        font-size: 0.85rem;
       }
     }
 
@@ -451,7 +417,209 @@
       min-width: 320px; /* 모바일 기기의 일반적인 최소 너비 */
     }
 
+    /* 작은 화면을 위한 반응형 스타일 */
+    @media screen and (max-width: 372px) {
+      /* 드롭다운 컨테이너를 세로로 재배치 */
+      .dropdown-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      /* 드롭다운 버튼은 전체 너비로 적용하고, margin-top을 무조건 제거 */
+      .dropdown-wrapper > .custom-dropdown {
+        width: 100%;
+        margin-top: 0 !important;
+      }
+      /* 특히 #dropdownMenu2Button 에는 margin-top 제거를 확실히 적용 */
+      #dropdownMenu2Button {
+        margin-top: 0 !important;
+      }
+      /* '부터' 텍스트는 한 줄(가로)로 유지 */
+      .dropdown-wrapper > .text-between {
+        white-space: nowrap;
+        margin: 10px 0;
+      }
+    }
 
+    /* 중간 크기 화면을 위한 추가 브레이크포인트 */
+    @media screen and (min-width: 361px) and (max-width: 480px) {
+        .content {
+            padding: 0.75rem;
+        }
+
+        .glass-effect {
+            padding: 1.5rem;
+        }
+
+        .dropdown-wrapper {
+            min-width: 100%;
+        }
+
+        #calendar {
+            padding: 1rem;
+        }
+
+        #calendar th,
+        #calendar td {
+            font-size: 0.875rem;
+        }
+    }
+
+    /* 드롭다운 메뉴가 화면을 벗어나지 않도록 처리 */
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* 모바일에서 터치 영역 개선 */
+    .custom-dropdown button,
+    .dropdown-menu a,
+    #nextButton {
+        min-height: 44px; /* iOS 권장 최소 터치 영역 */
+    }
+
+    /* 캘린더 셀 터치 영역 개선 */
+    #calendar td.day {
+        min-width: 32px;
+        min-height: 32px;
+    }
+
+    /* 작은 화면에서의 드롭다운 스타일 */
+    @media screen and (max-width: 480px) {
+      .custom-dropdown button {
+        font-size: 0.9rem; /* 글자 크기 축소 */
+        padding: 8px; /* 패딩 축소 */
+      }
+      
+      .dropdown-wrapper {
+        min-width: 100%;
+      }
+    }
+
+    @media screen and (max-width: 360px) {
+      .custom-dropdown button {
+        font-size: 0.8rem; /* 더 작은 화면에서는 글자 크기를 더 축소 */
+        padding: 6px; /* 패딩을 더 축소 */
+      }
+    }
+
+    /* 일요일 색상 */
+    #calendar th:first-child,
+    #calendar td:first-child {
+      color: #e53935; /* 빨간색 */
+    }
+
+    /* 토요일 색상 */
+    #calendar th:last-child,
+    #calendar td:last-child {
+      color: #1976d2; /* 파란색 */
+    }
+
+    /* 선택된 날짜는 글자색 흰색 유지 */
+    #calendar td.selected {
+      background-color: #8b5cf6;
+      color: white !important; /* !important로 토/일요일 색상 오버라이드 */
+      border-radius: 4px;
+    }
+
+    /* 호버 상태에서도 글자색 흰색 유지 */
+    @media (hover: hover) and (pointer: fine) {
+      #calendar td.day:hover {
+        background-color: #aa8eec;
+        color: white !important;
+        border-radius: 4px;
+      }
+    }
+
+    /* 터치 활성 상태에서도 글자색 흰색 유지 */
+    #calendar td.touch-active {
+      background-color: #aa8eec;
+      color: white !important;
+      border-radius: 4px;
+    }
+
+    /* 말풍선(툴팁) 네모 영역 */
+    #dateHelpTooltip {
+      position: absolute;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-left: 20px;
+      padding: 8px 16px;
+      text-align: left;
+      white-space: nowrap;
+      z-index: 1000;
+      top: calc(100% + 10px); /* 아이콘 아래 10px 간격 */
+      /* transform 제거 – 좌측 위치는 JS에서 직접 처리 */
+    }
+
+    /* 말풍선 꼭짓점(마름모)
+       - tooltip 네모의 우측 상단에 위치하며, 오른쪽 offset은 CSS 변수(--diamond-offset)로 지정 */
+    #dateHelpTooltip::before {
+      content: '';
+      position: absolute;
+      top: -6px; /* 툴팁 상단에서 6px 위 */
+      right: var(--diamond-offset, 10px); /* JS에서 계산한 값을 사용 (기본: 10px) */
+      transform: rotate(45deg);
+      margin-right: 20px;
+      width: 12px;
+      height: 12px;
+      background: white;
+      box-shadow: -3px -3px 5px rgba(0,0,0,0.1);
+    }
+
+    /* 좌우 흔들림 애니메이션 정의 */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    /* 흔들림 효과를 적용할 클래스 */
+    .shake-error {
+        animation: shake 0.2s ease-in-out;
+        animation-iteration-count: 2;
+    }
+
+    /* 날짜 숫자 스타일: 기본 옅은 회색 */
+    .circle {
+      color: inherit;
+    }
+
+    /* 오늘보다 이전 날짜 (disabled 된 날짜)의 숫자만 옅은 회색으로 표기 */
+    #calendar td.day.disabled .circle {
+      color: #ccc;
+    }
+
+    /* 오늘 이전 날짜 비활성화: 클릭·드래그 불가, 살짝 불투명하게 처리 */
+    #calendar td.day.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* 에러 메시지가 나타날 경우, inline 스타일을 override하여 레이아웃에 영향을 주지 않도록 처리 */
+    .custom-dropdown > #startDropdownError,
+    .custom-dropdown > #endDropdownError {
+      position: absolute !important;
+      top: calc(100% + 4px) !important; /* 버튼 바로 아래에 위치 (원하는 간격: 4px) */
+      left: 0;
+      width: 100%;
+      margin: 0 !important;
+      padding: 0;
+      font-size: 0.75em;
+      color: #d32f2f;
+      z-index: 10;
+    }
+
+    #titleError {
+      margin-top: 5px !important;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
@@ -463,7 +631,14 @@
   <div class="glass-effect rounded-3xl p-8">
     <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
     <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
-    <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p>
+    
+    <!-- 선택된 날짜 표시 영역 추가 -->
+    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden">
+        <p class="font-medium">선택된 날짜:</p>
+        <p id="selectedDates" class="mt-1"></p>
+    </div>
+    
+    <!-- <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p> -->
 
     <div class="dropdown-wrapper">
       <div class="custom-dropdown">
@@ -537,7 +712,18 @@
         </div>
       </div>
     </div>
-    <p class="text-purple-800 font-bold mt-[10px] mb-[10px]">날짜를 선택해 주세요</p>
+    <div class="flex items-center justify-between">
+      <p class="text-purple-800 font-bold mt-[15px] mb-[10px]">날짜를 선택해 주세요</p>
+      <div class="relative inline-block">
+        <button type="button" class="text-purple-800" id="dateHelpBtn">
+          <i class="fas fa-question-circle"></i>
+        </button>
+        <div id="dateHelpTooltip" class="hidden">
+          클릭 또는 드래그하여 날짜를 선택합니다.<br/>
+          최대 31일까지 선택할 수 있어요.
+        </div>
+      </div>
+    </div>
     <div id="calendar">
       <div class="calendar-nav">
         <button id="prevBtn" aria-label="이전 달">
@@ -555,7 +741,7 @@
       <table id="calendarTable"></table>
       <button id="todayBtn" class="today-btn">
         <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:5px;">
-          <circle cx="8" cy="8" r="7" fill="none" stroke="#4a148c" stroke-width="2"/>
+          <rect x="2" y="2" width="12" height="12" />
         </svg>
         오늘
       </button>
@@ -693,7 +879,7 @@
       let currentMonth = todayDate.getMonth();
 
       function getSelectionKey(year, month) {
-        return year + "-" + (month + 1);
+        return "dateSelection_" + year + "-" + (month + 1);
       }
 
       function saveCurrentSelection() {
@@ -726,9 +912,8 @@
       function renderCalendar(year, month) {
         const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
         header.textContent = year + "년 " + monthNames[month];
-
         calendarTable.innerHTML = "";
-
+        
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
         const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -741,29 +926,35 @@
         calendarTable.appendChild(thead);
 
         const tbody = document.createElement("tbody");
-
         const firstDay = new Date(year, month, 1).getDay();
         const totalDays = new Date(year, month + 1, 0).getDate();
-
         let date = 1;
-        for(let i = 0; i < 6; i++){
+        for (let i = 0; i < 6; i++) {
           const tr = document.createElement("tr");
-          for(let j = 0; j < 7; j++){
+          for (let j = 0; j < 7; j++) {
             const td = document.createElement("td");
-            if(i === 0 && j < firstDay) {
+            if (i === 0 && j < firstDay) {
               td.className = "empty";
               td.textContent = "";
-            } else if(date > totalDays) {
+            } else if (date > totalDays) {
               td.className = "empty";
               td.textContent = "";
             } else {
               td.dataset.date = date;
               td.classList.add("day");
+              // 오늘 날짜보다 이전이면 disabled 클래스 추가
+              if (
+                year < todayDate.getFullYear() ||
+                (year === todayDate.getFullYear() && month < todayDate.getMonth()) ||
+                (year === todayDate.getFullYear() && month === todayDate.getMonth() && date < todayDate.getDate())
+              ) {
+                td.classList.add("disabled");
+              }
               const circle = document.createElement("div");
               circle.classList.add("circle");
               circle.textContent = date;
               td.appendChild(circle);
-              if(year === todayDate.getFullYear() && month === todayDate.getMonth() && date === todayDate.getDate()){
+              if (year === todayDate.getFullYear() && month === todayDate.getMonth() && date === todayDate.getDate()) {
                 td.classList.add("today");
               }
               date++;
@@ -775,6 +966,7 @@
         calendarTable.appendChild(tbody);
 
         loadSelections(year, month);
+        updateSelectedDates();
       }
 
       renderCalendar(currentYear, currentMonth);
@@ -818,53 +1010,123 @@
         return null;
       }
 
+      function getTotalSelectedAcrossAllPages() {
+        let total = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith("dateSelection_")) {
+            const selections = JSON.parse(localStorage.getItem(key)) || [];
+            total += selections.length;
+          }
+        }
+        return total;
+      }
+
+      function showCalendarSelectionError() {
+        const calendarDiv = document.getElementById("calendar");
+        let existingError = document.getElementById("calendarSelectionError");
+        if (existingError) existingError.remove();
+        calendarDiv.style.border = "2px solid #d32f2f";
+        calendarDiv.classList.add("shake-error");
+        const errorMsg = document.createElement("div");
+        errorMsg.setAttribute("id", "calendarSelectionError");
+        errorMsg.style.color = "#d32f2f";
+        errorMsg.style.fontSize = "0.75em";
+        errorMsg.style.margin = "1px 0 0 0";
+        errorMsg.style.position = "relative";
+        errorMsg.textContent = "최대 31일까지만 선택할 수 있습니다.";
+        calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
+        setTimeout(() => {
+            calendarDiv.style.border = "";
+            calendarDiv.classList.remove("shake-error");
+            if (errorMsg.parentNode) errorMsg.remove();
+        }, 1800);
+      }
+
       function handleDragStart(e) {
         const touch = e.type.includes('touch') ? e.touches[0] : e;
         const dayCell = findDayCell(document.elementFromPoint(touch.clientX, touch.clientY));
-
-        if(dayCell && dayCell.classList.contains("day")){
+        if (dayCell && dayCell.classList.contains("disabled")) return;
+        if (dayCell && dayCell.classList.contains("day")) {
           isMouseDown = true;
           isTouchActive = e.type.includes('touch');
           dragStartDay = parseInt(dayCell.dataset.date);
           initialSelected.clear();
-
-          const dayCells = calendarTable.querySelectorAll("td.day");
+          const dayCells = Array.from(calendarTable.querySelectorAll("td.day"));
           dayCells.forEach(cell => {
             initialSelected.set(cell, cell.classList.contains("selected"));
           });
-
           dragMode = dayCell.classList.contains("selected") ? "remove" : "add";
-          if(dragMode === "add") {
+
+          if (dragMode === "add") {
+            const currentMonthKey = getSelectionKey(currentYear, currentMonth);
+            const currentMonthSaved = JSON.parse(localStorage.getItem(currentMonthKey)) || [];
+            const currentMonthSavedCount = currentMonthSaved.length;
+            let currentPageCount = 0;
+            dayCells.forEach(cell => {
+              if (cell.classList.contains("selected")) currentPageCount++;
+            });
+            const totalStored = getTotalSelectedAcrossAllPages();
+            const otherPagesCount = totalStored - currentMonthSavedCount;
+            const overallSelectedCount = otherPagesCount + currentPageCount;
+            if (overallSelectedCount >= 31) {
+              showCalendarSelectionError();
+              isMouseDown = false;
+              return;
+            }
             dayCell.classList.add("selected");
           } else {
             dayCell.classList.remove("selected");
           }
+          removeCalendarError();
           e.preventDefault();
         }
       }
 
       function handleDragMove(e) {
-        if(!isMouseDown) return;
-
+        if (!isMouseDown) return;
         const touch = e.type.includes('touch') ? e.touches[0] : e;
         const dayCell = findDayCell(document.elementFromPoint(touch.clientX, touch.clientY));
-
-        if(dayCell && dayCell.classList.contains("day")) {
+        if (dayCell && dayCell.classList.contains("day")) {
+          if (dayCell.classList.contains("disabled")) return;
           const currentDay = parseInt(dayCell.dataset.date);
           const minDay = Math.min(dragStartDay, currentDay);
           const maxDay = Math.max(dragStartDay, currentDay);
+          const allDayCells = Array.from(calendarTable.querySelectorAll("td.day"));
 
-          const dayCells = calendarTable.querySelectorAll("td.day");
-          dayCells.forEach(cell => {
+          const currentMonthKey = getSelectionKey(currentYear, currentMonth);
+          const currentMonthSaved = JSON.parse(localStorage.getItem(currentMonthKey)) || [];
+          const currentMonthSavedCount = currentMonthSaved.length;
+          let currentPageCount = 0;
+          allDayCells.forEach(cell => {
+            if (cell.classList.contains("selected")) currentPageCount++;
+          });
+          const totalStored = getTotalSelectedAcrossAllPages();
+          const otherPagesCount = totalStored - currentMonthSavedCount;
+          let overallSelectedCount = otherPagesCount + currentPageCount;
+
+          allDayCells.forEach(cell => {
+            if (cell.classList.contains("disabled")) return;
             const cellDay = parseInt(cell.dataset.date);
-            if(cellDay >= minDay && cellDay <= maxDay) {
-              if(dragMode === "add") {
-                cell.classList.add("selected");
-              } else {
-                cell.classList.remove("selected");
+            if (cellDay >= minDay && cellDay <= maxDay) {
+              if (dragMode === "add") {
+                if (!cell.classList.contains("selected")) {
+                  if (overallSelectedCount < 31) {
+                    cell.classList.add("selected");
+                    overallSelectedCount++;
+                  } else {
+                    showCalendarSelectionError();
+                    cell.classList.remove("selected");
+                  }
+                }
+              } else { 
+                if (cell.classList.contains("selected")) {
+                  cell.classList.remove("selected");
+                  overallSelectedCount = Math.max(0, overallSelectedCount - 1);
+                }
               }
             } else {
-              if(initialSelected.get(cell)){
+              if (initialSelected.get(cell)) {
                 cell.classList.add("selected");
               } else {
                 cell.classList.remove("selected");
@@ -875,16 +1137,37 @@
         e.preventDefault();
       }
 
-      function handleDragEnd() {
+      function handleDragEnd(e) {
         if(isMouseDown){
           isMouseDown = false;
           isTouchActive = false;
           dragStartDay = null;
           initialSelected.clear();
           saveCurrentSelection();
+          removeCalendarError();
+          updateSelectedDates();
         }
       }
 
+      // 수정된 removeCalendarError 함수
+      function removeCalendarError() {
+        const calendarDiv = document.getElementById("calendar");
+        // 만약 "최대 31일까지만 선택할 수 있습니다." 에러 메시지가 존재하면 제거하지 않음
+        const selectionError = document.getElementById("calendarSelectionError");
+        if (selectionError) {
+          return;
+        }
+        const calendarError = document.getElementById("calendarError");
+        const selectedDays = calendarTable.querySelectorAll("td.day.selected");
+        if (selectedDays.length > 0 && selectedDays.length <= 31) {
+          calendarDiv.style.border = "";
+          if (calendarError) {
+            calendarError.remove();
+          }
+        }
+      }
+
+      // 이벤트 리스너 등록 (중복 제거)
       calendarTable.addEventListener("mousedown", handleDragStart);
       calendarTable.addEventListener("mousemove", handleDragMove);
       document.addEventListener("mouseup", handleDragEnd);
@@ -894,23 +1177,52 @@
       document.addEventListener("touchend", handleDragEnd);
       document.addEventListener("touchcancel", handleDragEnd);
 
-      // 캘린더 클릭 시, 선택된 날짜 수가 올바르면 오류 제거
+      // 클릭 이벤트는 별도로 유지 (드래그와 관계없이 단일 클릭 처리)
       calendarTable.addEventListener("click", function(e) {
-        const calendarDiv = document.getElementById("calendar");
-        const calendarError = document.getElementById("calendarError");
-        const selectedDays = calendarTable.querySelectorAll("td.day.selected");
-        if(selectedDays.length > 0 && selectedDays.length <= 31) {
-          calendarDiv.style.border = "";
-          if(calendarError) {
-            calendarError.remove();
+        removeCalendarError();
+        updateSelectedDates();
+      });
+
+      // 수정된 updateSelectedDates 함수: localStorage에 저장된 모든 선택 날짜를 불러와 정렬 및 표시
+      function updateSelectedDates() {
+        const selectedDatesContainer = document.getElementById('selectedDatesContainer');
+        const selectedDatesElement = document.getElementById('selectedDates');
+
+        let allDates = [];
+        // localStorage의 모든 키를 순회하면서 "dateSelection_" 접두어가 있는 항목만 처리
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith("dateSelection_")) {
+            // 예: key = "dateSelection_2023-8"
+            const keyParts = key.slice("dateSelection_".length).split('-');
+            const year = parseInt(keyParts[0], 10);
+            const month = parseInt(keyParts[1], 10); // month는 (월+1)
+            const days = JSON.parse(localStorage.getItem(key));
+            days.forEach(day => {
+              allDates.push({year: year, month: month, day: parseInt(day, 10)});
+            });
           }
         }
-      });
+        if (allDates.length > 0) {
+          // 날짜 순서대로 정렬 (연·월·일)
+          allDates.sort((a, b) => {
+            if(a.year !== b.year) return a.year - b.year;
+            if(a.month !== b.month) return a.month - b.month;
+            return a.day - b.day;
+          });
+          const datesStr = allDates.map(item => `${item.year}년 ${item.month}월 ${item.day}일`);
+          selectedDatesElement.textContent = datesStr.join(', ');
+          selectedDatesContainer.classList.remove('hidden');
+        } else {
+          selectedDatesContainer.classList.add('hidden');
+        }
+      }
     })();
 
     // --- 검증 및 경고문구 출력 ---
     function validateForm() {
       let isValid = true;
+      let firstErrorElement = null;  // 첫 번째 오류 요소를 저장할 변수
 
       // 일정 제목 검증
       const titleInput = document.getElementById("titleInput");
@@ -922,6 +1234,8 @@
       if(titleInput.value.trim() === ""){
         isValid = false;
         titleInput.style.border = "2px solid #d32f2f";
+        titleInput.classList.add("shake-error");
+        setTimeout(() => titleInput.classList.remove("shake-error"), 400);
         const errorMsg = document.createElement("div");
         errorMsg.setAttribute("id", "titleError");
         errorMsg.style.color = "#d32f2f";
@@ -930,6 +1244,7 @@
         errorMsg.style.position = "relative";
         errorMsg.textContent = "일정 제목을 입력해주세요.";
         titleInput.parentNode.insertBefore(errorMsg, titleInput.nextSibling);
+        if (!firstErrorElement) firstErrorElement = titleInput;
       }
 
       // 시작시간 드롭다운 검증
@@ -942,6 +1257,8 @@
       if(startTimeButton.textContent.trim() === "옵션을 선택하세요"){
         isValid = false;
         startTimeButton.style.border = "2px solid #d32f2f";
+        startTimeButton.classList.add("shake-error");
+        setTimeout(() => startTimeButton.classList.remove("shake-error"), 400);
         const errorMsg = document.createElement("div");
         errorMsg.setAttribute("id", "startDropdownError");
         errorMsg.style.color = "#d32f2f";
@@ -950,6 +1267,7 @@
         errorMsg.style.position = "relative";
         errorMsg.textContent = "시작시간을 선택해주세요.";
         startTimeButton.parentNode.insertBefore(errorMsg, startTimeButton.nextSibling);
+        if (!firstErrorElement) firstErrorElement = startTimeButton;
       }
 
       // 종료시간 드롭다운 검증
@@ -962,6 +1280,8 @@
       if(endTimeButton.textContent.trim() === "옵션을 선택하세요"){
         isValid = false;
         endTimeButton.style.border = "2px solid #d32f2f";
+        endTimeButton.classList.add("shake-error");
+        setTimeout(() => endTimeButton.classList.remove("shake-error"), 400);
         const errorMsg = document.createElement("div");
         errorMsg.setAttribute("id", "endDropdownError");
         errorMsg.style.color = "#d32f2f";
@@ -970,6 +1290,7 @@
         errorMsg.style.position = "relative";
         errorMsg.textContent = "종료시간을 선택해주세요.";
         endTimeButton.parentNode.insertBefore(errorMsg, endTimeButton.nextSibling);
+        if (!firstErrorElement) firstErrorElement = endTimeButton;
       }
 
       // 날짜 선택 검증 (캘린더)
@@ -981,9 +1302,11 @@
       calendarDiv.style.border = "";
       const calendarTable = document.getElementById("calendarTable");
       const selectedDays = calendarTable.querySelectorAll("td.day.selected");
-      if(selectedDays.length === 0){
+      if(selectedDays.length === 0 || selectedDays.length > 31){
         isValid = false;
         calendarDiv.style.border = "2px solid #d32f2f";
+        calendarDiv.classList.add("shake-error");
+        setTimeout(() => calendarDiv.classList.remove("shake-error"), 400);
         const errorMsg = document.createElement("div");
         errorMsg.setAttribute("id", "calendarError");
         errorMsg.style.color = "#d32f2f";
@@ -992,18 +1315,17 @@
         errorMsg.style.position = "relative";
         errorMsg.textContent = "날짜를 선택해주세요.";
         calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
-      } else if(selectedDays.length > 31){
-        isValid = false;
-        calendarDiv.style.border = "2px solid #d32f2f";
-        const errorMsg = document.createElement("div");
-        errorMsg.setAttribute("id", "calendarError");
-        errorMsg.style.color = "#d32f2f";
-        errorMsg.style.fontSize = "0.75em";
-        errorMsg.style.margin = "1px 0 0 0";
-        errorMsg.style.position = "relative";
-        errorMsg.textContent = "선택한 날짜가 31일을 초과합니다.";
-        calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
+        if (!firstErrorElement) firstErrorElement = calendarDiv;
       }
+
+      // 마지막에 첫 번째 오류 요소로 스크롤
+      if (!isValid && firstErrorElement) {
+        firstErrorElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center'
+        });
+      }
+
       return isValid;
     }
 
@@ -1012,6 +1334,121 @@
       if (validateForm()) {
         location.href='/create-schedule';
       }
+    });
+
+    const helpBtn = document.getElementById('dateHelpBtn');
+    const tooltip = document.getElementById('dateHelpTooltip');
+    let isTooltipVisible = false;
+    const defaultDiamondOffset = 10; // 기본값: tooltip 우측에서 떨어진 거리
+
+    function updateTooltipPosition() {
+      const helpBtnRect = helpBtn.getBoundingClientRect();
+      const offsetParent = tooltip.offsetParent;
+      let parentLeft = 0;
+      let parentWidth = window.innerWidth;
+      if (offsetParent) {
+        const parentRect = offsetParent.getBoundingClientRect();
+        parentLeft = parentRect.left;
+        parentWidth = parentRect.width;
+      }
+      // 부모 기준 물음표 아이콘의 중앙 x좌표
+      const iconCenterX = helpBtnRect.left + (helpBtnRect.width / 2) - parentLeft;
+
+      // tooltip이 보인 상태여야 실제 너비를 읽을 수 있음
+      const tooltipRect = tooltip.getBoundingClientRect();
+
+      // 툴팁 네모의 우측 상단(마름모 중심이 6px 안쪽)에 맞추기 위한 기본 계산
+      let tooltipLeft = iconCenterX - tooltipRect.width + 6;
+
+      const extraOffset = 10;  // 오른쪽으로 10px 이동
+      tooltipLeft += extraOffset;
+
+      const margin = 10; // 부모 내부 최소 여백
+      // 부모 영역을 벗어나지 않도록 clamping
+      if (tooltipLeft < margin) {
+        tooltipLeft = margin;
+      }
+      if (tooltipLeft + tooltipRect.width > parentWidth - margin) {
+        tooltipLeft = parentWidth - margin - tooltipRect.width;
+      }
+
+      // diamond의 위치 재계산:
+      // tooltip 내부에서 diamond의 center는
+      // tooltipRect.width - (diamondOffset + 6) 이어야 하고,
+      // 이 값이 iconCenterX - tooltipLeft와 일치해야 함
+      // 따라서 diamondOffset = tooltipRect.width - (iconCenterX - tooltipLeft) - 6
+      const diamondOffset = tooltipRect.width - (iconCenterX - tooltipLeft) - 6;
+
+      // 위에서 계산한 tooltipLeft와 diamondOffset 값을 적용
+      tooltip.style.left = `${tooltipLeft}px`;
+      tooltip.style.setProperty('--diamond-offset', `${diamondOffset}px`);
+    }
+
+    // 물음표 아이콘 클릭 시, 툴팁 토글 및 위치 업데이트
+    helpBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isTooltipVisible = !isTooltipVisible;
+      tooltip.style.display = isTooltipVisible ? 'block' : 'none';
+      if (isTooltipVisible) {
+        // 툴팁이 렌더링된 후 위치 계산
+        setTimeout(updateTooltipPosition, 0);
+      }
+    });
+
+    // 화면 크기 변경 시 툴팁 위치 재계산
+    window.addEventListener('resize', function() {
+      if (isTooltipVisible) updateTooltipPosition();
+    });
+
+    // 툴팁 외부 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+      if (!tooltip.contains(e.target) && e.target !== helpBtn) {
+        isTooltipVisible = false;
+        tooltip.style.display = 'none';
+      }
+    });
+
+    // ESC 키 입력 시 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        isTooltipVisible = false;
+        tooltip.style.display = 'none';
+      }
+    });
+
+    // 제목 입력 필드 오류 제거 함수
+    function handleTitleError() {
+        const titleInput = document.getElementById("titleInput");
+        const titleError = document.getElementById("titleError");
+        
+        if(titleInput.value.trim() !== "") {
+            // 텍스트가 있으면 오류 제거
+            titleInput.style.border = "";
+            if(titleError) {
+                titleError.remove();
+            }
+        } else {
+            // 텍스트가 없으면 오류 표시
+            titleInput.style.border = "2px solid #d32f2f";
+            titleInput.classList.add("shake-error");
+            setTimeout(() => titleInput.classList.remove("shake-error"), 400);
+            
+            if(!titleError) {
+                const errorMsg = document.createElement("div");
+                errorMsg.setAttribute("id", "titleError");
+                errorMsg.style.color = "#d32f2f";
+                errorMsg.style.fontSize = "0.75em";
+                errorMsg.style.margin = "1px 0 0 0";
+                errorMsg.style.position = "relative";
+                errorMsg.textContent = "일정 제목을 입력해주세요.";
+                titleInput.parentNode.insertBefore(errorMsg, titleInput.nextSibling);
+            }
+        }
+    }
+
+    // 제목 입력 필드에 이벤트 리스너 추가
+    document.getElementById("titleInput").addEventListener("input", function() {
+        handleTitleError();
     });
   });
 </script>

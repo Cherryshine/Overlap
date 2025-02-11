@@ -2,6 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <style>
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        .logo-animation {
+            animation: float 2s ease-in-out infinite;
+        }
+
+    </style>
 </head>
 <body>
 <!-- nav fragment 정의 -->
