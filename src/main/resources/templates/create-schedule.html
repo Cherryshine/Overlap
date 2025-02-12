@@ -632,12 +632,11 @@
     <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
     <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
     
-    <!-- 선택된 날짜 표시 영역 추가 -->
-    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden">
+    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden" style="visibility: hidden">
         <p class="font-medium">선택된 날짜:</p>
         <p id="selectedDates" class="mt-1"></p>
     </div>
-    
+
     <!-- <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p> -->
 
     <div class="dropdown-wrapper">
@@ -746,7 +745,7 @@
         오늘
       </button>
     </div>
-    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;">다음</button>
+    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;" onclick="window.location.href='/select-time'">다음</button>
   </div>
 
 </div>

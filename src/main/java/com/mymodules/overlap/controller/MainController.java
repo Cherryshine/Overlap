@@ -21,6 +21,13 @@ public class MainController {
         return new ModelAndView("create-schedule" );
     }
 
+    @GetMapping("/select-time")
+    public ModelAndView selectTime()
+    {
+        return new ModelAndView("select_constructor_time" );
+    }
+
+
     @GetMapping("/main")
     public ModelAndView main(){
         return new ModelAndView("template" );
