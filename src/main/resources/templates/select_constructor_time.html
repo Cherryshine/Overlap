@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OverLap - 메인 랜딩페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
+      <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms,typography,aspect-ratio,container-queries"></script>
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <style>
+        .glass-effect { 
+          background: rgb(255, 255, 255); 
+          backdrop-filter: blur(10px); 
+          border: 1px solid rgba(255, 255, 255, 0.3); 
+        } 
+        .confetti { 
+          position: fixed; 
+          z-index: 1001;  /* 높은 z-index 유지 */
+          top: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 100%; 
+          pointer-events: none; 
+        }
+        .blur-overlay { 
+          display: none; 
+          position: fixed; 
+          top: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 100%; 
+          backdrop-filter: blur(5px); 
+          z-index: 60; /* 네비게이션바(z-index: 50)보다 높게 설정 */
+        }
+      </style>
+    <style>
+        .glass-effect { 
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            border-radius: 1rem;
+        }
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex-grow: 1;
+        }
+        footer {
+            margin-top: auto; /* 푸터를 하단에 고정 */
+        }
+
+        /* 타임 테이블 css */
+        .page-button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgb(255, 255, 255);
+            border-radius: 4px; /* 둥근 모서리 사각형 형태 */
+            box-shadow: 0 0 5px rgb(179, 142, 179);
+            cursor: pointer;
+            flex-shrink: 0;
+          }
+    
+          .page-button:disabled {
+            opacity: 0.5;
+            cursor: default;
+          }
+    
+          /* 스크롤 영역 내에 상단과 하단에 고정될 버튼 */
+          .page-button-prev {
+              position: sticky;
+              top: 8px;
+              left: 50%;
+              transform: translateX(-50%);
+              z-index: 10;
+          }
+    
+          .page-button-next {
+              position: sticky;
+              bottom: 8px;
+              left: 50%;
+              transform: translateX(-50%);
+              z-index: 10;
+          }
+    
+          /* 반응형 설정 */
+          @media (max-width: 629px) {
+            .page-button {
+              width: 28px;
+              height: 28px;
+            }
+          }
+          
+ /* 반응형 설정 */
+ @media (max-width: 629px) {
+    .page-button {
+      width: 28px;
+      height: 28px;
+    }
+  }
+  .grid-cell {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* 시간 구분선을 위한 가상 요소 */
+  .grid-cell::before {
+    content: '';
+    position: absolute;
+
+    left: -8px; /* 부모의 패딩만큼 음수값 */
+    right: -8px; /* 부모의 패딩만큼 음수값 */
+    top: 0;
+    height: 1px;
+    background-color: rgb(209, 213, 219);
+    z-index: 1;
+  }
+  
+  /* 시간대 구분선(검은색 굵은 선)의 경우 */
+  .grid-cell.hour-mark::before {
+    height: 1.2px;
+    background-color: rgb(157, 101, 203);
+  }
+  
+  /* 첫 번째 행의 셀은 border 제거 */
+  .grid-row-first .grid-cell::before {
+    display: none;
+
+  }
+
+        /* 커스텀 체크박스 스타일 */
+        .custom-checkbox {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: relative;
+            height: 18px;          /* 15px에서 18px로 조정 */
+            width: 18px;           /* 15px에서 18px로 조정 */
+            background-color: #fff;
+            border: 2px solid #9333ea;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #9333ea;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 5px;            /* 4px에서 6px로 조정 */
+            top: 2px;             /* 1px에서 2px로 조정 */
+            width: 4px;           /* 3px에서 4px로 조정 */
+            height: 9px;          /* 7px에서 9px로 조정 */
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* 애니메이션 효과를 위한 #app 스타일 */
+        #app {
+            padding: 1rem; /* Tailwind의 p-4와 동일 */
+            overflow: visible;
+            transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+            max-height: 1000px;
+            opacity: 1;
+        }
+        #app.collapsed {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important; /* 체크박스 클릭 시 overflow를 hidden으로 변경 */
+        }
+    </style>
+    <style>
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        .logo-animation {
+            animation: float 2s ease-in-out infinite;
+        }
+
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+      <!-- Confetti 캔버스 -->
+  <canvas class="confetti"></canvas>
+
+  <!-- Blur Overlay -->
+  <div class="blur-overlay"></div>
+
+      <div th:replace="~{/nav :: nav}"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
+        
+        <div id="scheduleContainer" class="glass-effect rounded-3xl p-8">
+            
+            <!-- 기존 내용 -->
+            <p class="text-purple-800 mb-[15px] text-3xl"><a class="text-purple-800 mb-[15px] font-bold text-3xl">대면회의</a> 그룹 일정</p>
+            <div class="text-purple-800 font-bold mb-[5px]">그룹장의 시간 선택</div>
+            <!-- 그룹장 체크박스 선택시 애니메이션 -->
+            <label class="custom-checkbox">
+                <input type="checkbox" id="noTimeSelection">
+                <span class="checkmark"></span>
+                <span class="text-purple-800 text-sm">그룹장은 일정에 참여하지 않아요</span>
+            </label>
+            <!-- 타임 테이블 -->
+            <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative"></div>
+            <!-- (1) 스크립트 파일 로드 -->
+            <script src="js/select_constructor_time.js"></script>
+
+            <!-- (2) JSON 데이터 및 초기화 로직 -->
+            <script>
+                const jsonData = {
+                    startTime: "09:00",
+                    endTime: "16:00",
+                    interval: 15,
+                    days: [
+                        { label: "Sun", date: "Feb 9" },
+                        { label: "Mon", date: "Feb 10" },
+                        { label: "Tue", date: "Feb 11" },
+                        { label: "Wed", date: "Feb 12" },
+                        { label: "Thu", date: "Feb 13" },
+                        { label: "Fri", date: "Feb 14" },
+                        { label: "Sat", date: "Feb 15" },
+                        { label: "Sun", date: "Feb 16" },
+                        { label: "Mon", date: "Feb 17" },
+                        { label: "Tue", date: "Feb 18" },
+                        { label: "Wed", date: "Feb 19" },
+                        { label: "Thu", date: "Feb 20" },
+                        { label: "Fri", date: "Feb 21" },
+                        { label: "Sat", date: "Feb 22" },
+                        { label: "Wed", date: "Feb 12" },
+                        { label: "Thu", date: "Feb 13" },
+                        { label: "Fri", date: "Feb 14" },
+                        { label: "Sat", date: "Feb 15" },
+                        { label: "Sun", date: "Feb 16" },
+                        { label: "Mon", date: "Feb 17" },
+                        { label: "Tue", date: "Feb 18" },
+                        { label: "Wed", date: "Feb 19" },
+                        { label: "Thu", date: "Feb 20" },
+                        { label: "Fri", date: "Feb 21" }
+                    ]
+                };
+
+                let currentPage = 0;
+                let itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    updateSchedule();
+
+                    // 반응형 리사이징 감지
+                    window.addEventListener("resize", function () {
+                        const newItemsPerPage = window.innerWidth <= 629 ? 3 : 7;
+                        if (newItemsPerPage !== itemsPerPage) {
+                            itemsPerPage = newItemsPerPage;
+                            currentPage = 0;
+                            updateSchedule();
+                        }
+                    });
+                });
+
+                // 체크박스 클릭 이벤트 (애니메이션 적용)
+                document.getElementById('noTimeSelection').addEventListener('change', function() {
+                    const appDiv = document.getElementById('app');
+                    const completeButton = document.querySelector('.w-full.py-3.bg-purple-700'); // 완료 버튼 선택자
+                    
+                    if (this.checked) {
+                        // display 대신 collapse 클래스를 추가하여 애니메이션을 적용
+                        appDiv.classList.add('collapsed');
+                        if (completeButton) {
+                            completeButton.style.marginTop = '15px';
+                        }
+                    } else {
+                        appDiv.classList.remove('collapsed');
+                        if (completeButton) {
+                            completeButton.style.marginTop = '30px';
+                        }
+                    }
+                });
+            </script>
+            <button class="w-full py-3 bg-purple-700 text-white rounded-xl mt-[30px]" id="triggerPopup">완료</button>
+        </div>
+    </div>
+
+    <footer class="bg-purple-800 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
+            setTimeout(function() {
+                window.scrollTo(0, 0); // 스크롤을 최상단으로
+            }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
+        });
+    </script>
+
+    <!-- 컨페티 팝업 -->
+       <!-- 일정 생성 팝업 -->
+  <div id="successMessage" class="fixed inset-0 flex items-center justify-center z-[999] hidden">
+    <div class="glass-effect p-8 rounded-2xl text-center bg-white/30 backdrop-blur-xl shadow-xl border border-white/40">
+      <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+      <h3 class="text-2xl font-bold text-purple-900 mb-2">일정이 생성되었습니다!</h3>
+      <p class="text-purple-800 mb-4">다음 페이지로 이동합니다.</p>
+    </div>
+  </div>
+
+  <!-- canvas-confetti 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    document.getElementById('triggerPopup').addEventListener('click', function() {
+      // Blur Overlay 보이기
+      document.querySelector('.blur-overlay').style.display = 'flex';
+      
+      // 컨페티 실행
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // 일정 생성 팝업 보이기
+      document.getElementById('successMessage').style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
