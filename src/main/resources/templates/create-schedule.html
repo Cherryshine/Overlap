@@ -542,7 +542,7 @@
       border-radius: 4px;
     }
 
-    /* 말풍선(툴팁) 네모 영역 */
+    /* 말풍선(툴크 네모 영역 */
     #dateHelpTooltip {
       position: absolute;
       background: white;
@@ -564,7 +564,7 @@
     #dateHelpTooltip::before {
       content: '';
       position: absolute;
-      top: -6px; /* 툴팁 상단에서 6px 위 */
+      top: -6px; /* 툴크 상단에서 6px 위 */
       right: var(--diamond-offset, 10px); /* JS에서 계산한 값을 사용 (기본: 10px) */
       transform: rotate(45deg);
       margin-right: 20px;
@@ -678,7 +678,7 @@
         <span>부터</span>
       </div>
       <div class="custom-dropdown">
-        <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-900 mt-[10px] placeholder-purple-800">
+        <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
           종료 시간
           <i class="fas fa-chevron-down"></i>
         </button>
@@ -766,63 +766,15 @@
     const dropdown2 = document.getElementById("dropdownMenu2");
     const dropdown2Button = document.getElementById("dropdownMenu2Button");
 
-    // 시간 문자열("12:00 AM" 등)을 분 단위로 변환하는 헬퍼 함수
-    function convertTimeStringToMinutes(timeStr) {
-      timeStr = timeStr.trim();
-      // "00:00 AM"인 경우는 자정 다음날로 간주하여 1440분(24시간)을 리턴
-      if(timeStr === "00:00 AM") {
-        return 1440;
-      }
-      var parts = timeStr.split(' ');
-      if(parts.length < 2) return 0;
-      var timePart = parts[0];
-      var meridiem = parts[1].toUpperCase();
-      var timeParts = timePart.split(':');
-      var hour = parseInt(timeParts[0], 10);
-      var minute = parseInt(timeParts[1], 10);
-      if (meridiem === "AM") {
-        if(hour === 12 || hour === 0) {
-          hour = 0;
-        }
-      } else if (meridiem === "PM") {
-        if(hour !== 12) {
-          hour += 12;
-        }
-      }
-      return hour * 60 + minute;
-    }
-
-    // 드롭다운 메뉴 옵션들을 필터링하는 함수
+    // 드롭다운 메뉴 옵션들을 필터링하는 함수 - 모든 옵션이 보이도록 업데이트
     function updateDropdownFilters() {
-      // 모든 옵션을 먼저 보이도록 초기화
+      // 시작 시간과 종료 시간 드롭다운의 모든 옵션을 항상 보이도록 설정합니다.
       dropdown1.querySelectorAll("a").forEach(option => {
         option.style.display = "block";
       });
       dropdown2.querySelectorAll("a").forEach(option => {
         option.style.display = "block";
       });
-
-      // 시작시간이 선택되어 있다면, 종료시간 드롭다운에는 시작시간보다 이후의 옵션만 보이도록 필터링
-      if (dropdown1Button.textContent.trim() !== "시작 시간") {
-        let startMinutes = convertTimeStringToMinutes(dropdown1Button.textContent);
-        dropdown2.querySelectorAll("a").forEach(option => {
-          let optionMinutes = convertTimeStringToMinutes(option.textContent);
-          if(optionMinutes <= startMinutes) {
-            option.style.display = "none";
-          }
-        });
-      }
-
-      // 종료시간이 선택되어 있다면, 시작시간 드롭다운에는 종료시간보다 이전의 옵션만 보이도록 필터링
-      if (dropdown2Button.textContent.trim() !== "종료 시간") {
-        let endMinutes = convertTimeStringToMinutes(dropdown2Button.textContent);
-        dropdown1.querySelectorAll("a").forEach(option => {
-          let optionMinutes = convertTimeStringToMinutes(option.textContent);
-          if(optionMinutes >= endMinutes) {
-            option.style.display = "none";
-          }
-        });
-      }
     }
 
     // 드롭다운 열기/닫기 시 필터 업데이트
@@ -1294,9 +1246,24 @@
     })();
 
     // --- 검증 및 경고문구 출력 ---
+    function parseTime(timeStr) {
+      // timeStr 예: "12:00 AM", "01:00 PM" 등
+      const parts = timeStr.split(' ');
+      if (parts.length < 2) return NaN;
+      const timePart = parts[0]; // "hh:mm"
+      const period = parts[1].toUpperCase(); // "AM" 또는 "PM"
+      let [hour, minute] = timePart.split(':').map(Number);
+      if (period === "AM" && hour === 12) {
+        hour = 0;
+      } else if (period === "PM" && hour < 12) {
+        hour += 12;
+      }
+      return hour * 60 + minute;
+    }
+
     function validateForm() {
       let isValid = true;
-      let firstErrorElement = null;  // 첫 번째 오류 요소를 저장할 변수
+      let firstErrorElement = null;
 
       // 일정 제목 검증
       const titleInput = document.getElementById("titleInput");
@@ -1367,6 +1334,47 @@
         if (!firstErrorElement) firstErrorElement = endTimeButton;
       }
 
+      // 시작 시간과 종료 시간의 순서 검증: 시작 시간이 종료 시간보다 늦은 경우
+      if(startTimeButton.textContent.trim() !== "시작 시간" && endTimeButton.textContent.trim() !== "종료 시간"){
+        const startTimeValue = parseTime(startTimeButton.textContent.trim());
+        const endTimeValue = parseTime(endTimeButton.textContent.trim());
+        if(startTimeValue >= endTimeValue){
+          isValid = false;
+
+          // 시작 시간 에러 처리
+          startTimeButton.style.border = "2px solid #d32f2f";
+          startTimeButton.classList.add("shake-error");
+          setTimeout(() => startTimeButton.classList.remove("shake-error"), 400);
+          let errStart = document.getElementById("startDropdownError");
+          if(errStart) errStart.remove();
+          const errorMsgTime = document.createElement("div");
+          errorMsgTime.setAttribute("id", "startDropdownError");
+          errorMsgTime.style.color = "#d32f2f";
+          errorMsgTime.style.fontSize = "0.75em";
+          errorMsgTime.style.margin = "1px 0 0 0";
+          errorMsgTime.style.position = "relative";
+          errorMsgTime.textContent = "시작시간이 종료시간보다 늦을수 없습니다.";
+          startTimeButton.parentNode.insertBefore(errorMsgTime, startTimeButton.nextSibling);
+
+          // 종료 시간 에러 처리
+          endTimeButton.style.border = "2px solid #d32f2f";
+          endTimeButton.classList.add("shake-error");
+          setTimeout(() => endTimeButton.classList.remove("shake-error"), 400);
+          let errEnd = document.getElementById("endDropdownError");
+          if(errEnd) errEnd.remove();
+          const errorMsgTime2 = document.createElement("div");
+          errorMsgTime2.setAttribute("id", "endDropdownError");
+          errorMsgTime2.style.color = "#d32f2f";
+          errorMsgTime2.style.fontSize = "0.75em";
+          errorMsgTime2.style.margin = "1px 0 0 0";
+          errorMsgTime2.style.position = "relative";
+          
+          endTimeButton.parentNode.insertBefore(errorMsgTime2, endTimeButton.nextSibling);
+
+          if (!firstErrorElement) firstErrorElement = startTimeButton;
+        }
+      }
+
       // 날짜 선택 검증 (캘린더)
       const calendarDiv = document.getElementById("calendar");
       const existingCalendarError = document.getElementById("calendarError");
@@ -1406,7 +1414,7 @@
     document.getElementById("nextButton").addEventListener("click", function(e) {
       e.preventDefault();
       if (validateForm()) {
-        location.href='/select-time';
+        location.href='/create-schedule';
       }
     });
 
@@ -1464,7 +1472,7 @@
       isTooltipVisible = !isTooltipVisible;
       tooltip.style.display = isTooltipVisible ? 'block' : 'none';
       if (isTooltipVisible) {
-        // 툴팁이 렌더링된 후 위치 계산
+        // 툴크가 렌더링된 후 위치 계산
         setTimeout(updateTooltipPosition, 0);
       }
     });
