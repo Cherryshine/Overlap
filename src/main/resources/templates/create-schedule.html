@@ -392,7 +392,7 @@
       #calendar {
         padding-bottom: 45px; /* 캘린더 하단 패딩 증가 */
       }
-      
+
       #todayBtn {
         margin: 10px auto 0;
         padding: 4px 8px;
@@ -404,7 +404,7 @@
       #calendar {
         padding-bottom: 50px; /* 캘린더 하단 패딩 증가 */
       }
-      
+
       #todayBtn {
         margin: 12px auto 0;
         padding: 5px 10px;
@@ -443,49 +443,49 @@
 
     /* 중간 크기 화면을 위한 추가 브레이크포인트 */
     @media screen and (min-width: 361px) and (max-width: 480px) {
-        .content {
-            padding: 0.75rem;
-        }
+      .content {
+        padding: 0.75rem;
+      }
 
-        .glass-effect {
-            padding: 1.5rem;
-        }
+      .glass-effect {
+        padding: 1.5rem;
+      }
 
-        .dropdown-wrapper {
-            min-width: 100%;
-        }
+      .dropdown-wrapper {
+        min-width: 100%;
+      }
 
-        #calendar {
-            padding: 1rem;
-        }
+      #calendar {
+        padding: 1rem;
+      }
 
-        #calendar th,
-        #calendar td {
-            font-size: 0.875rem;
-        }
+      #calendar th,
+      #calendar td {
+        font-size: 0.875rem;
+      }
     }
 
     /* 드롭다운 메뉴가 화면을 벗어나지 않도록 처리 */
     .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        max-width: 100%;
-        width: 100%;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-width: 100%;
+      width: 100%;
     }
 
     /* 모바일에서 터치 영역 개선 */
     .custom-dropdown button,
     .dropdown-menu a,
     #nextButton {
-        min-height: 44px; /* iOS 권장 최소 터치 영역 */
+      min-height: 44px; /* iOS 권장 최소 터치 영역 */
     }
 
     /* 캘린더 셀 터치 영역 개선 */
     #calendar td.day {
-        min-width: 32px;
-        min-height: 32px;
+      min-width: 32px;
+      min-height: 32px;
     }
 
     /* 작은 화면에서의 드롭다운 스타일 */
@@ -494,7 +494,7 @@
         font-size: 0.9rem; /* 글자 크기 축소 */
         padding: 8px; /* 패딩 축소 */
       }
-      
+
       .dropdown-wrapper {
         min-width: 100%;
       }
@@ -576,15 +576,15 @@
 
     /* 좌우 흔들림 애니메이션 정의 */
     @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
     }
 
     /* 흔들림 효과를 적용할 클래스 */
     .shake-error {
-        animation: shake 0.2s ease-in-out;
-        animation-iteration-count: 2;
+      animation: shake 0.2s ease-in-out;
+      animation-iteration-count: 2;
     }
 
     /* 날짜 숫자 스타일: 기본 옅은 회색 */
@@ -631,10 +631,11 @@
   <div class="glass-effect rounded-3xl p-8">
     <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
     <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
-    
-    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden" style="visibility: hidden">
-        <p class="font-medium">선택된 날짜:</p>
-        <p id="selectedDates" class="mt-1"></p>
+
+    <!-- 선택된 날짜 표시 영역 추가 -->
+    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden">
+      <p class="font-medium">선택된 날짜:</p>
+      <p id="selectedDates" class="mt-1"></p>
     </div>
 
     <!-- <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p> -->
@@ -642,7 +643,7 @@
     <div class="dropdown-wrapper">
       <div class="custom-dropdown">
         <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
-          옵션을 선택하세요
+          시작 시간
           <i class="fas fa-chevron-down"></i>
         </button>
         <div id="dropdownMenu1" class="dropdown-menu">
@@ -678,7 +679,7 @@
       </div>
       <div class="custom-dropdown">
         <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-900 mt-[10px] placeholder-purple-800">
-          옵션을 선택하세요
+          종료 시간
           <i class="fas fa-chevron-down"></i>
         </button>
         <div id="dropdownMenu2" class="dropdown-menu">
@@ -745,7 +746,7 @@
         오늘
       </button>
     </div>
-    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;" onclick="window.location.href='/select-time'">다음</button>
+    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;">다음</button>
   </div>
 
 </div>
@@ -802,7 +803,7 @@
       });
 
       // 시작시간이 선택되어 있다면, 종료시간 드롭다운에는 시작시간보다 이후의 옵션만 보이도록 필터링
-      if (dropdown1Button.textContent.trim() !== "옵션을 선택하세요") {
+      if (dropdown1Button.textContent.trim() !== "시작 시간") {
         let startMinutes = convertTimeStringToMinutes(dropdown1Button.textContent);
         dropdown2.querySelectorAll("a").forEach(option => {
           let optionMinutes = convertTimeStringToMinutes(option.textContent);
@@ -813,7 +814,7 @@
       }
 
       // 종료시간이 선택되어 있다면, 시작시간 드롭다운에는 종료시간보다 이전의 옵션만 보이도록 필터링
-      if (dropdown2Button.textContent.trim() !== "옵션을 선택하세요") {
+      if (dropdown2Button.textContent.trim() !== "종료 시간") {
         let endMinutes = convertTimeStringToMinutes(dropdown2Button.textContent);
         dropdown1.querySelectorAll("a").forEach(option => {
           let optionMinutes = convertTimeStringToMinutes(option.textContent);
@@ -912,7 +913,7 @@
         const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
         header.textContent = year + "년 " + monthNames[month];
         calendarTable.innerHTML = "";
-        
+
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
         const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -943,9 +944,9 @@
               td.classList.add("day");
               // 오늘 날짜보다 이전이면 disabled 클래스 추가
               if (
-                year < todayDate.getFullYear() ||
-                (year === todayDate.getFullYear() && month < todayDate.getMonth()) ||
-                (year === todayDate.getFullYear() && month === todayDate.getMonth() && date < todayDate.getDate())
+                      year < todayDate.getFullYear() ||
+                      (year === todayDate.getFullYear() && month < todayDate.getMonth()) ||
+                      (year === todayDate.getFullYear() && month === todayDate.getMonth() && date < todayDate.getDate())
               ) {
                 td.classList.add("disabled");
               }
@@ -1021,25 +1022,61 @@
         return total;
       }
 
+      let calendarErrorTimeoutId; // 달력 에러 타이머를 저장할 변수
+
+      // 에러 애니메이션 재호출 시 기존 애니메이션 취소 후 새로운 애니메이션 실행
       function showCalendarSelectionError() {
         const calendarDiv = document.getElementById("calendar");
+
+        // 기존 타이머가 있는 경우 취소하고 애니메이션 클래스 제거
+        if (calendarErrorTimeoutId) {
+          clearTimeout(calendarErrorTimeoutId);
+          calendarErrorTimeoutId = null;
+          calendarDiv.classList.remove("shake-error");
+          // 강제로 리플로우를 유도하여 애니메이션 재시작 가능하도록 함
+          void calendarDiv.offsetWidth;
+        }
+
+        // 기존 에러 메시지가 있으면 제거
         let existingError = document.getElementById("calendarSelectionError");
         if (existingError) existingError.remove();
+
+        // 달력 컨테이너의 포지션이 static이면 relative로 변경 (에러 메시지 위치를 위해)
+        const container = calendarDiv.parentElement;
+        if (getComputedStyle(container).position === "static") {
+          container.style.position = "relative";
+        }
+
+        // 에러 상태 스타일 적용
         calendarDiv.style.border = "2px solid #d32f2f";
-        calendarDiv.classList.add("shake-error");
+
         const errorMsg = document.createElement("div");
         errorMsg.setAttribute("id", "calendarSelectionError");
         errorMsg.style.color = "#d32f2f";
         errorMsg.style.fontSize = "0.75em";
-        errorMsg.style.margin = "1px 0 0 0";
-        errorMsg.style.position = "relative";
+        errorMsg.style.position = "absolute";
+        // 달력 바로 아래에 에러 메시지 위치 지정 (4px 간격)
+        const topPosition = calendarDiv.offsetTop + calendarDiv.offsetHeight + 4;
+        errorMsg.style.top = topPosition + "px";
+        errorMsg.style.left = calendarDiv.offsetLeft + "px";
+        errorMsg.style.width = calendarDiv.offsetWidth + "px";
+        errorMsg.style.zIndex = "10";
         errorMsg.textContent = "최대 31일까지만 선택할 수 있습니다.";
-        calendarDiv.parentNode.insertBefore(errorMsg, calendarDiv.nextSibling);
-        setTimeout(() => {
+
+        container.appendChild(errorMsg);
+
+        // 에러 애니메이션 시작
+        calendarDiv.classList.add("shake-error");
+
+        // 2초 후 에러 애니메이션 및 에러 메시지 제거
+        calendarErrorTimeoutId = setTimeout(() => {
+          calendarDiv.classList.remove("shake-error");
+          if (errorMsg.parentNode) {
             calendarDiv.style.border = "";
-            calendarDiv.classList.remove("shake-error");
-            if (errorMsg.parentNode) errorMsg.remove();
-        }, 1800);
+            errorMsg.remove();
+          }
+          calendarErrorTimeoutId = null;
+        }, 2000);
       }
 
       function handleDragStart(e) {
@@ -1118,7 +1155,7 @@
                     cell.classList.remove("selected");
                   }
                 }
-              } else { 
+              } else {
                 if (cell.classList.contains("selected")) {
                   cell.classList.remove("selected");
                   overallSelectedCount = Math.max(0, overallSelectedCount - 1);
@@ -1198,19 +1235,57 @@
             const month = parseInt(keyParts[1], 10); // month는 (월+1)
             const days = JSON.parse(localStorage.getItem(key));
             days.forEach(day => {
-              allDates.push({year: year, month: month, day: parseInt(day, 10)});
+              allDates.push({ year: year, month: month, day: parseInt(day, 10) });
             });
           }
         }
+
         if (allDates.length > 0) {
           // 날짜 순서대로 정렬 (연·월·일)
           allDates.sort((a, b) => {
-            if(a.year !== b.year) return a.year - b.year;
-            if(a.month !== b.month) return a.month - b.month;
+            if (a.year !== b.year) return a.year - b.year;
+            if (a.month !== b.month) return a.month - b.month;
             return a.day - b.day;
           });
-          const datesStr = allDates.map(item => `${item.year}년 ${item.month}월 ${item.day}일`);
-          selectedDatesElement.textContent = datesStr.join(', ');
+
+          // 연속된 날짜를 그룹화하는 함수
+          function groupConsecutiveDates(dates) {
+            const groups = [];
+            let currentGroup = [dates[0]];
+            for (let i = 1; i < dates.length; i++) {
+              const prev = dates[i - 1];
+              const curr = dates[i];
+              // Date 객체로 변환 후 일수 차이 계산 (연속적이면 diff === 1)
+              const prevDate = new Date(prev.year, prev.month - 1, prev.day);
+              const currDate = new Date(curr.year, curr.month - 1, curr.day);
+              const diff = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+              if (diff === 1) {
+                currentGroup.push(curr);
+              } else {
+                groups.push(currentGroup);
+                currentGroup = [curr];
+              }
+            }
+            groups.push(currentGroup);
+            return groups;
+          }
+
+          const groups = groupConsecutiveDates(allDates);
+
+          // 각 그룹별 출력 형식 결정: 연속이면 "첫날 ~ 마지막날", 아니면 개별 날짜
+          const dateStrings = groups.map(group => {
+            if (group.length > 1) {
+              const first = group[0];
+              const last = group[group.length - 1];
+              return `${first.year}년 ${first.month}월 ${first.day}일 ~ ${last.year}년 ${last.month}월 ${last.day}일`;
+            } else {
+              const d = group[0];
+              return `${d.year}년 ${d.month}월 ${d.day}일`;
+            }
+          });
+
+          // 기본 스타일 그대로 (콤마로 구분)
+          selectedDatesElement.textContent = dateStrings.join(', ');
           selectedDatesContainer.classList.remove('hidden');
         } else {
           selectedDatesContainer.classList.add('hidden');
@@ -1253,7 +1328,7 @@
         existingStartError.remove();
       }
       startTimeButton.style.border = "";
-      if(startTimeButton.textContent.trim() === "옵션을 선택하세요"){
+      if(startTimeButton.textContent.trim() === "시작 시간"){
         isValid = false;
         startTimeButton.style.border = "2px solid #d32f2f";
         startTimeButton.classList.add("shake-error");
@@ -1276,7 +1351,7 @@
         existingEndError.remove();
       }
       endTimeButton.style.border = "";
-      if(endTimeButton.textContent.trim() === "옵션을 선택하세요"){
+      if(endTimeButton.textContent.trim() === "종료 시간"){
         isValid = false;
         endTimeButton.style.border = "2px solid #d32f2f";
         endTimeButton.classList.add("shake-error");
@@ -1319,8 +1394,8 @@
 
       // 마지막에 첫 번째 오류 요소로 스크롤
       if (!isValid && firstErrorElement) {
-        firstErrorElement.scrollIntoView({ 
-          behavior: 'smooth', 
+        firstErrorElement.scrollIntoView({
+          behavior: 'smooth',
           block: 'center'
         });
       }
@@ -1356,7 +1431,7 @@
       // tooltip이 보인 상태여야 실제 너비를 읽을 수 있음
       const tooltipRect = tooltip.getBoundingClientRect();
 
-      // 툴팁 네모의 우측 상단(마름모 중심이 6px 안쪽)에 맞추기 위한 기본 계산
+      // 툴크 네모의 우측 상단(마름모 중심이 6px 안쪽)에 맞추기 위한 기본 계산
       let tooltipLeft = iconCenterX - tooltipRect.width + 6;
 
       const extraOffset = 10;  // 오른쪽으로 10px 이동
@@ -1383,7 +1458,7 @@
       tooltip.style.setProperty('--diamond-offset', `${diamondOffset}px`);
     }
 
-    // 물음표 아이콘 클릭 시, 툴팁 토글 및 위치 업데이트
+    // 물음표 아이콘 클릭 시, 툴크 토글 및 위치 업데이트
     helpBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       isTooltipVisible = !isTooltipVisible;
@@ -1417,37 +1492,37 @@
 
     // 제목 입력 필드 오류 제거 함수
     function handleTitleError() {
-        const titleInput = document.getElementById("titleInput");
-        const titleError = document.getElementById("titleError");
-        
-        if(titleInput.value.trim() !== "") {
-            // 텍스트가 있으면 오류 제거
-            titleInput.style.border = "";
-            if(titleError) {
-                titleError.remove();
-            }
-        } else {
-            // 텍스트가 없으면 오류 표시
-            titleInput.style.border = "2px solid #d32f2f";
-            titleInput.classList.add("shake-error");
-            setTimeout(() => titleInput.classList.remove("shake-error"), 400);
-            
-            if(!titleError) {
-                const errorMsg = document.createElement("div");
-                errorMsg.setAttribute("id", "titleError");
-                errorMsg.style.color = "#d32f2f";
-                errorMsg.style.fontSize = "0.75em";
-                errorMsg.style.margin = "1px 0 0 0";
-                errorMsg.style.position = "relative";
-                errorMsg.textContent = "일정 제목을 입력해주세요.";
-                titleInput.parentNode.insertBefore(errorMsg, titleInput.nextSibling);
-            }
+      const titleInput = document.getElementById("titleInput");
+      const titleError = document.getElementById("titleError");
+
+      if(titleInput.value.trim() !== "") {
+        // 텍스트가 있으면 오류 제거
+        titleInput.style.border = "";
+        if(titleError) {
+          titleError.remove();
         }
+      } else {
+        // 텍스트가 없으면 오류 표시
+        titleInput.style.border = "2px solid #d32f2f";
+        titleInput.classList.add("shake-error");
+        setTimeout(() => titleInput.classList.remove("shake-error"), 400);
+
+        if(!titleError) {
+          const errorMsg = document.createElement("div");
+          errorMsg.setAttribute("id", "titleError");
+          errorMsg.style.color = "#d32f2f";
+          errorMsg.style.fontSize = "0.75em";
+          errorMsg.style.margin = "1px 0 0 0";
+          errorMsg.style.position = "relative";
+          errorMsg.textContent = "일정 제목을 입력해주세요.";
+          titleInput.parentNode.insertBefore(errorMsg, titleInput.nextSibling);
+        }
+      }
     }
 
     // 제목 입력 필드에 이벤트 리스너 추가
     document.getElementById("titleInput").addEventListener("input", function() {
-        handleTitleError();
+      handleTitleError();
     });
   });
 </script>
