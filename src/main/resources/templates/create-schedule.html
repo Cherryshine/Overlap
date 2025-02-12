@@ -633,7 +633,7 @@
     <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
 
     <!-- 선택된 날짜 표시 영역 추가 -->
-    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden">
+    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden" style="display: none;">
       <p class="font-medium">선택된 날짜:</p>
       <p id="selectedDates" class="mt-1"></p>
     </div>
@@ -980,20 +980,20 @@
       function showCalendarSelectionError() {
         const calendarDiv = document.getElementById("calendar");
 
-        // 기존 타이머가 있는 경우 취소하고 애니메이션 클래스 제거
+        // 기존 타이머가 있다면 취소 후 애니메이션 클래스 제거
         if (calendarErrorTimeoutId) {
           clearTimeout(calendarErrorTimeoutId);
           calendarErrorTimeoutId = null;
           calendarDiv.classList.remove("shake-error");
-          // 강제로 리플로우를 유도하여 애니메이션 재시작 가능하도록 함
+          // 강제로 리플로우하여 애니메이션 재시작 가능하도록 함
           void calendarDiv.offsetWidth;
         }
 
-        // 기존 에러 메시지가 있으면 제거
+        // 기존 오류 메시지 제거
         let existingError = document.getElementById("calendarSelectionError");
         if (existingError) existingError.remove();
 
-        // 달력 컨테이너의 포지션이 static이면 relative로 변경 (에러 메시지 위치를 위해)
+        // 달력 컨테이너의 위치 설정(상대 위치 필요)
         const container = calendarDiv.parentElement;
         if (getComputedStyle(container).position === "static") {
           container.style.position = "relative";
@@ -1007,7 +1007,6 @@
         errorMsg.style.color = "#d32f2f";
         errorMsg.style.fontSize = "0.75em";
         errorMsg.style.position = "absolute";
-        // 달력 바로 아래에 에러 메시지 위치 지정 (4px 간격)
         const topPosition = calendarDiv.offsetTop + calendarDiv.offsetHeight + 4;
         errorMsg.style.top = topPosition + "px";
         errorMsg.style.left = calendarDiv.offsetLeft + "px";
@@ -1017,10 +1016,8 @@
 
         container.appendChild(errorMsg);
 
-        // 에러 애니메이션 시작
+        // 달력에 흔들림 애니메이션 적용 - 유효성 검증과 동일한 효과 (400ms)
         calendarDiv.classList.add("shake-error");
-
-        // 2초 후 에러 애니메이션 및 에러 메시지 제거
         calendarErrorTimeoutId = setTimeout(() => {
           calendarDiv.classList.remove("shake-error");
           if (errorMsg.parentNode) {
@@ -1028,7 +1025,7 @@
             errorMsg.remove();
           }
           calendarErrorTimeoutId = null;
-        }, 2000);
+        }, 1500);
       }
 
       function handleDragStart(e) {
@@ -1305,8 +1302,9 @@
         errorMsg.style.color = "#d32f2f";
         errorMsg.style.fontSize = "0.75em";
         errorMsg.style.margin = "1px 0 0 0";
-        errorMsg.style.position = "relative";
+        errorMsg.style.whiteSpace = "nowrap";
         errorMsg.textContent = "시작시간을 선택해주세요.";
+        startTimeButton.parentNode.style.overflow = "visible";
         startTimeButton.parentNode.insertBefore(errorMsg, startTimeButton.nextSibling);
         if (!firstErrorElement) firstErrorElement = startTimeButton;
       }
@@ -1328,13 +1326,14 @@
         errorMsg.style.color = "#d32f2f";
         errorMsg.style.fontSize = "0.75em";
         errorMsg.style.margin = "1px 0 0 0";
-        errorMsg.style.position = "relative";
+        errorMsg.style.whiteSpace = "nowrap";
         errorMsg.textContent = "종료시간을 선택해주세요.";
+        endTimeButton.parentNode.style.overflow = "visible";
         endTimeButton.parentNode.insertBefore(errorMsg, endTimeButton.nextSibling);
         if (!firstErrorElement) firstErrorElement = endTimeButton;
       }
 
-      // 시작 시간과 종료 시간의 순서 검증: 시작 시간이 종료 시간보다 늦은 경우
+      // 시작 시간과 종료 시간의 순서 검증 : 시작 시간이 종료 시간보다 늦을 경우
       if(startTimeButton.textContent.trim() !== "시작 시간" && endTimeButton.textContent.trim() !== "종료 시간"){
         const startTimeValue = parseTime(startTimeButton.textContent.trim());
         const endTimeValue = parseTime(endTimeButton.textContent.trim());
@@ -1352,8 +1351,9 @@
           errorMsgTime.style.color = "#d32f2f";
           errorMsgTime.style.fontSize = "0.75em";
           errorMsgTime.style.margin = "1px 0 0 0";
-          errorMsgTime.style.position = "relative";
+          errorMsgTime.style.whiteSpace = "nowrap";
           errorMsgTime.textContent = "시작시간이 종료시간보다 늦을수 없습니다.";
+          startTimeButton.parentNode.style.overflow = "visible";
           startTimeButton.parentNode.insertBefore(errorMsgTime, startTimeButton.nextSibling);
 
           // 종료 시간 에러 처리
@@ -1367,8 +1367,8 @@
           errorMsgTime2.style.color = "#d32f2f";
           errorMsgTime2.style.fontSize = "0.75em";
           errorMsgTime2.style.margin = "1px 0 0 0";
-          errorMsgTime2.style.position = "relative";
-          
+          errorMsgTime2.style.whiteSpace = "nowrap";
+          endTimeButton.parentNode.style.overflow = "visible";
           endTimeButton.parentNode.insertBefore(errorMsgTime2, endTimeButton.nextSibling);
 
           if (!firstErrorElement) firstErrorElement = startTimeButton;
@@ -1382,9 +1382,18 @@
         existingCalendarError.remove();
       }
       calendarDiv.style.border = "";
-      const calendarTable = document.getElementById("calendarTable");
-      const selectedDays = calendarTable.querySelectorAll("td.day.selected");
-      if(selectedDays.length === 0 || selectedDays.length > 31){
+
+      // localStorage에 저장된 전체 선택된 날짜 개수를 계산 (모든 "dateSelection_" 키에서)
+      let totalSelectedCount = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("dateSelection_")) {
+          const days = JSON.parse(localStorage.getItem(key)) || [];
+          totalSelectedCount += days.length;
+        }
+      }
+      
+      if(totalSelectedCount === 0 || totalSelectedCount > 31){
         isValid = false;
         calendarDiv.style.border = "2px solid #d32f2f";
         calendarDiv.classList.add("shake-error");
@@ -1414,7 +1423,7 @@
     document.getElementById("nextButton").addEventListener("click", function(e) {
       e.preventDefault();
       if (validateForm()) {
-        location.href='/create-schedule';
+        location.href='/select-time';
       }
     });
 
