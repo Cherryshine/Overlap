@@ -537,7 +537,7 @@ function initDragEvents(numCols) {
             }
             // 기존 임시 하이라이트 클래스 제거
             cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
-            // 추가: 모든 드래그 하이라이트 오버레이 제거
+            // 모든 드래그 하이라이트 오버레이 제거
             cells.forEach(cell => {
                 const overlay = cell.querySelector('.drag-highlight-overlay');
                 if (overlay) {
@@ -565,6 +565,13 @@ function initDragEvents(numCols) {
         if (isDragging && startCell && lastTouchedCell) {
             toggleRectangle(startCell, lastTouchedCell, dragAction);
             cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
+            // 모든 드래그 하이라이트 오버레이 제거
+            cells.forEach(cell => {
+                const overlay = cell.querySelector('.drag-highlight-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+            });
         }
         isDragging = false;
         startCell = null;
