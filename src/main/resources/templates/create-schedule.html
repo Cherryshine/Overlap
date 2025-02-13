@@ -1016,7 +1016,7 @@
 
         container.appendChild(errorMsg);
 
-        // 달력에 흔들림 애니메이션 적용 - 유효성 검증과 동일한 효과 (400ms)
+        // shake-error 클래스를 사용하여 애니메이션 적용
         calendarDiv.classList.add("shake-error");
         calendarErrorTimeoutId = setTimeout(() => {
           calendarDiv.classList.remove("shake-error");
@@ -1025,7 +1025,7 @@
             errorMsg.remove();
           }
           calendarErrorTimeoutId = null;
-        }, 1500);
+        }, 1000); // 지연 시간을 1초로 줄임
       }
 
       function handleDragStart(e) {
