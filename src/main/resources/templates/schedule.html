@@ -243,25 +243,6 @@
                         }
                     });
                 });
-
-                // 체크박스 클릭 이벤트 (애니메이션 적용)
-                document.getElementById('noTimeSelection').addEventListener('change', function() {
-                    const appDiv = document.getElementById('app');
-                    const completeButton = document.querySelector('.w-full.py-3.bg-purple-700'); // 완료 버튼 선택자
-
-                    if (this.checked) {
-                        // display 대신 collapse 클래스를 추가하여 애니메이션을 적용
-                        appDiv.classList.add('collapsed');
-                        if (completeButton) {
-                            completeButton.style.marginTop = '15px';
-                        }
-                    } else {
-                        appDiv.classList.remove('collapsed');
-                        if (completeButton) {
-                            completeButton.style.marginTop = '30px';
-                        }
-                    }
-                });
             </script>
             <!-- 버튼 그룹 -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 md-[30px] mt-[15px]">
