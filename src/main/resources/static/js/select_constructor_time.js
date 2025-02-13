@@ -99,8 +99,18 @@ function buildScheduleTable(data) {
     
         for (let c = 0; c < data.days.length; c++) {
             const cellKey = `${data.startIndex}-${data.days[c].date}-${i}`;
-            const isSelected = window.selectedCells && window.selectedCells[cellKey] ? "bg-green-300" : "";
-            let borderClasses = `grid-cell bg-gray-200 ${isHourMark ? 'hour-mark' : ''} ${isSelected}`;
+            // 미리보기 모드라면 셀이 선택되어 있을 경우 반투명 파란 오버레이를 적용, 그렇지 않으면 기존 녹색 선택 클래스 적용
+            let overlayHtml = "";
+            let selectedClass = "";
+            if (window.selectedCells && window.selectedCells[cellKey]) {
+                if (window.isPreviewMode) {
+                    overlayHtml = `<div class="preview-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 255, 0.5); pointer-events: none;"></div>`;
+                } else {
+                    selectedClass = "bg-green-300";
+                }
+            }
+            
+            let borderClasses = `grid-cell bg-gray-200 ${isHourMark ? 'hour-mark' : ''} ${selectedClass}`;
             let borderStyle = "border-right: 1px solid rgb(209, 213, 219)";
             
             if (hasPrevPage && c === 0) {
@@ -132,7 +142,8 @@ function buildScheduleTable(data) {
             let otherUserOverlayHtml = "";
             
             timeGridHtml += `
-                <div data-cell-key="${cellKey}" class="${borderClasses}" style="${borderStyle}">
+                <div data-cell-key="${cellKey}" class="${borderClasses} relative" style="${borderStyle}">
+                    ${overlayHtml}
                     <!-- ${formatTime24(blockStartMin)} -->
                     ${otherUserOverlayHtml}
                 </div>
@@ -238,29 +249,69 @@ function initDragEvents(numCols) {
         return { row, col };
     }
 
+    /**
+     * 드래그 시작 셀의 상태에 따라 선택/해제 모드에 맞게 영역 내의 셀들을 임시 하이라이트 합니다.
+     */
     function highlightRectangle(start, end) {
-        cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
+        // 모든 셀에서 기존의 임시 하이라이트 오버레이 제거
+        cells.forEach(cell => {
+            const existingOverlay = cell.querySelector('.drag-highlight-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            // 미리보기 모드, 일반 모드 관계없이 임시 클래스 제거
+            cell.classList.remove("bg-blue-200", "bg-red-200");
+        });
+        
         const startPos = getCellPosition(start);
         const endPos   = getCellPosition(end);
         const rowStart = Math.min(startPos.row, endPos.row);
         const rowEnd   = Math.max(startPos.row, endPos.row);
         const colStart = Math.min(startPos.col, endPos.col);
         const colEnd   = Math.max(startPos.col, endPos.col);
-
+        
         for (let r = rowStart; r <= rowEnd; r++) {
             for (let c = colStart; c <= colEnd; c++) {
                 const idx = r * numCols + c;
+                const cell = cells[idx];
+                const cellKey = cell.getAttribute('data-cell-key');
                 
-                // 드래그 액션이 "select"인 경우:
-                // 이미 초록색(bg-green-300)이 적용된 셀이 있더라도 파란색(bg-blue-200) 오버레이가 보이도록
                 if (dragAction === "select") {
-                    cells[idx].classList.remove("bg-green-300"); // 기존 초록색 제거
-                    cells[idx].classList.add("bg-blue-200");
-                }
-                // 드래그 액션이 "deselect"인 경우: 선택되어 있는 셀만 분홍색(bg-red-200) 오버레이로 표시
-                else if (dragAction === "deselect") {
-                    if (cells[idx].classList.contains("bg-green-300")) {
-                        cells[idx].classList.add("bg-red-200");
+                    // 이미 선택된 셀이면 진한 파란색 오버레이를 적용
+                    if (window.selectedCells && window.selectedCells[cellKey]) {
+                        let overlay = document.createElement("div");
+                        overlay.className = "drag-highlight-overlay";
+                        overlay.style.position = "absolute";
+                        overlay.style.top = "0";
+                        overlay.style.left = "0";
+                        overlay.style.width = "100%";
+                        overlay.style.height = "100%";
+                        overlay.style.background = "rgba(0, 0, 139, 0.7)"; // 진한 파란색
+                        overlay.style.pointerEvents = "none";
+                        overlay.style.zIndex = "9999";
+                        cell.appendChild(overlay);
+                    } else {
+                        cell.classList.add("bg-blue-200");
+                    }
+                } else if (dragAction === "deselect") {
+                    if (window.isPreviewMode) {
+                        if (window.selectedCells && window.selectedCells[cellKey]) {
+                            let overlay = document.createElement("div");
+                            overlay.className = "drag-highlight-overlay";
+                            overlay.style.position = "absolute";
+                            overlay.style.top = "0";
+                            overlay.style.left = "0";
+                            overlay.style.width = "100%";
+                            overlay.style.height = "100%";
+                            overlay.style.background = "rgba(0, 0, 255, 0.5)";
+                            overlay.style.pointerEvents = "none";
+                            overlay.style.zIndex = "9999";
+                            cell.appendChild(overlay);
+                        }
+                    } else {
+                        if (cell.classList.contains("bg-green-300")) {
+                            cell.classList.add("bg-red-200");
+                        }
                     }
                 }
             }
@@ -484,7 +535,15 @@ function initDragEvents(numCols) {
             if (e.target.classList.contains("grid-cell")) {
                 toggleRectangle(startCell, e.target, dragAction);
             }
+            // 기존 임시 하이라이트 클래스 제거
             cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
+            // 추가: 모든 드래그 하이라이트 오버레이 제거
+            cells.forEach(cell => {
+                const overlay = cell.querySelector('.drag-highlight-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+            });
         }
         isDragging = false;
         startCell = null;
