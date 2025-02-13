@@ -163,6 +163,7 @@ function initDragEvents(numCols) {
     let isDragging = false;
     let startCell = null;
     let lastTouchedCell = null;
+    let dragAction = null; // 드래그 모드 ("select" 또는 "deselect")
     let autoScrollInterval = null;
     const SCROLL_SPEED = 10;
     const SCROLL_ZONE = 50;
@@ -213,7 +214,6 @@ function initDragEvents(numCols) {
 
     function handleAutoScroll(clientY) {
         const windowHeight = window.innerHeight;
-        const scrollTop = window.scrollY;
         if (autoScrollInterval) {
             clearInterval(autoScrollInterval);
             autoScrollInterval = null;
@@ -250,16 +250,30 @@ function initDragEvents(numCols) {
         for (let r = rowStart; r <= rowEnd; r++) {
             for (let c = colStart; c <= colEnd; c++) {
                 const idx = r * numCols + c;
-                if (cells[idx].classList.contains("bg-green-300")) {
-                    cells[idx].classList.add("bg-red-200");
-                } else {
+                
+                // 드래그 액션이 "select"인 경우:
+                // 이미 초록색(bg-green-300)이 적용된 셀이 있더라도 파란색(bg-blue-200) 오버레이가 보이도록
+                if (dragAction === "select") {
+                    cells[idx].classList.remove("bg-green-300"); // 기존 초록색 제거
                     cells[idx].classList.add("bg-blue-200");
+                }
+                // 드래그 액션이 "deselect"인 경우: 선택되어 있는 셀만 분홍색(bg-red-200) 오버레이로 표시
+                else if (dragAction === "deselect") {
+                    if (cells[idx].classList.contains("bg-green-300")) {
+                        cells[idx].classList.add("bg-red-200");
+                    }
                 }
             }
         }
     }
 
-    function toggleRectangle(start, end) {
+    /**
+     * 드래그 시작 셀의 상태에 따라 선택/해제 모드에 맞게 영역 내의 셀들을 일괄 처리합니다.
+     * @param {Element} start - 드래그 시작 셀
+     * @param {Element} end - 드래그 끝 셀
+     * @param {string} mode - "select" 또는 "deselect"
+     */
+    function toggleRectangle(start, end, mode) {
         const startPos = getCellPosition(start);
         const endPos   = getCellPosition(end);
         const rowStart = Math.min(startPos.row, endPos.row);
@@ -272,12 +286,16 @@ function initDragEvents(numCols) {
                 const idx = r * numCols + c;
                 const cell = cells[idx];
                 const key = cell.getAttribute('data-cell-key');
-                if (cell.classList.contains("bg-green-300")) {
-                    cell.classList.remove("bg-green-300");
-                    delete window.selectedCells[key];
-                } else {
-                    cell.classList.add("bg-green-300");
-                    window.selectedCells[key] = true;
+                if (mode === "deselect") {
+                    if (cell.classList.contains("bg-green-300")) {
+                        cell.classList.remove("bg-green-300");
+                        delete window.selectedCells[key];
+                    }
+                } else if (mode === "select") {
+                    if (!cell.classList.contains("bg-green-300")) {
+                        cell.classList.add("bg-green-300");
+                        window.selectedCells[key] = true;
+                    }
                 }
             }
         }
@@ -388,13 +406,15 @@ function initDragEvents(numCols) {
     // 마우스 및 터치 이벤트 등록
     cells.forEach(cell => {
         cell.addEventListener("mousedown", (e) => {
-            // 드래그 시작 시 페이지 버튼(개별 버튼) fade out
+            // 드래그 시작 시 페이지 버튼 fade out
             const prevButton = document.getElementById("prevPage");
             const nextButton = document.getElementById("nextPage");
             if (prevButton) prevButton.style.opacity = "0";
             if (nextButton) nextButton.style.opacity = "0";
             isDragging = true;
             startCell = cell;
+            // 드래그 시작 시 현재 셀이 이미 선택되어 있으면 "deselect", 아니면 "select" 모드로 설정
+            dragAction = cell.classList.contains("bg-green-300") ? "deselect" : "select";
             createDragTooltip(e.clientX, e.clientY);
             updateDragTooltip(startCell, startCell, e.clientX, e.clientY);
             highlightRectangle(startCell, startCell);
@@ -416,7 +436,6 @@ function initDragEvents(numCols) {
 
         cell.addEventListener("touchstart", (e) => {
             e.preventDefault(); // 스크롤 방지
-            // 드래그 시작 시 페이지 버튼 fade out
             const prevButton = document.getElementById("prevPage");
             const nextButton = document.getElementById("nextPage");
             if (prevButton) prevButton.style.opacity = "0";
@@ -424,6 +443,8 @@ function initDragEvents(numCols) {
             isDragging = true;
             startCell = cell;
             lastTouchedCell = cell;
+            // 터치 시작 시 현재 셀이 이미 선택되어 있으면 "deselect", 아니면 "select" 모드로 설정
+            dragAction = cell.classList.contains("bg-green-300") ? "deselect" : "select";
             const touch = e.touches[0];
             createDragTooltip(touch.clientX, touch.clientY);
             updateDragTooltip(startCell, startCell, touch.clientX, touch.clientY);
@@ -446,7 +467,7 @@ function initDragEvents(numCols) {
         });
     });
 
-    // 드래그 종료 시: 페이지 버튼(개별 버튼) fade in (다시 보이도록)
+    // 드래그 종료 시: 페이지 버튼 fade in
     document.addEventListener("mouseup", (e) => {
         if (autoScrollInterval) {
             clearInterval(autoScrollInterval);
@@ -461,12 +482,13 @@ function initDragEvents(numCols) {
 
         if (isDragging && startCell) {
             if (e.target.classList.contains("grid-cell")) {
-                toggleRectangle(startCell, e.target);
+                toggleRectangle(startCell, e.target, dragAction);
             }
             cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
         }
         isDragging = false;
         startCell = null;
+        dragAction = null; // 모드 초기화
     });
 
     document.addEventListener("touchend", (e) => {
@@ -482,12 +504,13 @@ function initDragEvents(numCols) {
         if (nextButton) nextButton.style.opacity = "1";
 
         if (isDragging && startCell && lastTouchedCell) {
-            toggleRectangle(startCell, lastTouchedCell);
+            toggleRectangle(startCell, lastTouchedCell, dragAction);
             cells.forEach(cell => cell.classList.remove("bg-blue-200", "bg-red-200"));
         }
         isDragging = false;
         startCell = null;
         lastTouchedCell = null;
+        dragAction = null;  // 모드 초기화
     });
 
     window.generateOverlaysGlobal = generateOverlaysGlobal;

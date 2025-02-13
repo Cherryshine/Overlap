@@ -1244,11 +1244,14 @@
 
     // --- 검증 및 경고문구 출력 ---
     function parseTime(timeStr) {
-      // timeStr 예: "12:00 AM", "01:00 PM" 등
+      // 만약 "00:00 AM"이면 다음 날의 자정(24:00)을 의미하도록 1440 반환
+      if (timeStr.trim() === "00:00 AM") {
+        return 24 * 60;
+      }
       const parts = timeStr.split(' ');
       if (parts.length < 2) return NaN;
-      const timePart = parts[0]; // "hh:mm"
-      const period = parts[1].toUpperCase(); // "AM" 또는 "PM"
+      const timePart = parts[0];
+      const period = parts[1].toUpperCase();
       let [hour, minute] = timePart.split(':').map(Number);
       if (period === "AM" && hour === 12) {
         hour = 0;
