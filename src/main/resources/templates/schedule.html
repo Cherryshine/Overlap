@@ -82,56 +82,17 @@
             min-height: 100%;  /* 최소 높이를 100%로 설정 */
         }
 
-        /* 타임 테이블 css */
-        .page-button {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgb(255, 255, 255);
-            border-radius: 4px; /* 둥근 모서리 사각형 형태 */
-            box-shadow: 0 0 5px rgb(179, 142, 179);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        /* 반응형 설정 */
-        @media (max-width: 629px) {
-            .page-button {
-                width: 28px;
-                height: 28px;
+        /* 320px 이하 화면에서 버튼 텍스트 크기를 12px로 적용 (Tailwind보다 우선순위를 높임) */
+        @media (max-width: 320px) {
+            button.btn-responsive-text {
+                font-size: 12px !important;
             }
         }
-        .grid-cell {
-            position: relative;
-            overflow: hidden;
+
+        /* 반응형 버튼 폰트: 뷰포트 너비가 320px에서는 12px, 640px 이상에서는 16px로 선형 보간 */
+        .btn-responsive-font {
+            font-size: clamp(12px, calc(12px + ((100vw - 320px) / 80)), 16px) !important;
         }
-
-        /* 시간 구분선을 위한 가상 요소 */
-        .grid-cell::before {
-            content: '';
-            position: absolute;
-
-            left: -8px; /* 부모의 패딩만큼 음수값 */
-            right: -8px; /* 부모의 패딩만큼 음수값 */
-            top: 0;
-            height: 1px;
-            background-color: rgb(209, 213, 219);
-            z-index: 1;
-        }
-
-        /* 시간대 구분선(검은색 굵은 선)의 경우 */
-        .grid-cell.hour-mark::before {
-            height: 1.2px;
-            background-color: rgb(157, 101, 203);
-        }
-
-        /* 첫 번째 행의 셀은 border 제거 */
-        .grid-row-first .grid-cell::before {
-            display: none;
-
-        }
-
     </style>
     <script src="https://cdn.tailwindcss.com/3.3.2"></script>
 
@@ -186,44 +147,33 @@
                 height: 28px;
             }
         }
-        /* grid-cell 관련 CSS */
         .grid-cell {
             position: relative;
             overflow: hidden;
         }
 
-        /* 가상 요소를 이용해 셀의 상단에 시간 구분선 역할을 하는 선을 만듭니다. */
+        /* 시간 구분선을 위한 가상 요소 */
         .grid-cell::before {
             content: '';
             position: absolute;
-            left: -8px; /* 부모의 패딩과 맞추기 위해 음수값 */
-            right: -8px;
+
+            left: -8px; /* 부모의 패딩만큼 음수값 */
+            right: -8px; /* 부모의 패딩만큼 음수값 */
             top: 0;
             height: 1px;
             background-color: rgb(209, 213, 219);
             z-index: 1;
         }
 
-        /* 각 정각(시간대)에서는 약간 두껍고 색상이 변경된 선을 사용 */
+        /* 시간대 구분선(검은색 굵은 선)의 경우 */
         .grid-cell.hour-mark::before {
             height: 1.2px;
             background-color: rgb(157, 101, 203);
         }
 
-        /* 첫 번째 행의 셀에서는 시간 구분선을 숨깁니다. */
-        .grid-row-first .grid-cell::before {
-            display: none;
-        }
-
-
         /* 첫 번째 행의 셀은 border 제거 */
         .grid-row-first .grid-cell::before {
             display: none;
-        }
-
-        .grid-cell.hour-mark::before {
-            height: 1px;
-            background-color: rgb(209, 213, 219);
         }
 
     </style>
@@ -315,14 +265,13 @@
             </script>
             <!-- 버튼 그룹 -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 md-[30px] mt-[15px]">
-                <button id="shareButton" class="bg-purple-700 text-white text-base py-2 px-6 rounded hover:bg-purple-700 transition-colors">
+                <button id="shareButton" class="bg-purple-700 text-white btn-responsive-font py-2 px-6 rounded hover:bg-purple-700 transition-colors">
                     공유하기
                 </button>
-                <button class="bg-[#FEE500] text-[#191919] text-base py-2 px-6 rounded hover:bg-[#FEE500] transition-colors">
+                <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 rounded hover:bg-[#FEE500] transition-colors">
                     카카오로 로그인하고 톡캘린더 생성하기
                 </button>
             </div>
-
 
 
         </div>

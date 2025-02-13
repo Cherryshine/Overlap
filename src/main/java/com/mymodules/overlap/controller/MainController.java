@@ -1,11 +1,7 @@
 package com.mymodules.overlap.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 @RestController
 public class MainController {
@@ -26,7 +22,10 @@ public class MainController {
     {
         return new ModelAndView("select_constructor_time" );
     }
-
+    @GetMapping("/test")
+    public ModelAndView test(){
+        return new ModelAndView("schedule");
+    }
 
     @GetMapping("/main")
     public ModelAndView main(){

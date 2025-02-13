@@ -202,6 +202,19 @@
             margin: 0 !important;
             overflow: hidden !important; /* 체크박스 클릭 시 overflow를 hidden으로 변경 */
         }
+
+        body {
+            background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
+            background-repeat: no-repeat;
+            min-height: 100%;  /* 최소 높이를 100%로 설정 */
+        }
+
+        body, html {
+            height: auto;  /* 고정 높이 대신 자동으로 조정 */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
     </style>
     <style>
 
@@ -213,6 +226,7 @@
         .logo-animation {
             animation: float 2s ease-in-out infinite;
         }
+        
 
     </style>
 </head>
@@ -241,7 +255,7 @@
             <!-- 타임 테이블 -->
             <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative"></div>
             <!-- (1) 스크립트 파일 로드 -->
-            <script src="js/select_constructor_time.js"></script>
+            <script src="/js/select_constructor_time.js"></script>
 
             <!-- (2) JSON 데이터 및 초기화 로직 -->
             <script>
