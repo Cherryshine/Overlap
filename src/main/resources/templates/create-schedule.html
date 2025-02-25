@@ -849,15 +849,28 @@
       function loadSelections(year, month) {
         const key = getSelectionKey(year, month);
         let selections = JSON.parse(localStorage.getItem(key));
-        if(selections && selections.length) {
-          const dayCells = calendarTable.querySelectorAll("td.day");
-          dayCells.forEach(cell => {
-            if(selections.indexOf(cell.dataset.date) !== -1) {
-              cell.classList.add("selected");
-            } else {
-              cell.classList.remove("selected");
-            }
-          });
+        const todayDate = new Date();
+        const today = todayDate.getDate();
+        const currentMonth = todayDate.getMonth();
+        const currentYear = todayDate.getFullYear();
+
+        if (selections && selections.length) {
+            const dayCells = calendarTable.querySelectorAll("td.day");
+            dayCells.forEach(cell => {
+                const cellDate = parseInt(cell.dataset.date);
+                const cellMonth = currentMonth; // 현재 월
+                const cellYear = currentYear; // 현재 연도
+
+                // 오늘 날짜가 지나면 선택된 날짜를 회색으로 변경
+                if (cellYear === todayDate.getFullYear() && cellMonth === todayDate.getMonth() && cellDate < today) {
+                    cell.classList.add("disabled"); // 회색으로 표시
+                    cell.classList.remove("selected"); // 선택 해제
+                } else if (selections.indexOf(cell.dataset.date) !== -1) {
+                    cell.classList.add("selected");
+                } else {
+                    cell.classList.remove("selected");
+                }
+            });
         }
       }
 
