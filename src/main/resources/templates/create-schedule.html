@@ -858,11 +858,13 @@
             const dayCells = calendarTable.querySelectorAll("td.day");
             dayCells.forEach(cell => {
                 const cellDate = parseInt(cell.dataset.date);
-                const cellMonth = currentMonth; // 현재 월
-                const cellYear = currentYear; // 현재 연도
+                const cellMonth = month; // 현재 월을 사용
+                const cellYear = year; // 현재 연도 사용
 
                 // 오늘 날짜가 지나면 선택된 날짜를 회색으로 변경
-                if (cellYear === todayDate.getFullYear() && cellMonth === todayDate.getMonth() && cellDate < today) {
+                if (cellYear < todayDate.getFullYear() || 
+                    (cellYear === todayDate.getFullYear() && cellMonth < todayDate.getMonth()) || 
+                    (cellYear === todayDate.getFullYear() && cellMonth === todayDate.getMonth() && cellDate < today)) {
                     cell.classList.add("disabled"); // 회색으로 표시
                     cell.classList.remove("selected"); // 선택 해제
                 } else if (selections.indexOf(cell.dataset.date) !== -1) {
