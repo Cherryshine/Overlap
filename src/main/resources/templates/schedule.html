@@ -249,9 +249,11 @@
                 <button id="shareButton" class="bg-purple-700 text-white btn-responsive-font py-2 font-bold px-6 rounded hover:bg-purple-700 transition-colors">
                     공유하기
                 </button>
-                <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors">
+
+                <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-login" onclick="redirectKakao()">
                     카카오로 로그인하고 톡캘린더 생성하기
                 </button>
+
             </div>
 
 
@@ -266,6 +268,16 @@
 </footer>
 
 <script>
+
+    function redirectKakao() {
+        const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d";  // 카카오 REST API 키
+        const redirectUri = encodeURIComponent("https://localhost:8080/oauth/kakao/callback");
+        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+
+        window.location.href = kakaoAuthUrl;
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
         // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
         setTimeout(function() {
