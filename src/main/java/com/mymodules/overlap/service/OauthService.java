@@ -2,6 +2,8 @@ package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.dto.KakaoTokenResponseDto;
 import com.mymodules.overlap.dto.KakaoUserInfoDto;
+import com.mymodules.overlap.entity.OauthUser;
+import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ public class OauthService {
 
     private final UserRepository userRepository;
     private final WebClient webClient;
+
 
     @Value("${kakao.client.id}")
     private String CLIENT_ID;
@@ -63,20 +66,26 @@ public class OauthService {
                     .retrieve()
                     .bodyToMono(KakaoTokenResponseDto.class)
                     .block();
-
+            // 토큰 못가져왔을때
             if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
                 System.out.println("카카오 API 응답이 없습니다.");
                 return "test";
             }
+
             String accessToken = tokenResponse.getAccessToken();
 
+            // 엑세스토큰을 이용하여 유저 정보 가져오기
             Map<String, Object> getUserInfo = getUserInfo(accessToken);
 
+            // name 가져오기
             String name = (String) getUserInfo.get("name");
 
             log.info(name);
 
-            return null;
+            User user = new OauthUser(name);
+            userRepository.save(user);
+
+            return "success";
     }
 
     @Transactional
@@ -93,7 +102,7 @@ public class OauthService {
             System.out.println("사용자 정보를 가져오지 못했습니다.");
             return null;
         }
-
+        // 유저 프로필의 이름 가져오기 (유저가 설정한 닉네임)
         String name = userInfo.getKakaoAccount().getProfile().getNickname();
         String profileImage = userInfo.getKakaoAccount().getProfile().getProfileImageUrl();
 
