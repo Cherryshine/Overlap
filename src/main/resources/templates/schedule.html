@@ -254,6 +254,11 @@
                     카카오로 로그인하고 톡캘린더 생성하기
                 </button>
 
+
+                <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-calendar" >
+                    톡캘린더
+                </button>
+
             </div>
 
 
@@ -268,6 +273,35 @@
 </footer>
 
 <script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const kakaoCalendarButton = document.getElementById("kakao-calendar");
+
+        if (kakaoCalendarButton) {
+            kakaoCalendarButton.addEventListener("click", async () => {
+                try {
+                    const response = await fetch("/test/token", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log("Response Data:", data);
+                } catch (error) {
+                    console.error("Error fetching token:", error);
+                }
+            });
+        } else {
+            console.error("Element with id 'kakao-calendar' not found.");
+        }
+    });
+
 
     function redirectKakao() {
         const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d";  // 카카오 REST API 키
