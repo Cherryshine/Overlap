@@ -9,6 +9,8 @@ import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,17 +20,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 import java.util.Map;
 
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor
+
 public class OauthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final WebClient webClient;
+
 
     @Value("${kakao.client.id}")
     private String CLIENT_ID;
@@ -45,11 +49,12 @@ public class OauthService {
     @Value("${kakao.client.secret}")
     private String CLIENT_SECRET;
 
-    // ✅ WebClient.Builder를 생성자로 주입받아 WebClient 인스턴스 생성
-    public OauthService(UserRepository userRepository, WebClient.Builder webClientBuilder, JwtUtil jwtUtil) {
+
+    public OauthService(UserRepository userRepository, @Qualifier("webClientBuilderBean") WebClient.Builder webClientBuilder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-        this.webClient = webClientBuilder.build(); // WebClient 인스턴스 생성
+        this.webClient = webClientBuilder.build(); // ✅ WebClientConfig에서 주입된 WebClient.Builder 사용
+        log.info("✅ WebClient가 정상적으로 주입됨: {}", webClient);
     }
 
 
