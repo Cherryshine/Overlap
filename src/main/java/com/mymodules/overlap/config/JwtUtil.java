@@ -58,7 +58,7 @@ public class JwtUtil {
         }
     }
 
-    public String createToken(String name){
+    public String createToken(String oauthId){
 
         System.out.println("🔍 createToken() 호출됨");
 
@@ -69,7 +69,7 @@ public class JwtUtil {
         Date date = new Date();
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(name)
+                        .setSubject(oauthId)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)

@@ -95,7 +95,7 @@ public class OauthService {
                 log.info(name);
 
                 // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
-                User user = new OauthUser(name, oauthId);
+                User user = new OauthUser(name, oauthId, accessToken);
 
                 User RegisteredUser = userRepository.findByusername(name);
 
@@ -106,7 +106,7 @@ public class OauthService {
                 }
 
 
-                return jwtUtil.createToken(name);
+                return jwtUtil.createToken(oauthId);
 
                 } catch (Exception e) {
                     log.error("jwt 토큰 발급실패:{}",e.getMessage(), e);
