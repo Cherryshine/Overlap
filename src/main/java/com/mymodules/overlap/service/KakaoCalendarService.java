@@ -1,6 +1,8 @@
 package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.config.JwtUtil;
+import com.mymodules.overlap.entity.OauthUser;
+import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +19,13 @@ public class KakaoCalendarService {
     private final JwtUtil jwtUtil;
 
 
-    private String getKakaoCalendar(String oauthId){
-
-
+    public String getKakaoCalendar(String jwtToken){
+        jwtToken = jwtUtil.substringToken(jwtToken);
+        String oauthId = jwtUtil.getSubject(jwtToken);
+        User user = userRepository.findByOauthId(oauthId);
+        System.out.println(user+"유저임");
+        String accessToken = user.getAccessToken();
+        System.out.println(accessToken);
 
         return null;
     }

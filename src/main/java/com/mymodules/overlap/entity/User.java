@@ -16,18 +16,21 @@ public abstract class User {
     @Column(nullable = false)
     private String username;
 
-    @Column
-    private String OauthID;
+    @Column(unique = true, nullable = false)
+    private String oauthId;
 
     @Column
-    private String AccessToken;
+    private String accessToken;
 
     protected User() { }  // JPA 기본 생성자
 
     public User(String username, String oauthId, String accessToken) {
         this.username = username;
-        this.OauthID = oauthId;
-        this.AccessToken = accessToken;
+        this.oauthId = oauthId;
+        this.accessToken = accessToken;
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
 }
