@@ -11,16 +11,19 @@ public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-
     private Long id;
+
+    @Column(nullable = false)
     private String username;
 
+    @Column
+    private String OauthID;
 
-    protected User() { }  // JPA 기본 생성자 필수라네요
+    protected User() { }  // JPA 기본 생성자
 
-    public User(String username, String password) {
+    public User(String username, String oauthId) {
         this.username = username;
-
+        this.OauthID = oauthId;
     }
 
 }
