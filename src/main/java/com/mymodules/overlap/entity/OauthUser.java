@@ -12,8 +12,8 @@ public class OauthUser extends User {
         super();  // JPA 기본 생성자
     }
 
-    public OauthUser(String name, String oauthId, String accessToken) {
-        super(name, oauthId, accessToken);  // User 생성자 호출 (OAuth는 비밀번호 필요 없음)
+    public OauthUser(String name, String oauthId, String accessToken, String refreshToken) {
+        super(name, oauthId, accessToken,refreshToken);  // User 생성자 호출 (OAuth는 비밀번호 필요 없음)
     }
 
 }

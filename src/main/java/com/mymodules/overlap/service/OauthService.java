@@ -83,8 +83,10 @@ public class OauthService {
                     System.out.println("카카오 API 응답이 없습니다.");
                     return "test";
                 }
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + tokenResponse);
 
                 String accessToken = tokenResponse.getAccessToken();
+                String refreshToken = tokenResponse.getRefreshToken();
 
                 // 엑세스토큰을 이용하여 유저 정보 가져오기
                 Map<String, Object> getUserInfo = getUserInfo(accessToken);
@@ -95,7 +97,7 @@ public class OauthService {
                 log.info(name);
 
                 // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
-                User user = new OauthUser(name, oauthId, accessToken);
+                User user = new OauthUser(name, oauthId, accessToken,refreshToken);
 
                 User RegisteredUser = userRepository.findByusername(name);
 
