@@ -274,46 +274,37 @@
 
 <script>
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const kakaoCalendarButton = document.getElementById("kakao-calendar");
+        document.getElementById("kakao-calendar").addEventListener("click", async () => {
+        try {
+        const response = await fetch("/test/token", {
+        method: "GET",
+        headers: {
+        "Content-Type": "application/json",
+    },
+        credentials: "include", // 쿠키 포함
+    });
 
-        if (kakaoCalendarButton) {
-            kakaoCalendarButton.addEventListener("click", async () => {
-                try {
-                    const response = await fetch("/test/token", {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    console.log("Response Data:", data);
-                } catch (error) {
-                    console.error("Error fetching token:", error);
-                }
-            });
-        } else {
-            console.error("Element with id 'kakao-calendar' not found.");
-        }
+        const data = await response.json();
+        console.log("응답 데이터:", data);
+    } catch (error) {
+        console.error("에러 발생:", error);
+    }
     });
 
 
-    function redirectKakao() {
-        const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d";  // 카카오 REST API 키
-        const redirectUri = encodeURIComponent("https://localhost:8080/oauth/kakao/callback");
-        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
 
-        window.location.href = kakaoAuthUrl;
-    }
+function redirectKakao() {
+const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d"; // 카카오 REST API 키
+const redirectUri = encodeURIComponent("https://localhost:8080/oauth/kakao/callback");
+const kakaoAuthUrl =
+`https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+
+window.location.href = kakaoAuthUrl;
+}
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
+document.addEventListener('DOMContentLoaded', function() {
+// 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
         setTimeout(function() {
             window.scrollTo(0, 0); // 스크롤을 최상단으로
         }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
