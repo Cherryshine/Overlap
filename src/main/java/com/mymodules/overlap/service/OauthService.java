@@ -99,7 +99,7 @@ public class OauthService {
                 // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
                 User user = new OauthUser(name, oauthId, accessToken,refreshToken);
 
-                User RegisteredUser = userRepository.findByusername(name);
+                User RegisteredUser = userRepository.findByUsername(name);
 
                 if (RegisteredUser == null) {
                     userRepository.save(user);

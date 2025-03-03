@@ -1,10 +1,14 @@
 package com.mymodules.overlap.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @DiscriminatorColumn(name = "user_type") // 구분칼럼임. 상속받는 클래스에서 DiscriminatorValue 로 TEMPORARY, KAKAO 로 구분.
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)  // 모든 사용자 데이터를 한 테이블에 저장
+@Getter
+@Setter
 
 public abstract class User {
 
@@ -17,21 +21,21 @@ public abstract class User {
     private String username;
 
     @Column
-    private String OauthID;
+    private String oauthId;
 
     @Column
-    private String AccessToken;
+    private String accessToken;
 
     @Column
-    private String RefreshToken;
+    private String refreshToken;
 
     protected User() { }  // JPA 기본 생성자
 
     public User(String username, String oauthId, String accessToken, String refreshToken) {
         this.username = username;
-        this.OauthID = oauthId;
-        this.AccessToken = accessToken;
-        this.RefreshToken = refreshToken;
+        this.oauthId = oauthId;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
 }

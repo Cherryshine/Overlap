@@ -6,6 +6,6 @@ import com.mymodules.overlap.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByusername(String name);
+    User findByUsername(String name);
     User findByOauthId(String oauthId);
 }
