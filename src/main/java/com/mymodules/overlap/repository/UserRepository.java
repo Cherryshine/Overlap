@@ -8,4 +8,5 @@ import com.mymodules.overlap.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String name);
     User findByOauthId(String oauthId);
+    User findByAccessToken(String accessToken);
 }

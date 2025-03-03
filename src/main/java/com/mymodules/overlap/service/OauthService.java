@@ -104,9 +104,8 @@ public class OauthService {
                 if (RegisteredUser == null) {
                     userRepository.save(user);
                 } else {
-                    System.out.println("이미 가입" + RegisteredUser);
+                    System.out.println("이미 가입된 사용자 : " + RegisteredUser.getUsername());
                 }
-
 
                 return jwtUtil.createToken(oauthId);
 
@@ -147,5 +146,67 @@ public class OauthService {
         return Map.of("name", name, "profileImage", profileImage, "oauthId", oauthId);
     }
 
+    public String validateAccessToken(String oauthId) {
+        // DB에서 해당 사용자 정보 조회 (저장된 엑세스 토큰 포함)
+        User user = userRepository.findByOauthId(oauthId);
+        if (user == null) {
+            log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
+            return "사용자 없음";
+        }
+
+        String accessToken = user.getAccessToken();
+        try {
+            String tokenInfoUrl = "https://kapi.kakao.com/v1/user/access_token_info";
+
+            // 저장된 토큰을 이용하여 카카오 API에 GET 요청을 보냄
+            KakaoTokenResponseDto tokenInfo = webClient.get()
+                    .uri(tokenInfoUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .bodyToMono(KakaoTokenResponseDto.class)
+                    .block();
+
+            log.info("유효한 Access Token입니다. tokenInfo: {}", tokenInfo);
+            return "유효";
+        } catch (Exception e) {
+            log.warn("만료되었거나 잘못된 Access Token입니다. 에러: {}", e.getMessage());
+            return "만료";
+        }
+    }
+
+    @Transactional
+    public String newAccessToken(String oauthId){
+
+        User user = userRepository.findByOauthId(oauthId);
+
+        if (user == null) {
+            log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
+            return "사용자 없음";
+        }
+        String refreshToken = user.getRefreshToken();
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("client_id", CLIENT_ID);
+        params.add("refresh_token", refreshToken);
+        params.add("client_secret", CLIENT_SECRET);
+
+        KakaoTokenResponseDto refreshResponse = webClient.post()
+                .uri(TOKEN_URL)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(params)
+                .retrieve()
+                .bodyToMono(KakaoTokenResponseDto.class)
+                .block();
+
+        if (refreshResponse != null) {
+            String newToken = refreshResponse.getAccessToken();
+            user.setAccessToken(newToken);
+            System.out.println(newToken);
+            userRepository.save(user);
+        }
+
+        return "엑세스토큰 발급";
+    }
 
 }
