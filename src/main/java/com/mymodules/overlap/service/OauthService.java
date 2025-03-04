@@ -105,8 +105,8 @@ public class OauthService {
                     userRepository.save(user);
                 } else {
                     System.out.println("이미 가입된 사용자 : " + RegisteredUser.getUsername());
-                }
 
+                }
                 return jwtUtil.createToken(oauthId);
 
                 } catch (Exception e) {
@@ -125,7 +125,8 @@ public class OauthService {
                 .bodyToMono(KakaoUserInfoDto.class)
                 .block();
 
-/*      카카오 로그인 Raw Json
+/*
+    카카오 로그인 Raw Json
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String jsonString = objectMapper.writeValueAsString(userInfo);
@@ -134,6 +135,7 @@ public class OauthService {
             e.printStackTrace();
         }
 */
+
         if (userInfo == null || userInfo.getId() == null) {
             System.out.println("사용자 정보를 가져오지 못했습니다.");
             return null;
