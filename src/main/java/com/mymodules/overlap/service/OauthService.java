@@ -2,6 +2,8 @@ package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.config.JwtUtil;
 
+import com.mymodules.overlap.dto.KakaoCalendarRequestDto;
+import com.mymodules.overlap.dto.KakaoCalendarResponseDto;
 import com.mymodules.overlap.dto.KakaoTokenResponseDto;
 import com.mymodules.overlap.dto.KakaoUserInfoDto;
 import com.mymodules.overlap.entity.OauthUser;
@@ -145,6 +147,8 @@ public class OauthService {
         String profileImage = userInfo.getKakaoAccount().getProfile().getProfileImageUrl();
         return Map.of("name", name, "profileImage", profileImage, "oauthId", oauthId);
     }
+
+
 
     public String validateAccessToken(String oauthId) {
         // DB에서 해당 사용자 정보 조회 (저장된 엑세스 토큰 포함)

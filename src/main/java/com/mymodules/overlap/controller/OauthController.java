@@ -32,6 +32,11 @@ public class OauthController {
         response.sendRedirect("/test");
     }
 
+    @GetMapping("/oauth/authorize")
+    public void kakaoAuthCallback(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/test");
+    }
+
     @GetMapping("/validate")
     public ResponseEntity<String> validateToken(HttpServletRequest request) {
         // 쿠키에서 JWT 추출 (예시 메서드)

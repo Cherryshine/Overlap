@@ -34,18 +34,14 @@ public class KakaoCalendarController {
 
     @GetMapping("/test/token")
     public String getToken(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            Optional<String> jwtToken = Arrays.stream(request.getCookies())
-                    .filter(cookie -> "Authorization".equals(cookie.getName()))
-                    .map(cookie -> cookie.getValue())
-                    .findFirst();
-            System.out.println(jwtToken);
-            String token = jwtToken.orElse(null);
-            String calendar = kakaoCalendarService.getKakaoCalendar(token);
+
+            String jwtToken = jwtUtil.getJwtFromCookies(request);
+            String oauthId = jwtUtil.getSubject(jwtToken);
+            System.out.println(oauthId);
+            String calendar = kakaoCalendarService.getKakaoCalendar(oauthId);
             System.out.println(calendar);
-            return jwtToken.orElse("쿠키에 JWT 없음");
-        }
-        return "쿠키 없음";
+            return jwtToken;
+
     }
 
 
