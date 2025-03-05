@@ -40,7 +40,6 @@ public class KakaoCalendarController {
             System.out.println(oauthId);
             String calendar = kakaoCalendarService.getKakaoCalendar(oauthId);
             System.out.println(calendar);
-            System.out.println("남인 바보");
             return jwtToken;
 
     }
