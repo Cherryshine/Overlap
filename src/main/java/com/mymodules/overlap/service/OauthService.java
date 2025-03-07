@@ -85,7 +85,7 @@ public class OauthService {
                 // 토큰 못가져왔을때
                 if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
                     System.out.println("카카오 API 응답이 없습니다.");
-                    return "test";
+                    return "/";
                 }
                 System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + tokenResponse);
 

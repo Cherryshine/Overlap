@@ -17,22 +17,22 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-
+@RequestMapping("/oauth")
 public class OauthController {
 
     private final OauthService oauthService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/oauth/kakao/callback")
+    @GetMapping("/kakao/callback")
     public void kakaoCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
 
         String JwtToken = oauthService.createUser(code);
         jwtUtil.addJwtToCookie(JwtToken,response);
 
-        response.sendRedirect("/test");
+        response.sendRedirect("/");
     }
 
-    @GetMapping("/oauth/authorize")
+    @GetMapping("/authorize")
     public void kakaoAuthCallback(HttpServletResponse response) throws IOException {
         response.sendRedirect("/test");
     }

@@ -145,6 +145,10 @@
                 <!-- 일정 만들러 가기 버튼 -->
                 <div id="scheduleBtn" class="btn-animate mt-8">
                     <button class="w-full py-3 bg-purple-700 text-white rounded-xl" onclick="location.href='/create-schedule'">일정 만들러 가기</button>
+
+                    <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-login" onclick="redirectKakao()">
+                        카카오로 로그인하고 톡캘린더 생성하기
+                    </button>
                 </div>
 
             </div>
@@ -191,6 +195,15 @@
                     document.getElementById('scheduleBtn').classList.add('btn-show');
                 }, 2100); // 메시지 후 2.1초 뒤에 버튼 나타남
             }, 1000); // 1초 후에 애니메이션 시작
+        }
+
+        function redirectKakao() {
+            const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d"; // 카카오 REST API 키
+            const redirectUri = encodeURIComponent("https://localhost:8080/oauth/kakao/callback");
+            const kakaoAuthUrl =
+                `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=friends,profile_image,profile_nickname,talk_calendar,talk_message`;
+
+            window.location.href = kakaoAuthUrl;
         }
     </script>
 </body>
