@@ -41,3 +41,4 @@ out/
 
 # Ignore .p12 files
 *.p12
+/src/main/resources/application.properties
