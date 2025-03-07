@@ -11,6 +11,11 @@ public class MainController {
     {
         return new ModelAndView("landing" );
     }
+    @GetMapping("/captcha")
+    public ModelAndView captchaPage()
+    {
+        return new ModelAndView("captcha" );
+    }
     @GetMapping("/create-schedule")
     public ModelAndView scheduleCreatePage()
     {
