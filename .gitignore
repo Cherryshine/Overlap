@@ -37,7 +37,7 @@ out/
 !**/src/main/resources/keystore/
 
 # Ignore application properties
-application.properties
+!**/src/main/resources/application.properties
 
 # Ignore .p12 files
 *.p12
