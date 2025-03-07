@@ -1,5 +1,8 @@
 package com.mymodules.overlap.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.entity.OauthUser;
 import com.mymodules.overlap.entity.User;
@@ -59,29 +62,41 @@ public class KakaoCalendarService {
 
         System.out.println("엑세스 토큰: " + accessToken);
 
-        // 쿼리 파라미터 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectNode timeNode = objectMapper.createObjectNode();
+        timeNode.put("start_at", "2025-03-06T03:00:00Z");
+        timeNode.put("end_at", "2025-03-07T06:00:00Z");
+        timeNode.put("time_zone", "Asia/Seoul");
+        timeNode.put("all_day", false);
+        timeNode.put("lunar", false);
+
+        ObjectNode locationNode = objectMapper.createObjectNode();
+        locationNode.put("name", "카카오");
+        locationNode.put("location_id", 18577297);
+        locationNode.put("address", "경기 성남시 분당구 판교역로 166");
+        locationNode.put("latitude", 37.39570088983171);
+        locationNode.put("longitude", 127.1104335101161);
+
+        ObjectNode eventNode = objectMapper.createObjectNode();
+        eventNode.put("title", "OverLap 에서 생성한 일정입니다.");
+        eventNode.set("time", timeNode);
+        eventNode.put("rrule", "FREQ=DAILY;UNTIL=20250307T000000Z");
+        eventNode.put("description", "일정 설명");
+        eventNode.set("location", locationNode);
+        eventNode.putArray("reminders").add(2145);
+        eventNode.put("color", "RED");
+
+        String eventJson;
+        try {
+            eventJson = objectMapper.writeValueAsString(eventNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 변환 중 오류 발생", e);
+        }
+
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("calendar_id", "primary");
-        formData.add("event", "{\"title\": \"OverLap 에서 생성한 일정입니다.\"," +
-                "\"time\": {" +
-                "\"start_at\": \"2025-03-06T03:00:00Z\"," +
-                "\"end_at\": \"2025-03-07T06:00:00Z\"," +
-                "\"time_zone\": \"Asia/Seoul\"," +
-                "\"all_day\": false," +
-                "\"lunar\": false" +
-                "}," +
-                "\"rrule\":\"FREQ=DAILY;UNTIL=20250307T000000Z\"," +
-                "\"description\": \"일정 설명\"," +
-                "\"location\": {" +
-                "\"name\": \"카카오\"," +
-                "\"location_id\": 18577297," +
-                "\"address\": \"경기 성남시 분당구 판교역로 166\"," +
-                "\"latitude\": 37.39570088983171," +
-                "\"longitude\": 127.1104335101161" +
-                "}," +
-                "\"reminders\": [2145]," +
-                "\"color\": \"RED\"}");
-
+        formData.add("event", eventJson);
         // API 요청
         String response = webClient.post()
                 .uri("https://kapi.kakao.com/v2/api/calendar/create/event")
@@ -93,6 +108,33 @@ public class KakaoCalendarService {
                 .block();
 
         System.out.println("카카오 캘린더 생성 응답: " + response);
+
+//
+//        String eventList = webClient.get()
+//                .uri(uriBuilder -> uriBuilder
+//                        .scheme("https")
+//                        .host("kapi.kakao.com")
+//                        .path("/v2/api/calendar/events")
+//                        .queryParam("calendar_id", "primary")
+//                        .build())
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+//                .retrieve()
+//                .bodyToMono(String.class)
+//                .block();
+//        System.out.println("일정목록 ::::: "+eventList);
+//
+//
+//        String eventEdited = webClient.post()
+//                .uri(uriBuilder -> uriBuilder
+//                        .scheme("https")
+//                        .host("kapi.kakao.com")
+//                        .path("/v2/api/calendar/update/event/host")
+//                        .queryParam("event_id", "67c83a66031af43f915e330d_20250306T030000Z")
+//                        .build())
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+//                .retrieve()
+//                .bodyToMono(String.class)
+//                .block();
 
         return response;
     }

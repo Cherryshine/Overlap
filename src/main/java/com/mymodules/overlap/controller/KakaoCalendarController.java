@@ -34,14 +34,12 @@ public class KakaoCalendarController {
 
     @GetMapping("/test/token")
     public String getToken(HttpServletRequest request) {
-
             String jwtToken = jwtUtil.getJwtFromCookies(request);
             String oauthId = jwtUtil.getSubject(jwtToken);
             System.out.println(oauthId);
             String calendar = kakaoCalendarService.getKakaoCalendar(oauthId);
             System.out.println(calendar);
             return jwtToken;
-
     }
 
 
