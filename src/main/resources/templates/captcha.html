@@ -1,16 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Turnstile &dash; Dummy Login Demo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.1/css/bootstrap.min.css" integrity="sha512-siwe/oXMhSjGCwLn+scraPOWrJxHlUgMBMZXdPe2Tnk3I0x3ESCoLz7WZ5NTH6SZrywMY+PB1cjyqJ5jAluCOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css" integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+    <script>
+        function javascriptCallback(token) {
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: token })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('토큰이 성공적으로 전송되었습니다.');
+                    } else {
+                        console.error('토큰 전송 실패:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('오류 발생:', error);
+                });
+        }
+    </script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 화면 높이의 100% */
+            margin: 0;
+        }
+        .cf-turnstile {
+            max-width: 100%; /* 모바일에서 반응형 */
+            width: 300px; /* 최대 너비 설정 */
+        }
+    </style>
 </head>
 <body>
-<div
-        class="cf-turnstile"
-        data-sitekey="0x4AAAAAAA_z16NarBLgMS74"
-        data-callback="javascriptCallback"
+<div class="cf-turnstile"
+     data-sitekey="0x4AAAAAAA_z16NarBLgMS74"
+     data-callback="javascriptCallback"
 ></div>
 </body>
 </html>
