@@ -9,6 +9,7 @@
     <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
     <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+    <script src="/js/layout.js"></script>
     <style>
         .glass-effect { 
             background: rgba(255, 255, 255, 0.2); 
@@ -75,7 +76,7 @@
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
 
-<div th:replace="~{/nav :: nav}"></div>
+<div th:insert="~{/nav :: nav}"></div>
     
 
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl">
@@ -144,6 +145,7 @@
                     <button class="w-full py-3 bg-purple-700 text-white rounded-xl" onclick="location.href='/create-schedule'">일정 만들러 가기</button>
                 </div>
 
+
             </div>
         </div>
     </div>
@@ -189,6 +191,7 @@
                 }, 2100); // 메시지 후 2.1초 뒤에 버튼 나타남
             }, 1000); // 1초 후에 애니메이션 시작
         }
+
     </script>
 </body>
 </html>

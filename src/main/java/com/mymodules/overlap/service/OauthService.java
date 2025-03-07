@@ -93,15 +93,16 @@ public class OauthService {
                 String refreshToken = tokenResponse.getRefreshToken();
 
                 // 엑세스토큰을 이용하여 유저 정보 가져오기
-                Map<String, Object> getUserInfo = getUserInfo(accessToken);
+                KakaoUserInfoDto getUserInfo = getUserInfo(accessToken);
 
                 // name 가져오기
-                String name = (String) getUserInfo.get("name");
-                String oauthId = (String) getUserInfo.get("oauthId");
+                String name = getUserInfo.getKakaoAccount().getProfile().getNickname();
+                String oauthId = getUserInfo.getId();
+                String thumbnailImageUrl = getUserInfo.getKakaoAccount().getProfile().getThumbnailImageUrl();
                 log.info(name);
 
                 // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
-                User user = new OauthUser(name, oauthId, accessToken,refreshToken);
+                User user = new OauthUser(name, oauthId, accessToken,refreshToken,thumbnailImageUrl);
 
                 User RegisteredUser = userRepository.findByUsername(name);
 
@@ -109,6 +110,7 @@ public class OauthService {
                     userRepository.save(user);
                 } else {
                     System.out.println("이미 가입된 사용자 : " + RegisteredUser.getUsername());
+                    RegisteredUser.setAccessToken(accessToken);
 
                 }
                 return jwtUtil.createToken(oauthId);
@@ -120,7 +122,7 @@ public class OauthService {
     }
 
     @Transactional
-    protected Map<String,Object> getUserInfo (String accessToken){
+    protected KakaoUserInfoDto getUserInfo (String accessToken){
 
         KakaoUserInfoDto userInfo = webClient.get()
                 .uri(USER_INFO_URL)
@@ -149,7 +151,7 @@ public class OauthService {
         System.out.println(oauthId+"@@@@@@@@@@@@@@@@@@@");
         String name = userInfo.getKakaoAccount().getProfile().getNickname();
         String profileImage = userInfo.getKakaoAccount().getProfile().getProfileImageUrl();
-        return Map.of("name", name, "profileImage", profileImage, "oauthId", oauthId);
+        return userInfo;
     }
 
 

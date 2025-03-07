@@ -29,16 +29,20 @@ public abstract class User {
     @Column
     private String refreshToken;
 
+    @Column
+    private String thumbnailImageUrl;
+
     // User 하나가 여러 Schedule을 가질 수 있음 (1:N 관계)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventGroupEntity> eventGroupEntities = new ArrayList<>();
 
     protected User() { }  // JPA 기본 생성자
 
-    public User(String username, String oauthId, String accessToken, String refreshToken) {
+    public User(String username, String oauthId, String accessToken, String refreshToken, String thumbnailImageUrl) {
         this.username = username;
         this.oauthId = oauthId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.thumbnailImageUrl = thumbnailImageUrl;
     }
 }

@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+
     <style>
 
         @keyframes float {
@@ -16,6 +17,7 @@
     </style>
 </head>
 <body>
+
 <!-- nav fragment 정의 -->
 <nav th:fragment="nav" class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
     <a href="/">
@@ -23,8 +25,48 @@
     </a>
 
     <div class="ml-auto">
-        <img th:src="${kakaoUserThumbnailUrl}" alt="Profile Thumbnail" class="w-10 h-10 rounded-full">
+        <img id="thumbnailImageUrl" alt="Profile Thumbnail" class="w-10 h-10 rounded-full">
     </div>
 
 </nav>
+
+<script defer>
+    function loadProfileImage() {
+        setTimeout(() => {
+            console.log("🔄 프로필 이미지 불러오기 시작...");
+
+            fetch('/get_user/profile')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("✅ 서버 응답:", data);
+
+                    let rawUrl = data.thumbnailImageUrl;
+
+                    if (rawUrl && rawUrl.includes("?fname=")) {
+                        rawUrl = rawUrl.split("?fname=")[1];
+                    }
+
+                    console.log("🔍 최종 적용할 이미지 URL:", rawUrl);
+
+                    const profileImage = document.getElementById('thumbnailImageUrl');
+                    if (profileImage) {
+                        profileImage.src = rawUrl;
+                        console.log("✅ 적용된 이미지 URL:", profileImage.src);
+                    } else {
+                        console.error("❌ `thumbnailImageUrl` 요소를 찾을 수 없음");
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error:', error);
+                });
+        }, 500);
+    }
+
+    // 🔥 페이지가 완전히 로드된 후 강제로 실행
+    window.onload = function() {
+        loadProfileImage();
+    };
+</script>
+
+
 </body>
