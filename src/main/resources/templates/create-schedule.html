@@ -10,6 +10,7 @@
 
   <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
   <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
+  <script src="/js/layout.js"></script>
   <style>
     .glass-effect {
       background: rgba(255, 255, 255, 0.2);
@@ -625,7 +626,7 @@
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
 
-<div th:replace="~{/nav :: nav}"></div>
+<div th:insert="~{/nav :: nav}"></div>
 
 <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
   <!-- 컨테이너 내부 내용 제거됨 -->
@@ -1278,21 +1279,37 @@
     }
 
 
-    document.getElementById("nextButton").addEventListener("click", function(e) {
+    let isSubmitting = false; // 중복 요청 방지
+
+// ✅ 기존 데이터와 현재 데이터 비교 (제목, 시간, 날짜 변경 시 업데이트)
+    function isSameData(newData) {
+      const storedData = localStorage.getItem("lastSavedData");
+      if (!storedData) return false;
+      return JSON.stringify(newData) === storedData;
+    }
+
+    document.getElementById("nextButton").addEventListener("click", function (e) {
       e.preventDefault();
+
+      if (isSubmitting) {
+        console.warn("⚠️ 이미 요청이 진행 중입니다.");
+        return;
+      }
+
       if (validateForm()) {
-        // 입력된 값들 추출
+        isSubmitting = true;
+
+        // 🔥 입력된 값들 추출
         const title = document.getElementById("titleInput").value.trim();
         const startTime = document.getElementById("dropdownMenu1Button").textContent.trim();
         const endTime = document.getElementById("dropdownMenu2Button").textContent.trim();
 
-        // localStorage에 저장된 선택된 날짜들을 모두 불러와서 배열로 변환 (모든 "dateSelection_" 키 확인)
+        // 🔥 localStorage에 저장된 선택된 날짜들을 배열로 변환
         let selectedDates = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key.startsWith("dateSelection_")) {
             const days = JSON.parse(localStorage.getItem(key)) || [];
-            // key에서 연도와 월 정보 추출 (예: "dateSelection_2023-8")
             const keyParts = key.slice("dateSelection_".length).split("-");
             const year = keyParts[0];
             const month = keyParts[1];
@@ -1309,7 +1326,17 @@
           selectedDates: selectedDates
         };
 
-        // fetch를 이용해 백엔드로 POST 요청 보내기
+        // ✅ 데이터가 변경되지 않았다면, 저장하지 않고 바로 이동
+        if (isSameData(data)) {
+          console.warn("⚠️ 변경된 내용이 없습니다. 페이지 이동만 수행.");
+          isSubmitting = false;
+          location.href = '/select-time';
+          return;
+        }
+
+        console.log("📤 새로운 데이터 저장 및 서버 전송:", data);
+
+        // ✅ 기존 데이터 삭제하고 새로운 데이터 저장
         fetch('/eventGroup/create', {
           method: 'POST',
           headers: {
@@ -1324,23 +1351,21 @@
                   return response.json();
                 })
                 .then(result => {
-                  console.log("성공:", result);
-                  // 성공 시, 원하는 페이지로 이동하거나 다른 동작 수행
+                  console.log("✅ 성공:", result);
+
+                  // ✅ 기존 데이터 삭제 후 새로운 데이터 저장
+                  localStorage.removeItem("lastSavedData");
+                  localStorage.setItem("lastSavedData", JSON.stringify(data));
+
+                  isSubmitting = false;
                   location.href = '/select-time';
                 })
                 .catch(error => {
-                  console.error("에러:", error);
-                  // 에러 처리 로직 추가
+                  console.error("❌ 에러 발생:", error);
+                  isSubmitting = false;
                 });
       }
     });
-
-
-
-
-
-
-
 
 
 

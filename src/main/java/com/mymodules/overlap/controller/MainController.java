@@ -1,7 +1,12 @@
 package com.mymodules.overlap.controller;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class MainController {
@@ -35,6 +40,11 @@ public class MainController {
     @GetMapping("/main")
     public ModelAndView main(){
         return new ModelAndView("template" );
+    }
+
+    @GetMapping("/nav")
+    public ModelAndView nav(){
+        return new ModelAndView("nav" );
     }
 
 
