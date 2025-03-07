@@ -33,5 +33,11 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
+# Ignore keystore folder
+keystore/
+
+# Ignore application properties
+application.properties
+
+# Ignore .p12 files
+*.p12
