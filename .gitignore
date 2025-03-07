@@ -34,7 +34,7 @@ out/
 /.nb-gradle/
 
 # Ignore keystore folder
-keystore/
+!**/src/main/resources/keystore/
 
 # Ignore application properties
 application.properties
