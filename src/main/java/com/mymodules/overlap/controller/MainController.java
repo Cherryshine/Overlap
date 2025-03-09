@@ -19,7 +19,7 @@ public class MainController {
     @GetMapping("/create-schedule")
     public ModelAndView scheduleCreatePage()
     {
-        return new ModelAndView("schedule-page-1");
+        return new ModelAndView("create-schedule");
     }
 
     @GetMapping("/select-time")
