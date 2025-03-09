@@ -113,7 +113,7 @@ public class OauthService {
                     RegisteredUser.setAccessToken(accessToken);
 
                 }
-                return jwtUtil.createToken(oauthId);
+                return jwtUtil.createTokenWithCaptcha(oauthId,true,false);
 
                 } catch (Exception e) {
                     log.error("jwt 토큰 발급실패:{}",e.getMessage(), e);

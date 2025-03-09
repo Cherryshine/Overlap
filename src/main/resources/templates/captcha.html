@@ -7,25 +7,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css" integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
     <script>
-        function javascriptCallback(token) {
-            fetch('/', {
+
+            function javascriptCallback(token) {
+            fetch('/captcha/verify-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ token: token })
+                body: JSON.stringify({token: token})
             })
                 .then(response => {
                     if (response.ok) {
-                        console.log('토큰이 성공적으로 전송되었습니다.');
+                        console.log('✅ 토큰 검증 성공! 랜딩 페이지로 이동합니다.');
+                        window.location.href = '/';
                     } else {
-                        console.error('토큰 전송 실패:', response.statusText);
+                        console.error('⚠️ 토큰 검증 실패:', response.statusText);
+                        alert('⚠️ 캡차 인증에 실패했습니다. 다시 시도해주세요.');
                     }
                 })
                 .catch(error => {
-                    console.error('오류 발생:', error);
+                    console.error('🚨 오류 발생:', error);
+                    alert('🚨 서버 오류가 발생했습니다.');
                 });
         }
+
     </script>
     <style>
         body {
@@ -35,6 +40,7 @@
             height: 100vh; /* 화면 높이의 100% */
             margin: 0;
         }
+
         .cf-turnstile {
             max-width: 100%; /* 모바일에서 반응형 */
             width: 300px; /* 최대 너비 설정 */

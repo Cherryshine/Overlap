@@ -1,5 +1,6 @@
 package com.mymodules.overlap.filter;
 
+import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.service.CaptchaService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 public class TurnstileValidationFilter extends OncePerRequestFilter {
 
     private final CaptchaService captchaService;
+    private final JwtUtil jwtUtil;
 
     // 필터링을 제외할 URL 패턴 목록
     private static final List<String> EXCLUDED_URLS = Arrays.asList(
@@ -42,6 +44,15 @@ public class TurnstileValidationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            String captchaToken = jwtUtil.getJwtFromCookies(request);
+
+            if (captchaToken != null) {
+                log.info("✅ 쿠키에서 Turnstile 인증 JWT 발견! 필터 통과");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+
             // Turnstile 토큰 확인
             String turnstileToken = request.getParameter("cf-turnstile-response");
 
@@ -52,8 +63,7 @@ public class TurnstileValidationFilter extends OncePerRequestFilter {
             }
 
             // Turnstile 검증
-            String remoteIp = request.getRemoteAddr();
-            boolean isValid = captchaService.validateTurnstileToken(turnstileToken);
+            boolean isValid = captchaService.validateTurnstileToken(turnstileToken,response);
 
             if (!isValid) {
                 log.warn("⚠️ Turnstile validation failed. Redirecting to /captcha");
@@ -62,7 +72,7 @@ public class TurnstileValidationFilter extends OncePerRequestFilter {
             }
 
             log.info("✅ Turnstile 검증 성공 - 요청 URL: {}", requestURI);
-            filterChain.doFilter(request, response);
+            response.sendRedirect("/");
         } catch (Exception e) {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);

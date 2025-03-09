@@ -1,6 +1,7 @@
 package com.mymodules.overlap.config;
 
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -21,6 +22,7 @@ import java.util.Base64;
 import java.util.Date;
 
 
+@Log4j2
 @Component
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -58,23 +60,48 @@ public class JwtUtil {
         }
     }
 
-    public String createToken(String oauthId){
+//    public String createToken(String oauthId){
+//
+//        System.out.println("🔍 createToken() 호출됨");
+//
+//        if (key == null) {
+//            throw new IllegalStateException("🚨 JWT Key가 초기화되지 않았습니다. @PostConstruct init()을 확인하세요.");
+//        }
+//
+//        Date date = new Date();
+//        return BEARER_PREFIX +
+//                Jwts.builder()
+//                        .setSubject(oauthId)
+//                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+//                        .setIssuedAt(date)
+//                        .signWith(key, signatureAlgorithm)
+//                        .compact();
+//    }
 
-        System.out.println("🔍 createToken() 호출됨");
+    public String createTokenWithCaptcha(String oauthId, boolean captchaSuccess, boolean isGuest) {
+        log.info("🔍 createTokenWithCaptcha() 호출됨 - 사용자: {}, 캡챠 인증 여부: {}, 게스트 여부: {}",
+                oauthId, captchaSuccess, isGuest);
 
         if (key == null) {
             throw new IllegalStateException("🚨 JWT Key가 초기화되지 않았습니다. @PostConstruct init()을 확인하세요.");
         }
 
         Date date = new Date();
+
+        // ✅ subject 값 결정 (카카오 로그인 안 한 경우 "guest", 로그인한 경우 oauthId)
+        String subject = isGuest ? "guest" : oauthId;
+
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(oauthId)
+                        .setSubject(subject)
+                        .claim("captchaVerified", captchaSuccess) // ✅ 캡챠 인증 상태 추가
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
     }
+        // 캡챠 인증 여부 + guest 와 kakao 회원 구분
+
 
     public void addJwtToCookie(String token, HttpServletResponse res) {
         try {
