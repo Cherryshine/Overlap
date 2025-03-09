@@ -1,12 +1,7 @@
 package com.mymodules.overlap.controller;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class MainController {
@@ -24,7 +19,7 @@ public class MainController {
     @GetMapping("/create-schedule")
     public ModelAndView scheduleCreatePage()
     {
-        return new ModelAndView("create-schedule" );
+        return new ModelAndView("schedule-page-1");
     }
 
     @GetMapping("/select-time")
@@ -34,17 +29,17 @@ public class MainController {
     }
     @GetMapping("/test")
     public ModelAndView test(){
-        return new ModelAndView("schedule");
+        return new ModelAndView("show-schedule");
     }
 
     @GetMapping("/main")
     public ModelAndView main(){
-        return new ModelAndView("template" );
+        return new ModelAndView("temp");
     }
 
     @GetMapping("/nav")
     public ModelAndView nav(){
-        return new ModelAndView("nav" );
+        return new ModelAndView("navigation-bar");
     }
 
 

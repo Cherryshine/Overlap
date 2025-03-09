@@ -78,7 +78,7 @@
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
 
-<div th:replace="~{/nav :: nav}"></div>
+<div th:replace="~{/navigation-bar :: nav}"></div>
     
 
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl">
@@ -199,7 +199,7 @@
 
         function redirectKakao() {
             const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d"; // 카카오 REST API 키
-            const redirectUri = encodeURIComponent("https://localhost:443/oauth/kakao/callback");
+            const redirectUri = encodeURIComponent("https://overlap.purplecodelabs.com:443/oauth/kakao/callback");
             const kakaoAuthUrl =
                 `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=friends,profile_image,profile_nickname,talk_calendar,talk_message`;
 
