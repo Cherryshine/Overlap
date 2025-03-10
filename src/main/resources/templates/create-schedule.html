@@ -545,6 +545,7 @@
 
     /* 말풍선(툴크 네모 영역 */
     #dateHelpTooltip {
+      --diamond-offset: 10px;  /* 변수 기본값 정의 */
       position: absolute;
       background: white;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -566,7 +567,7 @@
       content: '';
       position: absolute;
       top: -6px; /* 툴크 상단에서 6px 위 */
-      right: var(--diamond-offset, 10px); /* JS에서 계산한 값을 사용 (기본: 10px) */
+      right: var(--diamond-offset); /* CSS 변수 사용 */
       transform: rotate(45deg);
       margin-right: 20px;
       width: 12px;
@@ -1330,7 +1331,13 @@
         if (isSameData(data)) {
           console.warn("⚠️ 변경된 내용이 없습니다. 페이지 이동만 수행.");
           isSubmitting = false;
-          location.href = '/select-time';
+          // 첫 번째 슬라이드 숨기기
+          document.getElementById("slide1").classList.remove("active");
+          // 두 번째 슬라이드 보이기
+          document.getElementById("slide2").classList.add("active");
+          
+          // 스크롤을 맨 위로
+          window.scrollTo(0, 0);
           return;
         }
 
@@ -1358,11 +1365,24 @@
                   localStorage.setItem("lastSavedData", JSON.stringify(data));
 
                   isSubmitting = false;
-                  location.href = '/select-time';
+                  // 첫 번째 슬라이드 숨기기
+                  document.getElementById("slide1").classList.remove("active");
+                  // 두 번째 슬라이드 보이기
+                  document.getElementById("slide2").classList.add("active");
+                  
+                  // 스크롤을 맨 위로
+                  window.scrollTo(0, 0);
                 })
                 .catch(error => {
                   console.error("❌ 에러 발생:", error);
                   isSubmitting = false;
+                  // 첫 번째 슬라이드 숨기기
+                  document.getElementById("slide1").classList.remove("active");
+                  // 두 번째 슬라이드 보이기
+                  document.getElementById("slide2").classList.add("active");
+
+                  // 스크롤을 맨 위로
+                  window.scrollTo(0, 0);
                 });
       }
     });

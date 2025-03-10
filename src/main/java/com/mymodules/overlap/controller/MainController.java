@@ -21,7 +21,6 @@ public class MainController {
     {
         return new ModelAndView("create-schedule");
     }
-
     @GetMapping("/select-time")
     public ModelAndView selectTime()
     {
@@ -31,12 +30,10 @@ public class MainController {
     public ModelAndView test(){
         return new ModelAndView("show-schedule");
     }
-
     @GetMapping("/main")
     public ModelAndView main(){
         return new ModelAndView("temp");
     }
-
     @GetMapping("/nav")
     public ModelAndView nav(){
         return new ModelAndView("navigation-bar");
