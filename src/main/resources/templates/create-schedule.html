@@ -623,135 +623,464 @@
       margin-top: 5px !important;
     }
 
+    /* 슬라이드 스타일 */
+    #slide1, #slide2 {
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    #slide1.active, #slide2.active {
+      display: block;
+      opacity: 1;
+    }
+
+    #slide1.hidden, #slide2.hidden {
+      display: none;
+      opacity: 0;
+    }
   </style>
+  <style>
+    .glass-effect { 
+      background: rgb(255, 255, 255); 
+      backdrop-filter: blur(10px); 
+      border: 1px solid rgba(255, 255, 255, 0.3); 
+    } 
+    .confetti { 
+      position: fixed; 
+      z-index: 1001;  /* 높은 z-index 유지 */
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      pointer-events: none; 
+    }
+    .blur-overlay { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      backdrop-filter: blur(5px); 
+      z-index: 60; /* 네비게이션바(z-index: 50)보다 높게 설정 */
+    }
+  </style>
+<style>
+    .glass-effect { 
+        background: rgba(255, 255, 255, 0.2); 
+        backdrop-filter: blur(10px); 
+        border: 1px solid rgba(255, 255, 255, 0.3); 
+        border-radius: 1rem;
+    }
+    body, html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .content {
+        flex-grow: 1;
+    }
+    footer {
+        margin-top: auto; /* 푸터를 하단에 고정 */
+    }
+
+    /* 타임 테이블 css */
+    .page-button {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(255, 255, 255);
+        border-radius: 4px; /* 둥근 모서리 사각형 형태 */
+        box-shadow: 0 0 5px rgb(179, 142, 179);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .page-button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      /* 스크롤 영역 내에 상단과 하단에 고정될 버튼 */
+      .page-button-prev {
+          position: sticky;
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+      }
+
+      .page-button-next {
+          position: sticky;
+          bottom: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+      }
+
+      /* 반응형 설정 */
+      @media (max-width: 629px) {
+        .page-button {
+          width: 28px;
+          height: 28px;
+        }
+      }
+      
+/* 반응형 설정 */
+@media (max-width: 629px) {
+.page-button {
+  width: 28px;
+  height: 28px;
+}
+}
+.grid-cell {
+position: relative;
+overflow: hidden;
+}
+
+/* 시간 구분선을 위한 가상 요소 */
+.grid-cell::before {
+content: '';
+position: absolute;
+
+left: -8px; /* 부모의 패딩만큼 음수값 */
+right: -8px; /* 부모의 패딩만큼 음수값 */
+top: 0;
+height: 1px;
+background-color: rgb(209, 213, 219);
+z-index: 1;
+}
+
+/* 시간대 구분선(검은색 굵은 선)의 경우 */
+.grid-cell.hour-mark::before {
+height: 1.2px;
+background-color: rgb(157, 101, 203);
+}
+
+/* 첫 번째 행의 셀은 border 제거 */
+.grid-row-first .grid-cell::before {
+display: none;
+
+}
+
+    /* 커스텀 체크박스 스타일 */
+    .custom-checkbox {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .custom-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: relative;
+        height: 18px;          /* 15px에서 18px로 조정 */
+        width: 18px;           /* 15px에서 18px로 조정 */
+        background-color: #fff;
+        border: 2px solid #9333ea;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+
+    .custom-checkbox input:checked ~ .checkmark {
+        background-color: #9333ea;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;            /* 4px에서 6px로 조정 */
+        top: 2px;             /* 1px에서 2px로 조정 */
+        width: 4px;           /* 3px에서 4px로 조정 */
+        height: 9px;          /* 7px에서 9px로 조정 */
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .custom-checkbox input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* 애니메이션 효과를 위한 #app 스타일 */
+    #app {
+        padding: 1rem; /* Tailwind의 p-4와 동일 */
+        overflow: visible;
+        transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+        max-height: 1000px;
+        opacity: 1;
+    }
+    #app.collapsed {
+        max-height: 0 !important;
+        opacity: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important; /* 체크박스 클릭 시 overflow를 hidden으로 변경 */
+    }
+
+    body {
+        background-size: 100% auto;  /* 너비 100%, 높이는 자동으로 조정 */
+        background-repeat: no-repeat;
+        min-height: 100%;  /* 최소 높이를 100%로 설정 */
+    }
+
+    body, html {
+        height: auto;  /* 고정 높이 대신 자동으로 조정 */
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+<style>
+
+    @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+        100% { transform: translateY(0); }
+    }
+    .logo-animation {
+        animation: float 2s ease-in-out infinite;
+    }
+    
+
+</style>
 </head>
 <body class="bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
+      <!-- Confetti 캔버스 -->
+      <canvas class="confetti"></canvas>
 
+  <!-- Blur Overlay -->
+  <div class="blur-overlay"></div>
 <div th:insert="~{/navigation-bar :: nav}"></div>
 
 <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pt-[84px] sm:pt-[150px] pb-[50px] min-h-[calc(100vh-80px)] max-w-4xl content">
-  <!-- 컨테이너 내부 내용 제거됨 -->
-  <div class="glass-effect rounded-3xl p-8">
-    <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
-    <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
+  <!-- 첫 번째 슬라이드 -->
+  <div id="slide1" class="active">
+    <div class="glass-effect rounded-3xl p-8">
+      <p class="text-purple-800 font-bold mb-[15px] text-2xl">새 일정 만들기</p>
+      <input type="text" id="titleInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="일정 제목을 입력하세요" required/>
 
-    <!-- 선택된 날짜 표시 영역 추가 -->
-    <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden" style="display: none;">
-      <p class="font-medium">선택된 날짜:</p>
-      <p id="selectedDates" class="mt-1"></p>
-    </div>
+      <!-- 선택된 날짜 표시 영역 추가 -->
+      <div id="selectedDatesContainer" class="mt-2 text-sm text-purple-800 hidden" style="display: none;">
+        <p class="font-medium">선택된 날짜:</p>
+        <p id="selectedDates" class="mt-1"></p>
+      </div>
 
-    <!-- <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p> -->
+      <!-- <p class="text-purple-800 font-bold">가능한 시간을 선택해 주세요</p> -->
 
-    <div class="dropdown-wrapper">
-      <div class="custom-dropdown">
-        <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
-          시작 시간
-          <i class="fas fa-chevron-down"></i>
-        </button>
-        <div id="dropdownMenu1" class="dropdown-menu">
-          <!-- 시간 옵션들 추가 -->
-          <a href="#">12:00 AM</a>
-          <a href="#">01:00 AM</a>
-          <a href="#">02:00 AM</a>
-          <a href="#">03:00 AM</a>
-          <a href="#">04:00 AM</a>
-          <a href="#">05:00 AM</a>
-          <a href="#">06:00 AM</a>
-          <a href="#">07:00 AM</a>
-          <a href="#">08:00 AM</a>
-          <a href="#">09:00 AM</a>
-          <a href="#">10:00 AM</a>
-          <a href="#">11:00 AM</a>
-          <a href="#">12:00 PM</a>
-          <a href="#">01:00 PM</a>
-          <a href="#">02:00 PM</a>
-          <a href="#">03:00 PM</a>
-          <a href="#">04:00 PM</a>
-          <a href="#">05:00 PM</a>
-          <a href="#">06:00 PM</a>
-          <a href="#">07:00 PM</a>
-          <a href="#">08:00 PM</a>
-          <a href="#">09:00 PM</a>
-          <a href="#">10:00 PM</a>
-          <a href="#">11:00 PM</a>
+      <div class="dropdown-wrapper">
+        <div class="custom-dropdown">
+          <button id="dropdownMenu1Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
+            시작 시간
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div id="dropdownMenu1" class="dropdown-menu">
+            <!-- 시간 옵션들 추가 -->
+            <a href="#">12:00 AM</a>
+            <a href="#">01:00 AM</a>
+            <a href="#">02:00 AM</a>
+            <a href="#">03:00 AM</a>
+            <a href="#">04:00 AM</a>
+            <a href="#">05:00 AM</a>
+            <a href="#">06:00 AM</a>
+            <a href="#">07:00 AM</a>
+            <a href="#">08:00 AM</a>
+            <a href="#">09:00 AM</a>
+            <a href="#">10:00 AM</a>
+            <a href="#">11:00 AM</a>
+            <a href="#">12:00 PM</a>
+            <a href="#">01:00 PM</a>
+            <a href="#">02:00 PM</a>
+            <a href="#">03:00 PM</a>
+            <a href="#">04:00 PM</a>
+            <a href="#">05:00 PM</a>
+            <a href="#">06:00 PM</a>
+            <a href="#">07:00 PM</a>
+            <a href="#">08:00 PM</a>
+            <a href="#">09:00 PM</a>
+            <a href="#">10:00 PM</a>
+            <a href="#">11:00 PM</a>
+          </div>
+        </div>
+        <div class="text-between">
+          <span>부터</span>
+        </div>
+        <div class="custom-dropdown">
+          <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
+            종료 시간
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div id="dropdownMenu2" class="dropdown-menu">
+            <!-- 시간 옵션들 추가 -->
+            <a href="#">12:00 AM</a>
+            <a href="#">01:00 AM</a>
+            <a href="#">02:00 AM</a>
+            <a href="#">03:00 AM</a>
+            <a href="#">04:00 AM</a>
+            <a href="#">05:00 AM</a>
+            <a href="#">06:00 AM</a>
+            <a href="#">07:00 AM</a>
+            <a href="#">08:00 AM</a>
+            <a href="#">09:00 AM</a>
+            <a href="#">10:00 AM</a>
+            <a href="#">11:00 AM</a>
+            <a href="#">12:00 PM</a>
+            <a href="#">01:00 PM</a>
+            <a href="#">02:00 PM</a>
+            <a href="#">03:00 PM</a>
+            <a href="#">04:00 PM</a>
+            <a href="#">05:00 PM</a>
+            <a href="#">06:00 PM</a>
+            <a href="#">07:00 PM</a>
+            <a href="#">08:00 PM</a>
+            <a href="#">09:00 PM</a>
+            <a href="#">10:00 PM</a>
+            <a href="#">11:00 PM</a>
+            <a href="#">00:00 AM</a>
+          </div>
         </div>
       </div>
-      <div class="text-between">
-        <span>부터</span>
-      </div>
-      <div class="custom-dropdown">
-        <button id="dropdownMenu2Button" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800">
-          종료 시간
-          <i class="fas fa-chevron-down"></i>
-        </button>
-        <div id="dropdownMenu2" class="dropdown-menu">
-          <!-- 시간 옵션들 추가 -->
-          <a href="#">12:00 AM</a>
-          <a href="#">01:00 AM</a>
-          <a href="#">02:00 AM</a>
-          <a href="#">03:00 AM</a>
-          <a href="#">04:00 AM</a>
-          <a href="#">05:00 AM</a>
-          <a href="#">06:00 AM</a>
-          <a href="#">07:00 AM</a>
-          <a href="#">08:00 AM</a>
-          <a href="#">09:00 AM</a>
-          <a href="#">10:00 AM</a>
-          <a href="#">11:00 AM</a>
-          <a href="#">12:00 PM</a>
-          <a href="#">01:00 PM</a>
-          <a href="#">02:00 PM</a>
-          <a href="#">03:00 PM</a>
-          <a href="#">04:00 PM</a>
-          <a href="#">05:00 PM</a>
-          <a href="#">06:00 PM</a>
-          <a href="#">07:00 PM</a>
-          <a href="#">08:00 PM</a>
-          <a href="#">09:00 PM</a>
-          <a href="#">10:00 PM</a>
-          <a href="#">11:00 PM</a>
-          <a href="#">00:00 AM</a>
+      <div class="flex items-center justify-between">
+        <p class="text-purple-800 font-bold mt-[15px] mb-[10px]">날짜를 선택해 주세요</p>
+        <div class="relative inline-block">
+          <button type="button" class="text-purple-800" id="dateHelpBtn">
+            <i class="fas fa-question-circle"></i>
+          </button>
+          <div id="dateHelpTooltip" class="hidden">
+            클릭 또는 드래그하여 날짜를 선택합니다.<br/>
+            최대 31일까지 선택할 수 있어요.
+          </div>
         </div>
       </div>
-    </div>
-    <div class="flex items-center justify-between">
-      <p class="text-purple-800 font-bold mt-[15px] mb-[10px]">날짜를 선택해 주세요</p>
-      <div class="relative inline-block">
-        <button type="button" class="text-purple-800" id="dateHelpBtn">
-          <i class="fas fa-question-circle"></i>
-        </button>
-        <div id="dateHelpTooltip" class="hidden">
-          클릭 또는 드래그하여 날짜를 선택합니다.<br/>
-          최대 31일까지 선택할 수 있어요.
+      <div id="calendar">
+        <div class="calendar-nav">
+          <button id="prevBtn" aria-label="이전 달">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+              <polyline points="10,3 5,8 10,13" fill="none" stroke="#4a148c" stroke-width="2"/>
+            </svg>
+          </button>
+          <div class="calendar-header" id="calendarHeader"></div>
+          <button id="nextBtn" aria-label="다음 달">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+              <polyline points="6,3 11,8 6,13" fill="none" stroke="#4a148c" stroke-width="2"/>
+            </svg>
+          </button>
         </div>
-      </div>
-    </div>
-    <div id="calendar">
-      <div class="calendar-nav">
-        <button id="prevBtn" aria-label="이전 달">
-          <svg width="16" height="16" viewBox="0 0 16 16">
-            <polyline points="10,3 5,8 10,13" fill="none" stroke="#4a148c" stroke-width="2"/>
+        <table id="calendarTable"></table>
+        <button id="todayBtn" class="today-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:5px;">
+            <rect x="2" y="2" width="12" height="12" />
           </svg>
-        </button>
-        <div class="calendar-header" id="calendarHeader"></div>
-        <button id="nextBtn" aria-label="다음 달">
-          <svg width="16" height="16" viewBox="0 0 16 16">
-            <polyline points="6,3 11,8 6,13" fill="none" stroke="#4a148c" stroke-width="2"/>
-          </svg>
+          오늘
         </button>
       </div>
-      <table id="calendarTable"></table>
-      <button id="todayBtn" class="today-btn">
-        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:5px;">
-          <rect x="2" y="2" width="12" height="12" />
-        </svg>
-        오늘
-      </button>
+      <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;">다음</button>
     </div>
-    <button class="w-full py-3 bg-purple-700 text-white rounded-xl" id="nextButton" style="margin-top: 30px;">다음</button>
   </div>
+  
+  <!-- 두 번째 슬라이드 -->
+  <div id="slide2" class="hidden">
+    <div class="glass-effect rounded-3xl p-8">
+      <div id="scheduleContainer">
+            
+        <!-- 기존 내용 -->
+        <p class="text-purple-800 mb-[15px] text-3xl"><a class="text-purple-800 mb-[15px] font-bold text-3xl">대면회의</a> 그룹 일정</p>
+        <div class="text-purple-800 font-bold mb-[5px]">그룹장의 시간 선택</div>
+        <!-- 그룹장 체크박스 선택시 애니메이션 -->
+        <label class="custom-checkbox">
+            <input type="checkbox" id="noTimeSelection">
+            <span class="checkmark"></span>
+            <span class="text-purple-800 text-sm">그룹장은 일정에 참여하지 않아요</span>
+        </label>
+        <!-- 타임 테이블 -->
+        <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative"></div>
+        <!-- (1) 스크립트 파일 로드 -->
+        <script src="/js/select_constructor_time.js"></script>
 
+        <!-- (2) JSON 데이터 및 초기화 로직 -->
+        <script>
+            const jsonData = {
+                startTime: "09:00",
+                endTime: "16:00",
+                interval: 15,
+                days: [
+                    { label: "Sun", date: "Feb 9" },
+                    { label: "Mon", date: "Feb 10" },
+                    { label: "Tue", date: "Feb 11" },
+                    { label: "Wed", date: "Feb 12" },
+                    { label: "Thu", date: "Feb 13" },
+                    { label: "Fri", date: "Feb 14" },
+                    { label: "Sat", date: "Feb 15" },
+                    { label: "Sun", date: "Feb 16" },
+                    { label: "Mon", date: "Feb 17" },
+                    { label: "Tue", date: "Feb 18" },
+                    { label: "Wed", date: "Feb 19" },
+                    { label: "Thu", date: "Feb 20" },
+                    { label: "Fri", date: "Feb 21" },
+                    { label: "Sat", date: "Feb 22" },
+                    { label: "Wed", date: "Feb 12" },
+                    { label: "Thu", date: "Feb 13" },
+                    { label: "Fri", date: "Feb 14" },
+                    { label: "Sat", date: "Feb 15" },
+                    { label: "Sun", date: "Feb 16" },
+                    { label: "Mon", date: "Feb 17" },
+                    { label: "Tue", date: "Feb 18" },
+                    { label: "Wed", date: "Feb 19" },
+                    { label: "Thu", date: "Feb 20" },
+                    { label: "Fri", date: "Feb 21" }
+                ]
+            };
+
+            let currentPage = 0;
+            let itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
+
+            document.addEventListener("DOMContentLoaded", function () {
+                updateSchedule();
+
+                // 반응형 리사이징 감지
+                window.addEventListener("resize", function () {
+                    const newItemsPerPage = window.innerWidth <= 629 ? 3 : 7;
+                    if (newItemsPerPage !== itemsPerPage) {
+                        itemsPerPage = newItemsPerPage;
+                        currentPage = 0;
+                        updateSchedule();
+                    }
+                });
+            });
+
+            // 체크박스 클릭 이벤트 (애니메이션 적용)
+            document.getElementById('noTimeSelection').addEventListener('change', function() {
+                const appDiv = document.getElementById('app');
+                const completeButton = document.querySelector('.w-full.py-3.bg-purple-700'); // 완료 버튼 선택자
+                
+                if (this.checked) {
+                    // display 대신 collapse 클래스를 추가하여 애니메이션을 적용
+                    appDiv.classList.add('collapsed');
+                    if (completeButton) {
+                        completeButton.style.marginTop = '15px';
+                    }
+                } else {
+                    appDiv.classList.remove('collapsed');
+                    if (completeButton) {
+                        completeButton.style.marginTop = '30px';
+                    }
+                }
+            });
+        </script>
+        <button class="w-full py-3 bg-purple-700 text-white rounded-xl mt-[30px]" id="triggerPopup">완료</button>
+    </div>
+    </div>
+  </div>
 </div>
 
 
@@ -760,6 +1089,33 @@
     <p class="text-sm">&copy; Made with 💜 by 퍼플코드랩스</p>
   </div>
 </footer>
+    <!-- 컨페티 팝업 -->
+       <!-- 일정 생성 팝업 -->
+       <div id="successMessage" class="fixed inset-0 flex items-center justify-center z-[999] hidden">
+        <div class="glass-effect p-8 rounded-2xl text-center bg-white/30 backdrop-blur-xl shadow-xl border border-white/40">
+          <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+          <h3 class="text-2xl font-bold text-purple-900 mb-2">일정이 생성되었습니다!</h3>
+          <p class="text-purple-800 mb-4">다음 페이지로 이동합니다.</p>
+        </div>
+      </div>
+        <!-- canvas-confetti 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    document.getElementById('triggerPopup').addEventListener('click', function() {
+      // Blur Overlay 보이기
+      document.querySelector('.blur-overlay').style.display = 'flex';
+      
+      // 컨페티 실행
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // 일정 생성 팝업 보이기
+      document.getElementById('successMessage').style.display = 'flex';
+    });
+  </script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -1289,101 +1645,18 @@
       return JSON.stringify(newData) === storedData;
     }
 
-    document.getElementById("nextButton").addEventListener("click", function (e) {
+    document.getElementById("nextButton").addEventListener("click", function(e) {
       e.preventDefault();
-
-      if (isSubmitting) {
-        console.warn("⚠️ 이미 요청이 진행 중입니다.");
-        return;
-      }
-
       if (validateForm()) {
-        isSubmitting = true;
-
-        // 🔥 입력된 값들 추출
-        const title = document.getElementById("titleInput").value.trim();
-        const startTime = document.getElementById("dropdownMenu1Button").textContent.trim();
-        const endTime = document.getElementById("dropdownMenu2Button").textContent.trim();
-
-        // 🔥 localStorage에 저장된 선택된 날짜들을 배열로 변환
-        let selectedDates = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith("dateSelection_")) {
-            const days = JSON.parse(localStorage.getItem(key)) || [];
-            const keyParts = key.slice("dateSelection_".length).split("-");
-            const year = keyParts[0];
-            const month = keyParts[1];
-            days.forEach(day => {
-              selectedDates.push({ year: year, month: month, day: day });
-            });
-          }
-        }
-
-        const data = {
-          title: title,
-          startTime: startTime,
-          endTime: endTime,
-          selectedDates: selectedDates
-        };
-
-        // ✅ 데이터가 변경되지 않았다면, 저장하지 않고 바로 이동
-        if (isSameData(data)) {
-          console.warn("⚠️ 변경된 내용이 없습니다. 페이지 이동만 수행.");
-          isSubmitting = false;
-          // 첫 번째 슬라이드 숨기기
-          document.getElementById("slide1").classList.remove("active");
-          // 두 번째 슬라이드 보이기
-          document.getElementById("slide2").classList.add("active");
-          
-          // 스크롤을 맨 위로
-          window.scrollTo(0, 0);
-          return;
-        }
-
-        console.log("📤 새로운 데이터 저장 및 서버 전송:", data);
-
-        // ✅ 기존 데이터 삭제하고 새로운 데이터 저장
-        fetch('/eventGroup/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                  }
-                  return response.json();
-                })
-                .then(result => {
-                  console.log("✅ 성공:", result);
-
-                  // ✅ 기존 데이터 삭제 후 새로운 데이터 저장
-                  localStorage.removeItem("lastSavedData");
-                  localStorage.setItem("lastSavedData", JSON.stringify(data));
-
-                  isSubmitting = false;
-                  // 첫 번째 슬라이드 숨기기
-                  document.getElementById("slide1").classList.remove("active");
-                  // 두 번째 슬라이드 보이기
-                  document.getElementById("slide2").classList.add("active");
-                  
-                  // 스크롤을 맨 위로
-                  window.scrollTo(0, 0);
-                })
-                .catch(error => {
-                  console.error("❌ 에러 발생:", error);
-                  isSubmitting = false;
-                  // 첫 번째 슬라이드 숨기기
-                  document.getElementById("slide1").classList.remove("active");
-                  // 두 번째 슬라이드 보이기
-                  document.getElementById("slide2").classList.add("active");
-
-                  // 스크롤을 맨 위로
-                  window.scrollTo(0, 0);
-                });
+        // 첫 번째 슬라이드 숨기기
+        document.getElementById("slide1").classList.remove("active");
+        document.getElementById("slide1").classList.add("hidden");
+        // 두 번째 슬라이드 보이기
+        document.getElementById("slide2").classList.remove("hidden");
+        document.getElementById("slide2").classList.add("active");
+        
+        // 스크롤을 맨 위로
+        window.scrollTo(0, 0);
       }
     });
 
@@ -1551,13 +1824,6 @@
 
       return isValid;
     }
-
-    document.getElementById("nextButton").addEventListener("click", function(e) {
-      e.preventDefault();
-      if (validateForm()) {
-        // location.href='/select-time';
-      }
-    });
 
     const helpBtn = document.getElementById('dateHelpBtn');
     const tooltip = document.getElementById('dateHelpTooltip');
