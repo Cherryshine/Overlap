@@ -7,26 +7,21 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
+@RequiredArgsConstructor  // ✅ 생성자 주입 자동으로 처리
 public class FilterConfig {
 
     private final CaptchaService captchaService;
-    private final JwtUtil jwtUtil;
-
-    public FilterConfig(CaptchaService captchaService) {
-        this.captchaService = captchaService;
-        this.jwtUtil = new JwtUtil();
-    }
+    private final JwtUtil jwtUtil; // ✅ 주입받기만 하면 됨!
 
     @Bean
-    public FilterRegistrationBean<TurnstileValidationFilter> turnstileValidationFilter(CaptchaService captchaService) {
+    public FilterRegistrationBean<TurnstileValidationFilter> turnstileValidationFilter() {
         FilterRegistrationBean<TurnstileValidationFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new TurnstileValidationFilter(captchaService,jwtUtil));
+
+        registrationBean.setFilter(new TurnstileValidationFilter(captchaService, jwtUtil)); // ✅ 주입받은 객체 넘김
         registrationBean.addUrlPatterns("/*");
-        registrationBean.setOrder(1);  // ✅ 가장 먼저 실행
+        registrationBean.setOrder(Integer.MIN_VALUE);
+
         return registrationBean;
     }
-
-
 }

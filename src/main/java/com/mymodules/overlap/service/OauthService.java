@@ -151,6 +151,7 @@ public class OauthService {
         System.out.println(oauthId+"@@@@@@@@@@@@@@@@@@@");
         String name = userInfo.getKakaoAccount().getProfile().getNickname();
         String profileImage = userInfo.getKakaoAccount().getProfile().getProfileImageUrl();
+        System.out.println(name + profileImage);
         return userInfo;
     }
 
