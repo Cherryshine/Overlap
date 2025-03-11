@@ -40,18 +40,6 @@ function formatTime24(totalMin) {
 }
 
 /**
- * 24시간을 12시간 형식의 레이블(오전/오후)로 변환하여 반환합니다.
- * @param {number} hour24 - 24시간 형식의 시간
- * @returns {string} "오전/오후 X시" 형식의 문자열
- */
-function formatHourLabel(hour24) {
-    let ampm = hour24 < 12 ? "오전" : "오후";
-    let hour12 = hour24 % 12;
-    if (hour12 === 0) hour12 = 12;
-    return `${ampm} ${hour12}시`;
-}
-
-/**
  * 12시간 형식을 24시간 형식으로 변환합니다.
  * @param {string} time12h - "HH:MM AM/PM" 형식의 시간 문자열
  * @returns {string} "HH:MM" 형식의 24시간제 시간 문자열
@@ -60,14 +48,14 @@ function convert12to24(time12h) {
     const [time, period] = time12h.split(' ');
     let [hours, minutes] = time.split(':');
     hours = parseInt(hours);
-    
+
     if (period === 'PM' && hours !== 12) {
         hours = hours + 12;
     }
     if (period === 'AM' && hours === 12) {
         hours = 0;
     }
-    
+
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
 }
 
@@ -82,12 +70,18 @@ function convert12to24(time12h) {
  */
 function buildScheduleTable(data) {
     const start = parseTimeString(data.startTime);
-    const end = parseTimeString(data.endTime);
+    let end = parseTimeString(data.endTime);
+
+    // 종료 시간이 00:00인 경우 24:00으로 처리
+    if (end.hour === 0 && end.minute === 0) {
+        end.hour = 24;
+    }
+
     const startTotal = toTotalMinutes(start.hour, start.minute);
     const endTotal = toTotalMinutes(end.hour, end.minute);
     const interval = data.interval;
     const totalBlocks = Math.floor((endTotal - startTotal) / interval);
-    
+
     // 테두리 유무 판단
     const hasPrevPage = data.startIndex > 0;
     const hasNextPage = data.startIndex + data.days.length < data.totalDays;
@@ -96,11 +90,12 @@ function buildScheduleTable(data) {
     let timeBarHtml = `<div class="relative w-16 mr-2">`;
     for (let h = start.hour; h <= end.hour; h++) {
         const hourIndex = h - start.hour;
-        const topPos = hourIndex * 160;
+        const topPos = hourIndex * (60 / interval * 32); // 32px는 셀의 기본 높이
+        const displayHour = h === 24 ? 0 : h;
         timeBarHtml += `
             <div class="time-label absolute left-0 text-sm font-semibold"
                  style="top: ${topPos}px; transform: translateY(-50%)">
-                ${formatHourLabel(h)}
+                ${displayHour}시발
             </div>
         `;
     }
@@ -116,7 +111,7 @@ function buildScheduleTable(data) {
         timeGridHtml += `
         <div class="grid grid-cols-${data.days.length} h-6 sm:h-8 ${i === 0 ? 'grid-row-first' : ''}">
     `;
-    
+
         for (let c = 0; c < data.days.length; c++) {
             const cellKey = `${data.startIndex}-${data.days[c].date}-${i}`;
             // 미리보기 모드라면 셀이 선택되어 있을 경우 반투명 파란 오버레이를 적용, 그렇지 않으면 기존 녹색 선택 클래스 적용
@@ -129,10 +124,10 @@ function buildScheduleTable(data) {
                     selectedClass = "bg-green-300";
                 }
             }
-            
+
             let borderClasses = `grid-cell bg-gray-200 ${isHourMark ? 'hour-mark' : ''} ${selectedClass}`;
             let borderStyle = "border-right: 1px solid rgb(209, 213, 219)";
-            
+
             if (hasPrevPage && c === 0) {
                 borderStyle = `
                     border-right: 1px solid rgb(209, 213, 219);
@@ -157,10 +152,10 @@ function buildScheduleTable(data) {
             } else if (!hasPrevPage && c === 0) {
                 borderStyle = "border-left: 1px solid rgb(209, 213, 219); border-right: 1px solid rgb(209, 213, 219)";
             }
-            
+
             // 다른 사람의 스케줄을 표시하는 로직 제거됨.
             let otherUserOverlayHtml = "";
-            
+
             timeGridHtml += `
                 <div data-cell-key="${cellKey}" class="${borderClasses} relative" style="${borderStyle}">
                     ${overlayHtml}
@@ -282,20 +277,20 @@ function initDragEvents(numCols) {
             // 미리보기 모드, 일반 모드 관계없이 임시 클래스 제거
             cell.classList.remove("bg-blue-200", "bg-red-200");
         });
-        
+
         const startPos = getCellPosition(start);
         const endPos   = getCellPosition(end);
         const rowStart = Math.min(startPos.row, endPos.row);
         const rowEnd   = Math.max(startPos.row, endPos.row);
         const colStart = Math.min(startPos.col, endPos.col);
         const colEnd   = Math.max(startPos.col, endPos.col);
-        
+
         for (let r = rowStart; r <= rowEnd; r++) {
             for (let c = colStart; c <= colEnd; c++) {
                 const idx = r * numCols + c;
                 const cell = cells[idx];
                 const cellKey = cell.getAttribute('data-cell-key');
-                
+
                 if (dragAction === "select") {
                     // 이미 선택된 셀이면 진한 파란색 오버레이를 적용
                     if (window.selectedCells && window.selectedCells[cellKey]) {
@@ -701,11 +696,11 @@ function updateSchedule() {
     `;
 
     // 빌드된 시간표 HTML (시간 바 + 셀 영역)
-    const tableHTML = buildScheduleTable({ 
-        ...window.jsonData, 
-        days: paginatedDays, 
-        startIndex, 
-        totalDays: window.jsonData.days.length 
+    const tableHTML = buildScheduleTable({
+        ...window.jsonData,
+        days: paginatedDays,
+        startIndex,
+        totalDays: window.jsonData.days.length
     });
 
     // 기존 페이지 버튼 컨테이너 제거하고, dayHeaderHtml과 tableHTML만 삽입
@@ -770,7 +765,7 @@ function updateSchedule() {
     setTimeout(() => {
         adjustTimeBarPositions(window.jsonData.interval);
     }, 0);
-    
+
     // 페이지 갱신 후 선택된 셀에 해당하는 오버레이를 다시 그리도록 호출합니다.
     setTimeout(() => {
         if (window.generateOverlaysGlobal) {
@@ -784,13 +779,18 @@ function updateSchedule() {
  * @param {number} interval - 시간 간격 (분)
  */
 function adjustTimeBarPositions(interval) {
-    // 우선 셀 중 하나를 선택하여 실제 높이를 측정 (h-10 클래스가 적용된 셀)
     const cell = document.querySelector(".grid-cell");
     if (cell) {
         const cellHeight = cell.offsetHeight;
-        // 1시간은 60분이므로, interval 당 셀 1개 높이에서 1시간 높이는 아래와 같이 계산합니다.
         const hourHeight = cellHeight * (60 / interval);
         document.querySelectorAll(".time-label").forEach((label, index) => {
+            const hour = index;
+            // 시간 표시 로직 수정
+            let displayHour = hour;
+            if (hour === 24 || hour === 0) {
+                displayHour = "0";
+            }
+            label.textContent = `${displayHour}시`;
             label.style.top = (hourHeight * index) + "px";
         });
     }
@@ -802,12 +802,12 @@ function adjustTimeBarPositions(interval) {
 function updateSelectedInfo() {
     const selectedInfoDiv = document.getElementById("selectedInfo");
     if (!selectedInfoDiv) return;
-    
+
     // 날짜별로 선택된 시간 범위를 모으기 위한 객체 생성
     const groupedSelections = {};
     const startTimeObj = parseTimeString(jsonData.startTime);
     const startTotalMin = toTotalMinutes(startTimeObj.hour, startTimeObj.minute);
-    
+
     for (const key in window.selectedCells) {
         if (!window.selectedCells[key]) continue;
         const parts = key.split("-");
@@ -817,20 +817,20 @@ function updateSelectedInfo() {
         const blockStart = startTotalMin + blockIndex * jsonData.interval;
         const blockEnd = blockStart + jsonData.interval;
         const timeRange = `${formatTime24(blockStart)} ~ ${formatTime24(blockEnd)}`;
-        
+
         if (!groupedSelections[dateKey]) {
             groupedSelections[dateKey] = [];
         }
         groupedSelections[dateKey].push(timeRange);
     }
-    
+
     let finalHtml = "";
     for (const dateKey in groupedSelections) {
         const uniqueRanges = Array.from(new Set(groupedSelections[dateKey])).sort();
         finalHtml += `<div class="mb-2"><strong>${dateKey}</strong>: ${uniqueRanges.join(", ")}</div>`;
     }
     selectedInfoDiv.innerHTML = finalHtml || "선택된 날짜 및 시간이 없습니다.";
-    
+
     // 선택된 셀 정보를 로컬 스토리지에 저장하여 페이지 전환 후에도 유지
     localStorage.setItem("selectedCells", JSON.stringify(window.selectedCells));
 }
@@ -841,6 +841,5 @@ window.initDragEvents = initDragEvents;
 window.updateSchedule = updateSchedule;
 window.convert12to24 = convert12to24;
 
-  
 
-  
+
