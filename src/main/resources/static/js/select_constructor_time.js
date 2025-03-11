@@ -51,6 +51,26 @@ function formatHourLabel(hour24) {
     return `${ampm} ${hour12}시`;
 }
 
+/**
+ * 12시간 형식을 24시간 형식으로 변환합니다.
+ * @param {string} time12h - "HH:MM AM/PM" 형식의 시간 문자열
+ * @returns {string} "HH:MM" 형식의 24시간제 시간 문자열
+ */
+function convert12to24(time12h) {
+    const [time, period] = time12h.split(' ');
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    
+    if (period === 'PM' && hours !== 12) {
+        hours = hours + 12;
+    }
+    if (period === 'AM' && hours === 12) {
+        hours = 0;
+    }
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+}
+
 /*****************************************
  * 시간표 HTML 생성 함수
  *****************************************/
@@ -626,8 +646,13 @@ function debounce(fn, delay) {
  * 시간표 및 관련 UI를 업데이트합니다.
  */
 function updateSchedule() {
+    if (!window.jsonData) {
+        console.error('jsonData is not available');
+        return;
+    }
+
     const startIndex = currentPage * itemsPerPage;
-    const paginatedDays = jsonData.days.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedDays = window.jsonData.days.slice(startIndex, startIndex + itemsPerPage);
 
     // 요일, 월 한글 변환 객체는 그대로 유지
     const dayKorean = {
@@ -677,14 +702,15 @@ function updateSchedule() {
 
     // 빌드된 시간표 HTML (시간 바 + 셀 영역)
     const tableHTML = buildScheduleTable({ 
-        ...jsonData, 
+        ...window.jsonData, 
         days: paginatedDays, 
         startIndex, 
-        totalDays: jsonData.days.length 
+        totalDays: window.jsonData.days.length 
     });
 
     // 기존 페이지 버튼 컨테이너 제거하고, dayHeaderHtml과 tableHTML만 삽입
     const app = document.getElementById("app");
+    if (!app) return;
     app.innerHTML = dayHeaderHtml + tableHTML;
 
     // 테이블 렌더링 후, 셀 영역(.flex-1.relative)에 이전/다음 버튼을 삽입합니다.
@@ -695,16 +721,14 @@ function updateSchedule() {
             if (currentPage > 0) {
                 const btnPrev = document.createElement('button');
                 btnPrev.id = "prevPage";
-                // 필요에 따라 left값을 조절하세요.
                 btnPrev.className = "absolute left-[-20px] top-1/2 transform -translate-y-1/2 page-button";
                 btnPrev.innerText = "←";
                 gridContainer.appendChild(btnPrev);
             }
             // 다음 페이지 버튼 (셀 영역의 오른쪽)
-            if (startIndex + itemsPerPage < jsonData.days.length) {
+            if (startIndex + itemsPerPage < window.jsonData.days.length) {
                 const btnNext = document.createElement('button');
                 btnNext.id = "nextPage";
-                // 필요에 따라 right값을 조절하세요.
                 btnNext.className = "absolute right-[-20px] top-1/2 transform -translate-y-1/2 page-button";
                 btnNext.innerText = "→";
                 gridContainer.appendChild(btnNext);
@@ -723,7 +747,7 @@ function updateSchedule() {
             }
             if (nextPageBtn) {
                 nextPageBtn.addEventListener("click", function() {
-                    if ((currentPage + 1) * itemsPerPage < jsonData.days.length) {
+                    if ((currentPage + 1) * itemsPerPage < window.jsonData.days.length) {
                         currentPage++;
                         updateSchedule();
                     }
@@ -737,14 +761,14 @@ function updateSchedule() {
 
     // 테이블 렌더링 후 시간바 위치 조정
     setTimeout(() => {
-        adjustTimeBarPositions(jsonData.interval);
+        adjustTimeBarPositions(window.jsonData.interval);
     }, 0);
 
     // 창 크기 변화에 따른 시간바 조정
-    setupResizeObserver(jsonData.interval);
+    setupResizeObserver(window.jsonData.interval);
 
     setTimeout(() => {
-        adjustTimeBarPositions(jsonData.interval);
+        adjustTimeBarPositions(window.jsonData.interval);
     }, 0);
     
     // 페이지 갱신 후 선택된 셀에 해당하는 오버레이를 다시 그리도록 호출합니다.
@@ -814,6 +838,8 @@ function updateSelectedInfo() {
 // 전역 노출 함수
 window.buildScheduleTable = buildScheduleTable;
 window.initDragEvents = initDragEvents;
+window.updateSchedule = updateSchedule;
+window.convert12to24 = convert12to24;
 
   
 

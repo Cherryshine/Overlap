@@ -1118,6 +1118,8 @@ display: none;
   </script>
 
 <script>
+  let selectedDatesMap = new Map(); // 선택된 날짜를 저장할 전역 변수
+
   document.addEventListener('DOMContentLoaded', function () {
     const dropdown1 = document.getElementById("dropdownMenu1");
     const dropdown1Button = document.getElementById("dropdownMenu1Button");
@@ -1190,7 +1192,7 @@ display: none;
       let currentMonth = todayDate.getMonth();
 
       function getSelectionKey(year, month) {
-        return "dateSelection_" + year + "-" + (month + 1);
+        return `${year}-${month + 1}`;
       }
 
       function saveCurrentSelection() {
@@ -1202,12 +1204,12 @@ display: none;
             selections.push(cell.dataset.date);
           }
         });
-        localStorage.setItem(key, JSON.stringify(selections));
+        selectedDatesMap.set(key, selections);
       }
 
       function loadSelections(year, month) {
         const key = getSelectionKey(year, month);
-        let selections = JSON.parse(localStorage.getItem(key));
+        let selections = selectedDatesMap.get(key);
         const todayDate = new Date();
         const today = todayDate.getDate();
         const currentMonth = todayDate.getMonth();
@@ -1217,15 +1219,14 @@ display: none;
             const dayCells = calendarTable.querySelectorAll("td.day");
             dayCells.forEach(cell => {
                 const cellDate = parseInt(cell.dataset.date);
-                const cellMonth = month; // 현재 월을 사용
-                const cellYear = year; // 현재 연도 사용
+                const cellMonth = month;
+                const cellYear = year;
 
-                // 오늘 날짜가 지나면 선택된 날짜를 회색으로 변경
                 if (cellYear < todayDate.getFullYear() || 
                     (cellYear === todayDate.getFullYear() && cellMonth < todayDate.getMonth()) || 
                     (cellYear === todayDate.getFullYear() && cellMonth === todayDate.getMonth() && cellDate < today)) {
-                    cell.classList.add("disabled"); // 회색으로 표시
-                    cell.classList.remove("selected"); // 선택 해제
+                    cell.classList.add("disabled");
+                    cell.classList.remove("selected");
                 } else if (selections.indexOf(cell.dataset.date) !== -1) {
                     cell.classList.add("selected");
                 } else {
@@ -1338,12 +1339,10 @@ display: none;
 
       function getTotalSelectedAcrossAllPages() {
         let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith("dateSelection_")) {
-            const selections = JSON.parse(localStorage.getItem(key)) || [];
-            total += selections.length;
-          }
+        for (let i = 0; i < selectedDatesMap.size; i++) {
+          const key = selectedDatesMap.keys().next().value;
+          const selections = selectedDatesMap.get(key) || [];
+          total += selections.length;
         }
         return total;
       }
@@ -1419,7 +1418,7 @@ display: none;
 
           if (dragMode === "add") {
             const currentMonthKey = getSelectionKey(currentYear, currentMonth);
-            const currentMonthSaved = JSON.parse(localStorage.getItem(currentMonthKey)) || [];
+            const currentMonthSaved = selectedDatesMap.get(currentMonthKey) || [];
             const currentMonthSavedCount = currentMonthSaved.length;
             let currentPageCount = 0;
             dayCells.forEach(cell => {
@@ -1454,7 +1453,7 @@ display: none;
           const allDayCells = Array.from(calendarTable.querySelectorAll("td.day"));
 
           const currentMonthKey = getSelectionKey(currentYear, currentMonth);
-          const currentMonthSaved = JSON.parse(localStorage.getItem(currentMonthKey)) || [];
+          const currentMonthSaved = selectedDatesMap.get(currentMonthKey) || [];
           const currentMonthSavedCount = currentMonthSaved.length;
           let currentPageCount = 0;
           allDayCells.forEach(cell => {
@@ -1549,18 +1548,12 @@ display: none;
 
         let allDates = [];
         // localStorage의 모든 키를 순회하면서 "dateSelection_" 접두어가 있는 항목만 처리
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith("dateSelection_")) {
-            // 예: key = "dateSelection_2023-8"
-            const keyParts = key.slice("dateSelection_".length).split('-');
-            const year = parseInt(keyParts[0], 10);
-            const month = parseInt(keyParts[1], 10); // month는 (월+1)
-            const days = JSON.parse(localStorage.getItem(key));
-            days.forEach(day => {
-              allDates.push({ year: year, month: month, day: parseInt(day, 10) });
-            });
-          }
+        for (let i = 0; i < selectedDatesMap.size; i++) {
+          const key = selectedDatesMap.keys().next().value;
+          const days = selectedDatesMap.get(key);
+          days.forEach(day => {
+            allDates.push({ year: parseInt(key.split('-')[0]), month: parseInt(key.split('-')[1]), day: parseInt(day) });
+          });
         }
 
         if (allDates.length > 0) {
@@ -1648,12 +1641,62 @@ display: none;
     document.getElementById("nextButton").addEventListener("click", function(e) {
       e.preventDefault();
       if (validateForm()) {
+        // 입력된 데이터 수집
+        const title = document.getElementById("titleInput").value;
+        const startTime = document.getElementById("dropdownMenu1Button").textContent.trim();
+        const endTime = document.getElementById("dropdownMenu2Button").textContent.trim();
+        
+        // 선택된 날짜들 수집
+        let selectedDates = [];
+        selectedDatesMap.forEach((days, yearMonth) => {
+          const [year, month] = yearMonth.split("-").map(Number);
+          days.forEach(day => {
+            selectedDates.push({
+              year: year,
+              month: month - 1,
+              day: parseInt(day)
+            });
+          });
+        });
+
+        // 날짜 정렬
+        selectedDates.sort((a, b) => {
+          const dateA = new Date(a.year, a.month, a.day);
+          const dateB = new Date(b.year, b.month, b.day);
+          return dateA - dateB;
+        });
+
+        // 타임테이블 데이터 생성
+        const jsonData = {
+          startTime: convert12to24(startTime),
+          endTime: convert12to24(endTime),
+          interval: 15,
+          days: selectedDates.map(date => {
+            const d = new Date(date.year, date.month, date.day);
+            const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return {
+              label: weekdays[d.getDay()],
+              date: `${months[d.getMonth()]} ${d.getDate()}`
+            };
+          })
+        };
+
+        // 일정 제목 업데이트
+        const scheduleTitle = document.querySelector("#slide2 .text-3xl a");
+        scheduleTitle.textContent = title;
+
         // 첫 번째 슬라이드 숨기기
         document.getElementById("slide1").classList.remove("active");
         document.getElementById("slide1").classList.add("hidden");
+        
         // 두 번째 슬라이드 보이기
         document.getElementById("slide2").classList.remove("hidden");
         document.getElementById("slide2").classList.add("active");
+        
+        // 타임테이블 초기화 및 업데이트
+        window.jsonData = jsonData;
+        window.updateSchedule();
         
         // 스크롤을 맨 위로
         window.scrollTo(0, 0);
@@ -1790,12 +1833,10 @@ display: none;
 
       // localStorage에 저장된 전체 선택된 날짜 개수를 계산 (모든 "dateSelection_" 키에서)
       let totalSelectedCount = 0;
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith("dateSelection_")) {
-          const days = JSON.parse(localStorage.getItem(key)) || [];
-          totalSelectedCount += days.length;
-        }
+      for (let i = 0; i < selectedDatesMap.size; i++) {
+        const key = selectedDatesMap.keys().next().value;
+        const days = selectedDatesMap.get(key);
+        totalSelectedCount += days.length;
       }
       
       if(totalSelectedCount === 0 || totalSelectedCount > 31){
