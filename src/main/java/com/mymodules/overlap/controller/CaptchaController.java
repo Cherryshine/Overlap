@@ -29,10 +29,10 @@ public class CaptchaController {
         boolean isValid = captchaService.validateTurnstileToken(token, response);
 
         if (isValid) {
-            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@떠라 ");
+            log.info("@");
             return new ModelAndView("redirect:/");
         } else {
-            log.warn("sdfjosdfidsfj");
+            log.warn("redirect failed");
             return new ModelAndView("redirect:/captcha"); // 다시 캡차 페이지로 이동
         }
     }

@@ -118,7 +118,7 @@
                                 <img src="/images/thumbnail.png" class="w-[280px] h-48 object-cover rounded-tl-lg rounded-tr-lg rounded-bl-none rounded-br-none">
                                 <div class="p-2 bg-[#FEE500] rounded-b-lg">
                                     <h3 class="text-sm font-medium mb-1">오버랩 - 약속잡는 최적의 방법</h3>
-                                    <a href="#" class="text-blue-500 text-xs">https://www.overlap.com/</a>
+                                    <a href="#" class="text-blue-500 text-xs">https://www.overlap.purplecodelabs.com/</a>
                                 </div>
                             </div>
                             <div class="flex items-center mt-1">
@@ -199,7 +199,7 @@
 
         function redirectKakao() {
             const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d"; // 카카오 REST API 키
-            const redirectUri = encodeURIComponent("https://overlap.purplecodelabs.com:8043/oauth/kakao/callback");
+            const redirectUri = encodeURIComponent("https://localhost:8043/oauth/kakao/callback");
             const kakaoAuthUrl =
                 `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=friends,profile_image,profile_nickname,talk_calendar,talk_message`;
 
