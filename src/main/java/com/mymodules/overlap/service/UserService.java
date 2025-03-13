@@ -1,6 +1,5 @@
 package com.mymodules.overlap.service;
 
-import com.mymodules.overlap.dto.KakaoUserInfoDto;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

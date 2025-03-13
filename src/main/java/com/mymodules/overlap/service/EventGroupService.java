@@ -2,7 +2,7 @@ package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.dto.EventGroupRequestDto;
 import com.mymodules.overlap.dto.EventGroupResponseDto;
-import com.mymodules.overlap.entity.EventGroup;
+
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.EventRepository;
 import com.mymodules.overlap.repository.UserRepository;

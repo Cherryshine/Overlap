@@ -1,17 +1,12 @@
 package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.config.JwtUtil;
-
-import com.mymodules.overlap.dto.KakaoCalendarRequestDto;
-import com.mymodules.overlap.dto.KakaoCalendarResponseDto;
 import com.mymodules.overlap.dto.KakaoTokenResponseDto;
 import com.mymodules.overlap.dto.KakaoUserInfoDto;
 import com.mymodules.overlap.entity.OauthUser;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

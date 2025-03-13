@@ -1,13 +1,9 @@
 package com.mymodules.overlap.controller;
 
 import com.mymodules.overlap.config.JwtUtil;
-import com.mymodules.overlap.repository.UserRepository;
 import com.mymodules.overlap.service.KakaoCalendarService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

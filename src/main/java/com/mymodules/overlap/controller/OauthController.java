@@ -3,7 +3,6 @@ package com.mymodules.overlap.controller;
 
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.service.OauthService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
