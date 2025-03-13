@@ -3,6 +3,7 @@ package com.mymodules.overlap.service;
 import com.mymodules.overlap.dto.EventGroupRequestDto;
 import com.mymodules.overlap.dto.EventGroupResponseDto;
 
+import com.mymodules.overlap.entity.EventGroup;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.EventRepository;
 import com.mymodules.overlap.repository.UserRepository;
@@ -20,7 +21,7 @@ public class EventGroupService {
 
     @Transactional
     public EventGroupResponseDto createEvent(EventGroupRequestDto req, String userId) {
-        if(userId == "guest"){
+        if("guest".equals(userId)){
             EventGroupResponseDto res = new EventGroupResponseDto("Guest", req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
             System.out.println(res);
             return res;
@@ -29,6 +30,8 @@ public class EventGroupService {
             User user = userRepository.findByOauthId(userId);
             String username = user.getUsername();
             EventGroupResponseDto res = new EventGroupResponseDto(username, req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
+            EventGroup eventGroup = new EventGroup(res,user);
+            eventRepository.save(eventGroup);
             System.out.println(res);
             return res;
         }

@@ -1,10 +1,12 @@
 package com.mymodules.overlap.entity;
 
+import com.mymodules.overlap.dto.EventGroupResponseDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,40 +45,21 @@ public class EventGroup {
     @JoinColumn(name = "timetable_id", referencedColumnName = "id", nullable = true)
     private TimeTable timeTable;
 
-    // List로 가져오기 위한 헬퍼 메서드
-    public List<String> getSelectDatesList() {
-        if (selectDates == null || selectDates.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(selectDates.split(","))
-                .map(String::trim)
-                .collect(Collectors.toList());
-    }
 
-    // List로 설정하기 위한 헬퍼 메서드
-    public void setSelectDatesList(List<String> dates) {
-        if (dates == null || dates.isEmpty()) {
-            this.selectDates = "";
-        } else {
-            this.selectDates = String.join(",", dates);
-        }
-    }
-
-    public void updateEvent(String title, String startTime, String endTime, String newDates) {
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.selectDates = newDates;
-    }
-
-    // ✅ 새로운 이벤트를 위한 생성자 추가
-    public EventGroup(User user, String title, String startTime, String endTime, String selectDates) {
+    public EventGroup(EventGroupResponseDto res, User user) {
         this.user = user;
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.selectDates = selectDates;
+        this.title = res.getTitle();
+        this.startTime = res.getStartTime().toString(); // LocalTime을 String으로 변환
+        this.endTime = res.getEndTime().toString();     // LocalTime을 String으로 변환
+        this.selectDates = convertDatesToString(res.getDates());
     }
 
-
+    private String convertDatesToString(List<LocalDate> dates) {
+        if (dates == null || dates.isEmpty()) {
+            return "";
+        }
+        return dates.stream()
+                .map(LocalDate::toString) // ISO-8601 포맷: 2024-03-14
+                .collect(Collectors.joining(","));
+    }
 }

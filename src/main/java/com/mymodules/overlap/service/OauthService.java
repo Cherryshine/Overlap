@@ -66,6 +66,7 @@ public class OauthService {
                 params.add("redirect_uri", REDIRECT_URI);
                 params.add("client_secret", CLIENT_SECRET);
                 params.add("grant_type", "authorization_code");
+                log.info("redirect_uri = {}", REDIRECT_URI);
 
                 // 2. Kakao API에 액세스 토큰 요청
                 KakaoTokenResponseDto tokenResponse = webClient.post()
