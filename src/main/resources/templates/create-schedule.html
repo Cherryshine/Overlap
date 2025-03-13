@@ -1261,26 +1261,23 @@ display: none;
         }
       }
       
+      // scheduleData를 콘솔에 출력하여 확인
       console.log('전송할 데이터:', scheduleData);
       
-      // 서버에 POST 요청 보내기
+      // fetch 요청 수정
       fetch('/api/schedules', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        credentials: 'same-origin', // 쿠키 포함
         body: JSON.stringify(scheduleData)
       })
       .then(response => {
         if (!response.ok) {
-          return response.json().then(errData => {
-            throw new Error(errData.message || '일정 저장 중 오류가 발생했습니다.');
-          });
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('일정이 성공적으로 생성되었습니다:', data);
         
         // 성공 상태로 팝업 업데이트
         loadingState.style.display = 'none';
@@ -1292,11 +1289,6 @@ display: none;
           spread: 70,
           origin: { y: 0.6 }
         });
-        
-        // 3초 후 일정 상세 페이지로 이동
-        setTimeout(() => {
-          window.location.href = `/schedules/${data.id}`;
-        }, 3000);
       })
       .catch(error => {
         console.error('일정 생성 오류:', error);

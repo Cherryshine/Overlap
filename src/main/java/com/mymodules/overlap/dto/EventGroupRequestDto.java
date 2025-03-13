@@ -1,22 +1,28 @@
 package com.mymodules.overlap.dto;
 
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
-@Setter
 @Getter
-@NoArgsConstructor
+@Setter
+@AllArgsConstructor
 public class EventGroupRequestDto {
-
     private String title;
-    private String startTime;
-    private String endTime;
-    private List<Map<String, Integer>> selectedDates;
+    private List<LocalDate> dates;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private boolean creatorParticipates;
+    private List<SelectedTime> creatorSelectedTimes;
 
-
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString(includeFieldNames = false)
+    private static class SelectedTime {
+        private LocalDate date;
+        private LocalTime startTime;
+        private LocalTime endTime;
+    }
 }

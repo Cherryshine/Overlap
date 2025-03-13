@@ -24,7 +24,7 @@ public class EventGroupEntity {
 
     // User 엔티티와 다대일(N:1) 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
 
     @Column(name = "title",nullable = false)
