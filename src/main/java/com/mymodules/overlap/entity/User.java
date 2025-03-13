@@ -34,7 +34,7 @@ public abstract class User {
 
     // User 하나가 여러 Schedule을 가질 수 있음 (1:N 관계)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventGroupEntity> eventGroupEntities = new ArrayList<>();
+    private List<EventGroup> eventGroupEntities = new ArrayList<>();
 
     protected User() { }  // JPA 기본 생성자
 

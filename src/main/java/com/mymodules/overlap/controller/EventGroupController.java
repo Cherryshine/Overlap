@@ -1,6 +1,5 @@
 package com.mymodules.overlap.controller;
 
-
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.dto.EventGroupRequestDto;
 import com.mymodules.overlap.dto.EventGroupResponseDto;
@@ -23,8 +22,10 @@ public class EventGroupController {
 
     @PostMapping("/schedules")
     public ResponseEntity<EventGroupResponseDto> createSchedule(@RequestBody EventGroupRequestDto requestDto, HttpServletRequest request) {
+
         String token = jwtUtil.getJwtFromCookies(request);
         String oauthId = jwtUtil.getSubject(token);
+        System.out.println(oauthId);
 
         System.out.println("=== Request Body ===");
         System.out.println("Title: " + requestDto.getTitle());
@@ -36,7 +37,7 @@ public class EventGroupController {
         System.out.println("==================");
 
         EventGroupResponseDto responseDto = eventGroupService.createEvent(requestDto, oauthId);
-        System.out.println("returning HTTP STATUS 200");
+        System.out.println("returning HTTP STATUS 201 Created");
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }

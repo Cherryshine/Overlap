@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class EventGroupRequestDto {
+
     private String title;
     private List<LocalDate> dates;
     private LocalTime startTime;
@@ -16,13 +17,4 @@ public class EventGroupRequestDto {
     private boolean creatorParticipates;
     private List<SelectedTime> creatorSelectedTimes;
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @ToString(includeFieldNames = false)
-    private static class SelectedTime {
-        private LocalDate date;
-        private LocalTime startTime;
-        private LocalTime endTime;
-    }
 }

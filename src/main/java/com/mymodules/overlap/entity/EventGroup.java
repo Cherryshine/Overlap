@@ -1,6 +1,5 @@
 package com.mymodules.overlap.entity;
 
-import com.mymodules.overlap.dto.EventGroupRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
-public class EventGroupEntity {
+public class EventGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,7 +70,7 @@ public class EventGroupEntity {
     }
 
     // ✅ 새로운 이벤트를 위한 생성자 추가
-    public EventGroupEntity(User user, String title, String startTime, String endTime, String selectDates) {
+    public EventGroup(User user, String title, String startTime, String endTime, String selectDates) {
         this.user = user;
         this.title = title;
         this.startTime = startTime;

@@ -28,7 +28,7 @@ public class TurnstileValidationFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_URLS = Arrays.asList(
             "/css/", "/js/", "/images/", "/favicon.ico", "/captcha",
             "/captcha/verify-token", "/cdn-cgi/*", "/cdn-cgi/challenge-platform/*",
-            "/oauth/kakao/callback"
+            "/oauth/kakao/callback", "/api/schedules"
     );
 
     @Override
