@@ -1,5 +1,6 @@
 package com.mymodules.overlap.config;
 
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,8 +109,8 @@ public class JwtUtil {
 
             Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token);
             cookie.setPath("/");
-            cookie.setSecure(false);
-            cookie.setHttpOnly(false);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
             cookie.setMaxAge(60 * 60 * 24);
 
             res.addCookie(cookie);
@@ -130,13 +131,43 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+
+            if (expiration.before(now)) {
+                logger.warn("❌ JWT 만료됨 - 만료 시간: {}, 현재 시간: {}", expiration, now);
+                return false;
+            }
+
+            logger.info("✅ JWT 유효함 - 만료 시간: {}, 현재 시간: {}", expiration, now);
             return true;
+
+        } catch (ExpiredJwtException e) {
+            logger.error("❌ JWT 만료됨: {}", e.getMessage());
         } catch (Exception e) {
-            logger.error("JWT 토큰 검증 오류: {}", e.getMessage());
+            logger.error("❌ JWT 검증 오류: {}", e.getMessage());
         }
+
         return false;
     }
+
+    public void removeCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(AUTHORIZATION_HEADER, null); // 삭제할 이름
+        cookie.setPath("/");  // 생성할 때와 동일한 경로
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // HTTPS 환경일 경우 true
+        cookie.setMaxAge(0);    // 0으로 설정하면 삭제
+        response.addCookie(cookie);
+
+        log.info("✅ 쿠키 삭제 요청 보냄! 이름: {}, Path: {}, Secure: {}", AUTHORIZATION_HEADER, cookie.getPath(), cookie.getSecure());
+    }
+
 
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
