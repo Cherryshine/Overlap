@@ -29,6 +29,7 @@ public class EventGroupController {
 
         System.out.println("=== Request Body ===");
         System.out.println("Title: " + requestDto.getTitle());
+        System.out.println("Username: " + requestDto.getUsername());
         System.out.println("Dates: " + requestDto.getDates());
         System.out.println("Start Time: " + requestDto.getStartTime());
         System.out.println("End Time: " + requestDto.getEndTime());

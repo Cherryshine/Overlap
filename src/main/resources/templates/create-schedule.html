@@ -995,7 +995,9 @@ display: none;
             
         <!-- 기존 내용 -->
         <p class="text-purple-800 mb-[15px] text-3xl"><a class="text-purple-800 mb-[15px] font-bold text-3xl">대면회의</a> 그룹 일정</p>
-        <div class="text-purple-800 font-bold mb-[5px]">그룹장의 시간 선택</div>
+        <div class="text-purple-800 font-bold mb-[5px]">그룹장의 이름 설정</div>
+        <input type="text" id="userNameInput" class="w-full bg-white bg-opacity-20 border-0 rounded-lg p-3 text-purple-800 mt-[10px] placeholder-purple-800" placeholder="보여질 닉네임을 입력하세요" required/>
+        <div class="text-purple-800 font-bold mb-[5px] mt-[15px]">그룹장의 시간 선택</div>
         <!-- 그룹장 체크박스 선택시 애니메이션 -->
         <label class="custom-checkbox">
             <input type="checkbox" id="noTimeSelection">
@@ -1077,6 +1079,7 @@ display: none;
                 }
             });
         </script>
+
         <button class="w-full py-3 bg-purple-700 text-white rounded-xl mt-[30px]" id="triggerPopup">완료</button>
     </div>
     </div>
@@ -1183,10 +1186,14 @@ display: none;
       
       // 일정 정보 수집
       const title = document.querySelector("#slide2 .text-3xl a").textContent; // 일정 제목
-      
+
+      // 닉네임 정보 수집
+
+      const username = document.getElementById("userNameInput").value;
       // 날짜 정보 수집
       let scheduleData = {
         title: title,
+        username : username,
         dates: [] // 선택된 날짜들
       };
       

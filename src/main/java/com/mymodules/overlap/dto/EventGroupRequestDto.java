@@ -11,6 +11,7 @@ import java.util.List;
 public class EventGroupRequestDto {
 
     private String title;
+    private String username;
     private List<LocalDate> dates;
     private LocalTime startTime;
     private LocalTime endTime;

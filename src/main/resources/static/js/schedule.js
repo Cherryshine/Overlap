@@ -44,6 +44,7 @@ function formatTime24(totalMin) {
  * @returns {string} "오전/오후 X시" 형식의 문자열
  */
 function formatHourLabel(hour24) {
+    console.log("This Time for Hour 24 : "+hour24);
     let ampm = hour24 < 12 ? "오전" : "오후";
     let hour12 = hour24 % 12;
     if (hour12 === 0) hour12 = 12;
