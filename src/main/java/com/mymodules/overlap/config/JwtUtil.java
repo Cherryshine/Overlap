@@ -60,24 +60,6 @@ public class JwtUtil {
         }
     }
 
-//    public String createToken(String oauthId){
-//
-//        System.out.println("🔍 createToken() 호출됨");
-//
-//        if (key == null) {
-//            throw new IllegalStateException("🚨 JWT Key가 초기화되지 않았습니다. @PostConstruct init()을 확인하세요.");
-//        }
-//
-//        Date date = new Date();
-//        return BEARER_PREFIX +
-//                Jwts.builder()
-//                        .setSubject(oauthId)
-//                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-//                        .setIssuedAt(date)
-//                        .signWith(key, signatureAlgorithm)
-//                        .compact();
-//    }
-
     public String createTokenWithCaptcha(String oauthId, boolean captchaSuccess, boolean isGuest) {
         log.info("🔍 createTokenWithCaptcha() 호출됨 - 사용자: {}, 캡챠 인증 여부: {}, 게스트 여부: {}",
                 oauthId, captchaSuccess, isGuest);
@@ -100,7 +82,7 @@ public class JwtUtil {
                         .signWith(key, signatureAlgorithm)
                         .compact();
     }
-        // 캡챠 인증 여부 + guest 와 kakao 회원 구분
+    // 캡챠 인증 여부 + guest 와 kakao 회원 구분
 
 
     public void addJwtToCookie(String token, HttpServletResponse res) {
