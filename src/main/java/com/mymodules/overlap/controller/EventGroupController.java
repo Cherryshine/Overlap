@@ -41,7 +41,7 @@ public class EventGroupController {
 
         Object result = eventService.createEvent(requestDto, oauthId);
         
-        // 유효성 검증 실패한 경우 (Map 타입으로 반환됨)
+        // 유효성 검증 실패한 경우 (JSON, Map 타입으로 반환)
         if (result instanceof Map) {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
