@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @RestController
@@ -21,7 +23,7 @@ public class EventGroupController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/schedules")
-    public ResponseEntity<EventGroupResponseDto> createSchedule(@RequestBody EventGroupRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<?> createSchedule(@RequestBody EventGroupRequestDto requestDto, HttpServletRequest request) {
 
         String token = jwtUtil.getJwtFromCookies(request);
         String oauthId = jwtUtil.getSubject(token);
@@ -37,7 +39,15 @@ public class EventGroupController {
         System.out.println("Creator Participating times: " + requestDto.getCreatorSelectedTimes());
         System.out.println("==================");
 
-        EventGroupResponseDto responseDto = eventService.createEvent(requestDto, oauthId);
+        Object result = eventService.createEvent(requestDto, oauthId);
+        
+        // 유효성 검증 실패한 경우 (Map 타입으로 반환됨)
+        if (result instanceof Map) {
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+        
+        // 정상 처리된 경우
+        EventGroupResponseDto responseDto = (EventGroupResponseDto) result;
         System.out.println("returning HTTP STATUS 201 Created");
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
