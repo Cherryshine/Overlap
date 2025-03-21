@@ -2,8 +2,9 @@ package com.mymodules.overlap.service;
 
 import com.mymodules.overlap.dto.EventGroupRequestDto;
 import com.mymodules.overlap.dto.EventGroupResponseDto;
-
+import com.mymodules.overlap.dto.SelectedTime;
 import com.mymodules.overlap.entity.EventGroup;
+import com.mymodules.overlap.entity.TimeTable;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.EventRepository;
 import com.mymodules.overlap.repository.UserRepository;
@@ -12,7 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @RequiredArgsConstructor
 @Service
@@ -78,21 +83,52 @@ public class EventService {
             User user = new User(req.getUsername());
             userRepository.save(user);
             System.out.println("게스트 유저\n"+ "\nusername : "+ user.getUsername()+ "\nuuid : " + user.getUuid() +"생성됨");
+            
+            // EventGroup과 TimeTable 생성 및 연결
             EventGroupResponseDto res = new EventGroupResponseDto("Guest", req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
+            EventGroup eventGroup = new EventGroup(res, user);
+            
+            // creatorParticipates가 true면 TimeTable 생성
+            if (req.isCreatorParticipates() && req.getCreatorSelectedTimes() != null) {
+                TimeTable timeTable = createTimeTable(user, req.getCreatorSelectedTimes());
+                eventGroup.setTimeTable(timeTable);
+            }
+            
+            eventRepository.save(eventGroup);
             System.out.println(res);
             return res;
         } else {
-            if(req.getUsername() != null){
-
-            }
             System.out.println("일정생성요청 사용자 : "+ userId);
             User user = userRepository.findByUuid(userId);
             String username = user.getUsername();
             EventGroupResponseDto res = new EventGroupResponseDto(username, req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
-            EventGroup eventGroup = new EventGroup(res,user);
+            EventGroup eventGroup = new EventGroup(res, user);
+            
+            // creatorParticipates가 true면 TimeTable 생성
+            if (req.isCreatorParticipates() && req.getCreatorSelectedTimes() != null) {
+                TimeTable timeTable = createTimeTable(user, req.getCreatorSelectedTimes());
+                eventGroup.setTimeTable(timeTable);
+            }
+            
             eventRepository.save(eventGroup);
             System.out.println(res);
             return res;
         }
+    }
+
+    // TimeTable 생성 및 선택된 시간 데이터 변환 메서드 추가
+    private TimeTable createTimeTable(User user, List<SelectedTime> selectedTimes) {
+        // SelectedTime 객체들을 JSON 문자열로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // LocalDate, LocalTime 직렬화를 위한 모듈
+        
+        String selectedTimeJson;
+        try {
+            selectedTimeJson = objectMapper.writeValueAsString(selectedTimes);
+        } catch (Exception e) {
+            throw new RuntimeException("선택된 시간 데이터 변환 중 오류가 발생했습니다.", e);
+        }
+        
+        return new TimeTable(user, selectedTimeJson);
     }
 }

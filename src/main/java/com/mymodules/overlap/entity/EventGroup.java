@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Entity
@@ -28,6 +29,9 @@ public class EventGroup {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
+
+    @Column(name = "url", nullable = false)
+    private String url;
 
     @Column(name = "title",nullable = false)
     private String title;
@@ -64,6 +68,9 @@ public class EventGroup {
         this.startTime = res.getStartTime().toString(); // LocalTime을 String으로 변환
         this.endTime = res.getEndTime().toString();     // LocalTime을 String으로 변환
         this.selectDates = convertDatesToString(res.getDates());
+        
+        // 고유한 URL 생성 로직 추가
+        this.url = generateUniqueUrl();
     }
 
     private String convertDatesToString(List<LocalDate> dates) {
@@ -73,6 +80,12 @@ public class EventGroup {
         return dates.stream()
                 .map(LocalDate::toString) // ISO-8601 포맷: 2024-03-14
                 .collect(Collectors.joining(","));
+    }
+
+    // URL 생성 메서드 추가
+    private String generateUniqueUrl() {
+        // 랜덤한 6자리 영숫자 조합 생성 (실제 구현에서는 중복 확인 로직 필요)
+        return UUID.randomUUID().toString().substring(0, 6);
     }
 
     @PrePersist
