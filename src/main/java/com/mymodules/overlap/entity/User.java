@@ -45,4 +45,5 @@ public abstract class User {
         this.refreshToken = refreshToken;
         this.thumbnailImageUrl = thumbnailImageUrl;
     }
+
 }

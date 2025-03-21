@@ -40,6 +40,15 @@ public class EventGroup {
     @Column(name = "selectdates", nullable = false, columnDefinition = "TEXT")
     private String selectDates;
 
+    @Column(name = "created_At", nullable = false)
+    private LocalDate createdAt;
+
+    @Column(name = "expired_At", nullable = false)
+    private LocalDate expiredAt;
+//
+//    @Column(name = "url", nullable = false)
+//    private String url;
+
     // Schedule이 TimeTable과 1:1 관계의 주인이 되어 외래키를 관리합니다.
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "timetable_id", referencedColumnName = "id", nullable = true)
@@ -61,5 +70,12 @@ public class EventGroup {
         return dates.stream()
                 .map(LocalDate::toString) // ISO-8601 포맷: 2024-03-14
                 .collect(Collectors.joining(","));
+    }
+
+    @PrePersist
+    public void onPrePersist() {
+        // 엔티티가 처음 저장되기 직전에 호출됨!
+        this.createdAt = LocalDate.now(); // 현재 날짜로 생성일자 셋팅
+        this.expiredAt = this.createdAt.plusDays(30); // 생성일 기준 30일 뒤 만료일자 셋팅
     }
 }
