@@ -72,15 +72,21 @@ public class EventService {
                 return errorResponse;
             }
         }
+
         // 유효성 검증 끝
-        
         if(userId.equals("guest")){
+            User user = new User(req.getUsername());
+            userRepository.save(user);
+            System.out.println("게스트 유저\n"+ "\nusername : "+ user.getUsername()+ "\nuuid : " + user.getUuid() +"생성됨");
             EventGroupResponseDto res = new EventGroupResponseDto("Guest", req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
             System.out.println(res);
             return res;
         } else {
+            if(req.getUsername() != null){
+
+            }
             System.out.println("일정생성요청 사용자 : "+ userId);
-            User user = userRepository.findByOauthId(userId);
+            User user = userRepository.findByUuid(userId);
             String username = user.getUsername();
             EventGroupResponseDto res = new EventGroupResponseDto(username, req.getTitle(),req.getDates(),req.getStartTime(),req.getEndTime(),req.isCreatorParticipates(),req.getCreatorSelectedTimes());
             EventGroup eventGroup = new EventGroup(res,user);
