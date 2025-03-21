@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class EventGroupService {
+public class EventService {
 
     private final UserRepository userRepository;
     private final EventRepository eventRepository;

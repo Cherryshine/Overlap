@@ -3,7 +3,7 @@ package com.mymodules.overlap.controller;
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.dto.EventGroupRequestDto;
 import com.mymodules.overlap.dto.EventGroupResponseDto;
-import com.mymodules.overlap.service.EventGroupService;
+import com.mymodules.overlap.service.EventService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class EventGroupController {
-    private final EventGroupService eventGroupService;
+    private final EventService eventService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/schedules")
@@ -37,7 +37,7 @@ public class EventGroupController {
         System.out.println("Creator Participating times: " + requestDto.getCreatorSelectedTimes());
         System.out.println("==================");
 
-        EventGroupResponseDto responseDto = eventGroupService.createEvent(requestDto, oauthId);
+        EventGroupResponseDto responseDto = eventService.createEvent(requestDto, oauthId);
         System.out.println("returning HTTP STATUS 201 Created");
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
