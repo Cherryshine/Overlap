@@ -5,25 +5,23 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Entity
+@DiscriminatorColumn(name = "user_type") // 구분 칼럼 (상속받는 클래스에서 DiscriminatorValue로 구분)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)  // 모든 사용자 데이터를 한 테이블에 저장
 @Getter
 @Setter
-public class User {
+public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // id 자동 증가
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = true)
-    private String tempUsername;
-
     @Column
-    private String uuid;  // uuid 필드
+    private String oauthId;
 
     @Column
     private String accessToken;
@@ -34,47 +32,17 @@ public class User {
     @Column
     private String thumbnailImageUrl;
 
-    @Column
-    private String userType;  // "KAKAO" 또는 "GUEST"를 직접 저장
-
-    @Column
-    private String createdAt;
-
-    @Column // Guest Type 일 경우, 이 필드에 맞춰 삭제됨.
-    private String expireAt;
-
     // User 하나가 여러 Schedule을 가질 수 있음 (1:N 관계)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventGroup> eventGroupEntities = new ArrayList<>();
 
-    // Constructors
+    protected User() { }  // JPA 기본 생성자
 
-    protected User() { }
-
-    // Kakao User
-    public User(String name, String uuid, String accessToken, String refreshToken, String thumbnailImageUrl) {
-        this.username = name;
-        this.uuid = uuid;
+    public User(String username, String oauthId, String accessToken, String refreshToken, String thumbnailImageUrl) {
+        this.username = username;
+        this.oauthId = oauthId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.thumbnailImageUrl = thumbnailImageUrl;
-        this.userType = "KAKAO";
-        this.createdAt = LocalDateTime.now().toString();
-    }
-
-    // Guest User
-    public User(String username) {
-        this.username = username;
-        this.userType = "GUEST";
-        this.createdAt = LocalDateTime.now().toString();
-        this.expireAt = LocalDateTime.now().plusDays(30).toString();
-    }
-
-    @PostPersist
-    public void onPostPersist() {
-        if ("GUEST".equals(this.userType)) {
-            // id 값이 DB에 저장된 후 자동으로 UUID를 설정
-            this.uuid = "guest" + this.id;
-        }
     }
 }

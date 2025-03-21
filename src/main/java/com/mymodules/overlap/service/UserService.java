@@ -21,7 +21,7 @@ public class UserService {
 
     public Map<String, String> getProfile(String oauthId) {
 
-        User user = userRepository.findByUuid(oauthId);
+        User user = userRepository.findByOauthId(oauthId);
 
 //         KakaoUserInfoDto 에서 가져오기
         KakaoUserInfoDto userInfo = oauthService.getUserInfo(user.getAccessToken());

@@ -47,7 +47,7 @@ public class KakaoCalendarService {
         System.out.println("OAuth ID: " + oauthId);
 
         // 사용자 정보 조회
-        User user = userRepository.findByUuid(oauthId);
+        User user = userRepository.findByOauthId(oauthId);
         if (user == null) {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }

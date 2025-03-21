@@ -3,6 +3,7 @@ package com.mymodules.overlap.service;
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.dto.KakaoTokenResponseDto;
 import com.mymodules.overlap.dto.KakaoUserInfoDto;
+import com.mymodules.overlap.entity.OauthUser;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+
+
+import java.util.Map;
 
 
 @Slf4j
@@ -94,7 +98,7 @@ public class OauthService {
                 log.info(name);
 
                 // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
-                User user = new User(name, oauthId, accessToken,refreshToken,thumbnailImageUrl);
+                User user = new OauthUser(name, oauthId, accessToken,refreshToken,thumbnailImageUrl);
 
                 User RegisteredUser = userRepository.findByUsername(name);
 
@@ -151,7 +155,7 @@ public class OauthService {
 
     public String validateAccessToken(String oauthId) {
         // DB에서 해당 사용자 정보 조회 (저장된 엑세스 토큰 포함)
-        User user = userRepository.findByUuid(oauthId);
+        User user = userRepository.findByOauthId(oauthId);
         if (user == null) {
             log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
             return "사용자 없음";
@@ -180,7 +184,7 @@ public class OauthService {
     @Transactional
     public String newAccessToken(String oauthId){
 
-        User user = userRepository.findByUuid(oauthId);
+        User user = userRepository.findByOauthId(oauthId);
 
         if (user == null) {
             log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
