@@ -3,7 +3,6 @@ package com.mymodules.overlap.service;
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.dto.KakaoTokenResponseDto;
 import com.mymodules.overlap.dto.KakaoUserInfoDto;
-import com.mymodules.overlap.entity.OauthUser;
 import com.mymodules.overlap.entity.User;
 import com.mymodules.overlap.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
-import java.util.Map;
 
 
 @Slf4j
@@ -57,64 +53,64 @@ public class OauthService {
 
     @Transactional
     public String createUser (String code){
-            try {
+        try {
 
-                // 1. 요청 파라미터 설정
-                MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-                params.add("code", code);
-                params.add("client_id", CLIENT_ID);
-                params.add("redirect_uri", REDIRECT_URI);
-                params.add("client_secret", CLIENT_SECRET);
-                params.add("grant_type", "authorization_code");
-                log.info("redirect_uri = {}", REDIRECT_URI);
+            // 1. 요청 파라미터 설정
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("code", code);
+            params.add("client_id", CLIENT_ID);
+            params.add("redirect_uri", REDIRECT_URI);
+            params.add("client_secret", CLIENT_SECRET);
+            params.add("grant_type", "authorization_code");
+            log.info("redirect_uri = {}", REDIRECT_URI);
 
-                // 2. Kakao API에 액세스 토큰 요청
-                KakaoTokenResponseDto tokenResponse = webClient.post()
-                        .uri(TOKEN_URL)
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .bodyValue(params)
-                        .retrieve()
-                        .bodyToMono(KakaoTokenResponseDto.class)
-                        .block();
+            // 2. Kakao API에 액세스 토큰 요청
+            KakaoTokenResponseDto tokenResponse = webClient.post()
+                    .uri(TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .bodyValue(params)
+                    .retrieve()
+                    .bodyToMono(KakaoTokenResponseDto.class)
+                    .block();
 
 
-                // 토큰 못가져왔을때
-                if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
-                    System.out.println("카카오 API 응답이 없습니다.");
-                    return "/";
-                }
-                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + tokenResponse);
+            // 토큰 못가져왔을때
+            if (tokenResponse == null || tokenResponse.getAccessToken() == null) {
+                System.out.println("카카오 API 응답이 없습니다.");
+                return "/";
+            }
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + tokenResponse);
 
-                String accessToken = tokenResponse.getAccessToken();
-                String refreshToken = tokenResponse.getRefreshToken();
+            String accessToken = tokenResponse.getAccessToken();
+            String refreshToken = tokenResponse.getRefreshToken();
 
-                // 엑세스토큰을 이용하여 유저 정보 가져오기
-                KakaoUserInfoDto getUserInfo = getUserInfo(accessToken);
+            // 엑세스토큰을 이용하여 유저 정보 가져오기
+            KakaoUserInfoDto getUserInfo = getUserInfo(accessToken);
 
-                // name 가져오기
-                String name = getUserInfo.getKakaoAccount().getProfile().getNickname();
-                String oauthId = getUserInfo.getId();
-                String thumbnailImageUrl = getUserInfo.getKakaoAccount().getProfile().getThumbnailImageUrl();
-                log.info(name);
+            // name 가져오기
+            String name = getUserInfo.getKakaoAccount().getProfile().getNickname();
+            String oauthId = getUserInfo.getId();
+            String thumbnailImageUrl = getUserInfo.getKakaoAccount().getProfile().getThumbnailImageUrl();
+            log.info(name);
 
-                // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
-                User user = new OauthUser(name, oauthId, accessToken,refreshToken,thumbnailImageUrl);
+            // db에 유저 이름 저장 추상 클래스인 User 상속받은 OauthUser 엔티티를 이용하여 저장 (type = kakao)
+            User user = new User(name, oauthId, accessToken,refreshToken,thumbnailImageUrl);
 
-                User RegisteredUser = userRepository.findByUsername(name);
+            User RegisteredUser = userRepository.findByUsername(name);
 
-                if (RegisteredUser == null) {
-                    userRepository.save(user);
-                } else {
-                    System.out.println("이미 가입된 사용자 : " + RegisteredUser.getUsername());
-                    RegisteredUser.setAccessToken(accessToken);
+            if (RegisteredUser == null) {
+                userRepository.save(user);
+            } else {
+                System.out.println("이미 가입된 사용자 : " + RegisteredUser.getUsername());
+                RegisteredUser.setAccessToken(accessToken);
 
-                }
-                return jwtUtil.createTokenWithCaptcha(oauthId,true,false);
+            }
+            return jwtUtil.createTokenWithCaptcha(oauthId,true,false);
 
-                } catch (Exception e) {
-                    log.error("jwt 토큰 발급실패:{}",e.getMessage(), e);
-                    return "jwt 토큰 발급실패";
-                }
+        } catch (Exception e) {
+            log.error("jwt 토큰 발급실패:{}",e.getMessage(), e);
+            return "jwt 토큰 발급실패";
+        }
     }
 
     @Transactional
@@ -155,7 +151,7 @@ public class OauthService {
 
     public String validateAccessToken(String oauthId) {
         // DB에서 해당 사용자 정보 조회 (저장된 엑세스 토큰 포함)
-        User user = userRepository.findByOauthId(oauthId);
+        User user = userRepository.findByUuid(oauthId);
         if (user == null) {
             log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
             return "사용자 없음";
@@ -184,7 +180,7 @@ public class OauthService {
     @Transactional
     public String newAccessToken(String oauthId){
 
-        User user = userRepository.findByOauthId(oauthId);
+        User user = userRepository.findByUuid(oauthId);
 
         if (user == null) {
             log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);

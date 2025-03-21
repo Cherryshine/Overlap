@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,11 +41,13 @@ public class EventGroup {
     @Column(name = "selectdates", nullable = false, columnDefinition = "TEXT")
     private String selectDates;
 
-    @Column(name = "created_At", nullable = false)
-    private LocalDate createdAt;
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
 
-    @Column(name = "expired_At", nullable = false)
-    private LocalDate expiredAt;
+    @Column(nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime expiredAt;
 //
 //    @Column(name = "url", nullable = false)
 //    private String url;
@@ -73,9 +76,8 @@ public class EventGroup {
     }
 
     @PrePersist
-    public void onPrePersist() {
-        // 엔티티가 처음 저장되기 직전에 호출됨!
-        this.createdAt = LocalDate.now(); // 현재 날짜로 생성일자 셋팅
-        this.expiredAt = this.createdAt.plusDays(30); // 생성일 기준 30일 뒤 만료일자 셋팅
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        expiredAt = createdAt.plusDays(30);
     }
 }

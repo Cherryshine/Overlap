@@ -19,9 +19,9 @@ public class UserService {
     private final OauthService oauthService;
 
 
-    public Map<String, String> getProfile(String oauthId) {
+    public Map<String,String> getProfile(String oauthId) {
 
-        User user = userRepository.findByOauthId(oauthId);
+        User user = userRepository.findByUuid(oauthId);
 
 //         KakaoUserInfoDto 에서 가져오기
         KakaoUserInfoDto userInfo = oauthService.getUserInfo(user.getAccessToken());
@@ -30,9 +30,9 @@ public class UserService {
 //        String thumbnailUrl = user.getThumbnailImageUrl();
         System.out.println(thumbnailUrl);
 
-        Map<String, String> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
 
-        map.put("thumbnailImageUrl", thumbnailUrl);
+        map.put("thumbnailImageUrl",thumbnailUrl);
 
         return map;
     }
