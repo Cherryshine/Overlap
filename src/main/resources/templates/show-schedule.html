@@ -252,11 +252,11 @@
                 </button>
 
                 <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-login" onclick="redirectKakao()">
-                    카카오로 로그인하고 톡캘린더 생성하기
+                    카카오로 로그인하고 내 일정 등록하기
                 </button>
 
-                <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-calendar-auth" >
-                    톡캘린더 권한얻기
+                <button class="bg-purple-700 text-white btn-responsive-font py-2 font-bold px-6 rounded hover:bg-purple-700 transition-colors" id="kakao-calendar-auth" >
+                    내 일정 등록하기
                 </button>
 
                 <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-calendar" onclick="window.location.href = '/test/token'">
@@ -278,22 +278,6 @@
 
 <script>
 
-    //     document.getElementById("kakao-calendar").addEventListener("click", async () => {
-    //     try {
-    //     const response = await fetch("/test/token", {
-    //     method: "GET",
-    //     headers: {
-    //     "Content-Type": "application/json",
-    // },
-    //     credentials: "include", // 쿠키 포함
-    // });
-    //
-    //     const data = await response.json();
-    //     console.log("응답 데이터:", data);
-    // } catch (error) {
-    //     console.error("에러 발생:", error);
-    // }
-    // });
 
 
 
@@ -305,15 +289,6 @@ const kakaoAuthUrl =
 
 window.location.href = kakaoAuthUrl;
 }
-
-        // function redirectKakaoAuth() {
-        //     const clientId = "e6c0d0aedffcb33efa50bd47deba9e3d"; // 카카오 REST API 키
-        //     const redirectUri = encodeURIComponent("https://localhost:8080/oauth/authorize");
-        //     const kakaoAuthUrl =
-        //         `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=talk_calendar`;
-        //
-        //     window.location.href = kakaoAuthUrl;
-        // }
 
 document.addEventListener('DOMContentLoaded', function() {
 // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
