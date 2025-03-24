@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Map;
 
@@ -51,5 +53,17 @@ public class EventGroupController {
         System.out.println("returning HTTP STATUS 201 Created");
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+    @GetMapping("/schedules/{url}")
+    public ResponseEntity<?> getEventGroupByUrl(@PathVariable String url) {
+        // eventService.
+        // EventGroupResponseDto eventGroup = eventRepository.findEventGroupByUrl(url);
+        
+        // if (eventGroup == null) {
+        //     return new ResponseEntity<>("존재하지 않는 일정입니다.", HttpStatus.NOT_FOUND);
+        // }
+        
+        // return new ResponseEntity<>(eventGroup, HttpStatus.OK);
+        return null;
     }
 }

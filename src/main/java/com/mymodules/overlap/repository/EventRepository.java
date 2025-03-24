@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<EventGroup, Long> {
 
     List<EventGroup> findByExpiredAtBefore(LocalDate date);
-
+    EventGroup findByUrl(String url);
     Optional<EventGroup> findFirstByUserOrderByIdDesc(User user);
 }

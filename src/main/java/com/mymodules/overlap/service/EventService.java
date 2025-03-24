@@ -131,4 +131,14 @@ public class EventService {
         
         return new TimeTable(user, selectedTimeJson);
     }
+
+    private void loadEventGroup(String url) {
+        EventGroup eventGroup = eventRepository.findByUrl(url);
+
+        if (eventGroup != null) {
+            throw new IllegalArgumentException();
+        }
+
+
+    }
 }

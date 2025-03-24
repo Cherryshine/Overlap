@@ -177,6 +177,136 @@
             display: none;
         }
 
+        /* 로딩 애니메이션 관련 스타일 */
+        .skeleton-loader {
+            position: relative;
+            background: #f0e9fb;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(157, 101, 203, 0.08);
+        }
+        
+        /* 빛 막대 효과 1 - 첫 번째 막대 */
+        .skeleton-loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150px;
+            height: 100%;
+            width: 150px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer-wave 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+        }
+        
+        /* 빛 막대 효과 2 - 두 번째 막대 (시차를 둠) */
+        .skeleton-loader::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150px;
+            height: 100%;
+            width: 150px;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer-wave 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) 0.75s infinite;
+        }
+        
+        @keyframes shimmer-wave {
+            0% {
+                transform: translateX(-150px);
+            }
+            100% {
+                transform: translateX(1000px);
+            }
+        }
+        
+        /* 중첩된 그리드에서 시차를 두지 않고 동일한 물결이 지나가도록 수정 */
+        .loader-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loader-header {
+            display: flex;
+            height: 36px;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .loader-time-column {
+            width: 60px;
+            margin-right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .loader-time {
+            width: 52px;
+            height: 20px;
+        }
+        
+        .loader-grid-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .loader-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .loader-cell {
+            height: 26px;
+            border-radius: 4px;
+        }
+        
+        /* 펄싱 효과 (약간의 크기 변화) */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.97);
+            }
+        }
+        
+        .skeleton-loader {
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        /* 등장 애니메이션 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loader-container {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="flex flex-col bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400">
@@ -190,57 +320,486 @@
             <!-- 일정 제목 -->
             <p class="text-purple-800 mb-[15px] text-3xl"><a class="text-purple-800 mb-[15px] font-bold text-3xl">대면회의</a> 그룹 일정</p>
             <!-- 타임 테이블 -->
-            <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative"></div>
+            <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative">
+                <!-- 로딩 애니메이션 추가 -->
+                <div id="scheduleLoader" class="loader-container">
+                    <!-- 헤더 스켈레톤 -->
+                    <div class="loader-header">
+                        <div class="skeleton-loader w-16"></div>
+                        <div class="skeleton-loader flex-1"></div>
+                    </div>
+                    
+                    <!-- 시간표 본문 -->
+                    <div class="flex">
+                        <!-- 시간 마커 열 -->
+                        <div class="loader-time-column">
+                            <div class="loader-time skeleton-loader"></div>
+                            <div class="loader-time skeleton-loader"></div>
+                            <div class="loader-time skeleton-loader"></div>
+                            <div class="loader-time skeleton-loader"></div>
+                        </div>
+                        
+                        <!-- 그리드 스켈레톤 -->
+                        <div class="loader-grid-container">
+                            <!-- 반복되는 행 7개 (시간대별) -->
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- (1) 스크립트 파일 로드 -->
             <script src="/js/schedule.js"></script>
 
             <!-- (2) JSON 데이터 및 초기화 로직 -->
             <script>
-                const jsonData = {
-                    startTime: "09:00",
-                    endTime: "16:00",
-                    interval: 15,
-                    days: [
-                        { label: "Sun", date: "Feb 9" },
-                        { label: "Mon", date: "Feb 10" },
-                        { label: "Tue", date: "Feb 11" },
-                        { label: "Wed", date: "Feb 12" },
-                        { label: "Thu", date: "Feb 13" },
-                        { label: "Fri", date: "Feb 14" },
-                        { label: "Sat", date: "Feb 15" },
-                        { label: "Sun", date: "Feb 16" },
-                        { label: "Mon", date: "Feb 17" },
-                        { label: "Tue", date: "Feb 18" },
-                        { label: "Wed", date: "Feb 19" },
-                        { label: "Thu", date: "Feb 20" },
-                        { label: "Fri", date: "Feb 21" },
-                        { label: "Sat", date: "Feb 22" },
-                        { label: "Wed", date: "Feb 12" },
-                        { label: "Thu", date: "Feb 13" },
-                        { label: "Fri", date: "Feb 14" },
-                        { label: "Sat", date: "Feb 15" },
-                        { label: "Sun", date: "Feb 16" },
-                        { label: "Mon", date: "Feb 17" },
-                        { label: "Tue", date: "Feb 18" },
-                        { label: "Wed", date: "Feb 19" },
-                        { label: "Thu", date: "Feb 20" },
-                        { label: "Fri", date: "Feb 21" }
-                    ]
+                // 서버에서 데이터 가져오기 함수
+                async function fetchScheduleData() {
+                    try {
+                        // 로더 표시
+                        document.getElementById('scheduleLoader').classList.remove('hidden');
+                        
+                        // 참여자 리스트와 가능한 시간대를 포함한 더미 데이터
+                        const data = {
+                            startTime: "11:00",
+                            endTime: "16:00",
+                            interval: 15,
+                            days: [
+                                { label: "월", date: "2월 12일" },
+                                { label: "화", date: "2월 13일" },
+                                { label: "수", date: "2월 14일" },
+                                { label: "목", date: "2월 15일" },
+                                { label: "금", date: "2월 16일" }
+                            ],
+                            participants: [
+                                { name: "지수", id: 1 },
+                                { name: "민구", id: 2 },
+                                { name: "성문", id: 3 },
+                                { name: "아현", id: 4 },
+                                { name: "민지", id: 5 },
+                                { name: "하니", id: 6 },
+                                { name: "혜인", id: 7 },
+                                { name: "다니엘", id: 8 },
+                                { name: "혜린", id: 9 },
+                                { name: "한국", id: 10 },
+                                { name: "지헌", id: 11 },
+                                { name: "하루", id: 12 }
+                            ],
+                            // 가용성 데이터를 셀 색상 정보로 변환
+                            availabilityColors: {}
+                        };
+                        
+                        // 각 날짜별, 시간별 참여자 가용성 데이터
+                        const availability = {
+                            "월_11:00": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // 모두 참여 가능
+                            "월_11:15": [1, 2, 3, 8, 9, 10, 11, 12],    // 8명 참여 가능
+                            "월_11:30": [2, 3, 4, 5, 6],       // 5명 참여 가능
+                            "월_11:45": [4, 7, 9],          // 3명만 참여 가능
+                            "월_12:00": [1, 2, 4, 7, 8, 9],
+                            "월_13:30": [1, 3, 4, 5, 11, 12],
+                            "화_11:00": [1, 2, 7, 8, 9, 10],
+                            "화_11:15": [2, 3, 4, 5, 6, 7, 8],
+                            "화_14:00": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                            "수_11:00": [3, 4, 10, 11, 12],
+                            "수_13:00": [1, 2, 3, 5, 6, 7],
+                            "목_11:45": [1, 4, 5, 6, 8, 9, 10],
+                            "목_15:00": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                            "금_11:30": [2, 3, 4, 7, 8, 9, 10],
+                            "금_11:45": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                        };
+                        
+                        // 가용성 데이터를 셀 색상으로 변환
+                        const totalParticipants = data.participants.length;
+                        
+                        // 각 셀 데이터 색상 및 정보 생성
+                        for (let day of data.days) {
+                            let currentHour = 9;  // 시작 시간(9시)
+                            let currentMinute = 0;
+                            
+                            while (currentHour < 16 || (currentHour === 16 && currentMinute === 0)) {
+                                // 시간 형식 포맷팅
+                                const formattedHour = currentHour.toString().padStart(2, '0');
+                                const formattedMinute = currentMinute.toString().padStart(2, '0');
+                                const formattedTime = `${formattedHour}:${formattedMinute}`;
+                                
+                                // 가용성 키 생성 (요일_시간)
+                                const availabilityKey = `${day.label}_${formattedTime}`;
+                                const availableUsers = availability[availabilityKey] || [];
+                                
+                                if (availableUsers.length > 0) {
+                                    // 참여 가능한 사람 비율 계산
+                                    const ratio = availableUsers.length / totalParticipants;
+                                    
+                                    // HSL 색상 계산 - 보라색(270) 유지하되 광도 조정
+                                    const saturation = 70 + (30 * ratio); 
+                                    // 가장 진한 색의 광도 늘림 (최소값 45%로 변경)
+                                    const lightness = 90 - (45 * ratio);
+                                    
+                                    // 셀 키 생성
+                                    const cellKey = `${day.label}_${formattedTime}`;
+                                    
+                                    // 배경색 설정 및 텍스트 색상 정보 추가
+                                    data.availabilityColors[cellKey] = {
+                                        backgroundColor: `hsl(270, ${saturation}%, ${lightness}%)`,
+                                        title: `참여 가능: ${availableUsers.length}/${totalParticipants}`,
+                                        participantIds: availableUsers,
+                                        // 텍스트 색상 정보 추가 (어두운 셀에만 흰색 적용)
+                                        textColor: ratio > 0.5 ? 'white' : 'black'
+                                    };
+                                }
+                                
+                                // 다음 시간대로 이동
+                                currentMinute += data.interval;
+                                if (currentMinute >= 60) {
+                                    currentHour += Math.floor(currentMinute / 60);
+                                    currentMinute %= 60;
+                                }
+                            }
+                        }
+                        
+                        // 데이터 설정
+                        window.jsonData = data;
+                        
+                        // 로더 숨기기
+                        document.getElementById('scheduleLoader').classList.add('hidden');
+                        
+                        // 일정 정보 표시 영역 추가
+                        if (!document.getElementById('selectedCellInfo')) {
+                            const infoDiv = document.createElement('div');
+                            infoDiv.id = 'selectedCellInfo';
+                            infoDiv.className = 'mt-4 p-6 bg-white rounded-lg shadow text-center border-2 border-purple-300 border-dashed flex items-center justify-center min-h-[120px]';
+                            infoDiv.innerHTML = `
+                                <div class="text-gray-500 text-md">
+                                    <i class="fas fa-info-circle text-purple-500 mr-2"></i>
+                                    선택된 셀이 없어요. 셀을 선택하시면 가능한 인원이 여기에 표시돼요.
+                                </div>
+                            `;
+                            document.getElementById('app').insertAdjacentElement('afterend', infoDiv);
+                        }
+                        
+                        // 기존 schedule.js의 updateSchedule 함수 호출
+                        updateSchedule();
+                        
+                        // 셀에 색상 적용 및 툴팁 추가
+                        setTimeout(applyAvailabilityColors, 100);
+                        
+                    } catch (error) {
+                        console.error('일정 데이터를 가져오는 중 오류 발생:', error);
+                        
+                        // 간단한 오류 대체 데이터
+                            window.jsonData = {
+                                startTime: "09:00",
+                                endTime: "16:00",
+                                interval: 15,
+                                days: [
+                                { label: "월", date: "2월 12일" },
+                                { label: "화", date: "2월 13일" },
+                                { label: "수", date: "2월 14일" }
+                            ],
+                            participants: [
+                                { name: "지수", id: 1 },
+                                { name: "민구", id: 2 }
+                                ]
+                            };
+                            
+                            // 로더 숨기기
+                            document.getElementById('scheduleLoader').classList.add('hidden');
+                            
+                            // 스케줄 업데이트
+                            updateSchedule();
+                    }
+                }
+                
+                // 생성된 셀에 가용성 색상 적용 및 툴팁, 클릭 이벤트 추가
+                function applyAvailabilityColors() {
+                    if (!window.jsonData || !window.jsonData.availabilityColors) return;
+                    
+                    const colors = window.jsonData.availabilityColors;
+                    const participants = window.jsonData.participants || [];
+                    
+                    document.querySelectorAll('.grid-cell').forEach(cell => {
+                        // 셀의 위치 정보 추출
+                        const days = window.jsonData.days;
+                        const startTimeObj = parseTimeString(window.jsonData.startTime);
+                        const startTotalMin = toTotalMinutes(startTimeObj.hour, startTimeObj.minute);
+                        
+                        // 이벤트 발생 셀 위치 파악
+                        const cellIndex = Array.from(cell.parentNode.children).indexOf(cell) - 1;
+                        if (cellIndex < 0) return; // 시간 열 제외
+                        
+                        const rowParent = cell.closest('div[class*="grid-cols-"]') || cell.parentNode;
+                        const dayIndex = cellIndex % days.length;
+                        if (dayIndex < 0 || dayIndex >= days.length) return;
+                        
+                        const day = days[dayIndex].label;
+                        
+                        // 시간 계산: 셀의 행 인덱스에 간격을 곱하여 시작 시간부터 오프셋
+                        const rowIndex = Math.floor(Array.from(rowParent.parentNode.children).indexOf(rowParent));
+                        const timeOffset = rowIndex * window.jsonData.interval;
+                        const cellTimeMinutes = startTotalMin + timeOffset;
+                        const formattedTime = formatTime24(cellTimeMinutes);
+                        
+                        // 셀 키 생성
+                        const cellKey = `${day}_${formattedTime}`;
+                        
+                        // 가용성 색상 정보가 있으면 적용
+                        if (colors[cellKey]) {
+                            cell.style.backgroundColor = colors[cellKey].backgroundColor;
+                            
+                            // 참여자 수 표시
+                            const participantIds = colors[cellKey].participantIds || [];
+                            
+                            // 기존 텍스트 제거
+                            const existingText = cell.querySelector('span');
+                            if (existingText) {
+                                cell.removeChild(existingText);
+                            }
+                            
+                            const countText = document.createElement('span');
+                            // 텍스트 색상 설정
+                            const textColor = colors[cellKey].textColor || 'black';
+                            countText.className = `text-xs font-medium ${textColor === 'white' ? 'text-white' : 'text-gray-800'}`;
+                            countText.textContent = `${participantIds.length}/${participants.length}`;
+                            cell.appendChild(countText);
+                            
+                            // 툴팁에 참여자 이름 추가
+                            if (participantIds.length > 0) {
+                                const names = participantIds.map(id => {
+                                    const participant = participants.find(p => p.id === id);
+                                    return participant ? participant.name : "알 수 없음";
+                                });
+                                
+                                // 종료 시간 계산 (15분 후)
+                                const endTime = calculateEndTime(formattedTime, 15);
+                                const timeRange = `${formattedTime}-${endTime}`;
+                                
+                                let tooltipText;
+                                if (names.length <= 3) {
+                                    tooltipText = `${timeRange} 참여 가능: ${names.join(", ")}`;
+                                } else {
+                                    tooltipText = `${timeRange} 참여 가능: ${names.slice(0, 3).join(", ")} 외 ${names.length - 3}명`;
+                                }
+                                
+                                cell.title = tooltipText;
+                                
+                                // 데이터 속성에 모든 정보 저장
+                                cell.dataset.day = day;
+                                cell.dataset.time = formattedTime;
+                                cell.dataset.participantIds = JSON.stringify(participantIds);
+                                
+                                // 클릭 이벤트 추가
+                                cell.addEventListener('click', function() {
+                                    showParticipantInfo(this);
+                                });
+                            }
+                        }
+                    });
+                }
+                
+                // 셀 클릭 시 참여자 정보 표시
+                function showParticipantInfo(cell) {
+                    const infoDiv = document.getElementById('selectedCellInfo');
+                    if (!infoDiv) return;
+                    
+                    // 먼저 모든 셀의 스타일을 초기화
+                    document.querySelectorAll('.grid-cell').forEach(cell => {
+                        // 모든 추가 스타일 속성 제거
+                        cell.style.boxShadow = '';
+                        cell.style.borderRadius = '';
+                        cell.style.position = '';
+                        cell.style.zIndex = '';
+                        cell.classList.remove('selected');
+                    });
+                    
+                    // 선택된 셀에 강조 효과 적용
+                    cell.classList.add('selected');
+                    
+                    // 내부 테두리 효과는 유지하고 외부 그림자만 제거
+                    cell.style.boxShadow = `inset 0 0 0 3px #40A9FF`; // 내부 테두리 효과만 유지 (파란색)
+                    
+                    cell.style.borderRadius = '6px'; // 둥근 테두리 효과
+                    cell.style.position = 'relative'; // 상대적 위치 설정
+                    cell.style.zIndex = '2';
+                    
+                    // 셀 데이터 추출
+                    const day = cell.dataset.day;
+                    const time = cell.dataset.time;
+                    const participantIds = JSON.parse(cell.dataset.participantIds || '[]');
+                    
+                    // 종료 시간 계산 (15분 후)
+                    const endTime = calculateEndTime(time, 15);
+                    const timeRange = `${time}-${endTime}`;
+                    
+                    if (participantIds.length === 0) {
+                        infoDiv.innerHTML = '<p class="text-gray-500">이 시간에는 참여 가능한 인원이 없습니다.</p>';
+                        infoDiv.className = 'mt-4 p-6 bg-white rounded-lg shadow text-left';
+                        return;
+                    }
+                    
+                    // 참여자 정보 구성
+                    const participants = window.jsonData.participants || [];
+                    const participantInfos = participantIds.map(id => {
+                        const participant = participants.find(p => p.id === id);
+                        return participant ? participant.name : "알 수 없음";
+                    });
+                    
+                    // HTML 구성
+                    let html = `
+                        <h3 class="font-bold text-lg text-purple-800">${day}요일 ${timeRange}</h3>
+                        <p class="mb-2 text-gray-600">참여 가능한 인원: ${participantIds.length}명</p>
+                        <div class="flex flex-wrap gap-2">
+                    `;
+                    
+                    // 참여자 태그 추가
+                    participantInfos.forEach(name => {
+                        html += `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm">${name}</span>`;
+                    });
+                    
+                    html += `</div>`;
+                    
+                    // 정보 표시 - 클래스도 업데이트하여 점선 테두리 제거
+                    infoDiv.innerHTML = html;
+                    infoDiv.className = 'mt-4 p-6 bg-white rounded-lg shadow text-left';
+                }
+                
+                // 종료 시간 계산 함수 (시작 시간에서 minutes 분 후)
+                function calculateEndTime(startTime, minutes) {
+                    const [hours, mins] = startTime.split(':').map(Number);
+                    
+                    // 분 단위로 변환하고 minutes를 더한 다음 다시 시간과 분으로 변환
+                    let totalMinutes = hours * 60 + mins + minutes;
+                    const newHours = Math.floor(totalMinutes / 60);
+                    const newMins = totalMinutes % 60;
+                    
+                    // 시간과 분을 두 자리 문자열로 포맷팅
+                    const formattedHours = newHours.toString().padStart(2, '0');
+                    const formattedMins = newMins.toString().padStart(2, '0');
+                    
+                    return `${formattedHours}:${formattedMins}`;
+                }
+                
+                // 시간 관련 유틸리티 함수
+                function parseTimeString(str) {
+                    const [hh, mm] = str.split(":");
+                    return { hour: parseInt(hh, 10), minute: parseInt(mm, 10) };
+                }
+                
+                function toTotalMinutes(h, m) {
+                    return h * 60 + m;
+                }
+                
+                function formatTime24(totalMin) {
+                    const h = Math.floor(totalMin / 60);
+                    const min = totalMin % 60;
+                    const hh = h < 10 ? "0" + h : "" + h;
+                    const mm = min < 10 ? "0" + min : "" + min;
+                    return `${hh}:${mm}`;
+                }
+                
+                // 원래 updateSchedule 함수 호출 전에 수정버전 사용을 위한 패치
+                const originalUpdateSchedule = window.updateSchedule;
+                window.updateSchedule = function() {
+                    const result = originalUpdateSchedule.apply(this, arguments);
+                    
+                    // 요일 표시 수정 - label을 그대로 사용
+                    document.querySelectorAll('.text-sm.text-gray-500').forEach(el => {
+                        // undefined 요일 텍스트 처리
+                        if (el.textContent.includes('undefined')) {
+                            // 원본 데이터에서 요일 추출
+                            const dayIndex = Array.from(el.closest('.grid').querySelectorAll('.text-center')).indexOf(el.closest('.text-center'));
+                            if (dayIndex >= 0 && window.jsonData.days[dayIndex]) {
+                                el.textContent = `${window.jsonData.days[dayIndex].label}요일`;
+                            }
+                        }
+                    });
+                    
+                    // 날짜 표시 수정
+                    document.querySelectorAll('.text-lg.font-semibold').forEach(el => {
+                        // undefined 텍스트 처리
+                        if (el.textContent.includes('undefined')) {
+                            // 원본 데이터에서 날짜 추출
+                            const dayIndex = Array.from(el.closest('.grid').querySelectorAll('.text-center')).indexOf(el.closest('.text-center'));
+                            if (dayIndex >= 0 && window.jsonData.days[dayIndex]) {
+                                // 이미 "2월 12일" 형식으로 되어 있기 때문에 그대로 사용
+                                el.textContent = window.jsonData.days[dayIndex].date;
+                            }
+                        }
+                    });
+                    
+                    return result;
                 };
-
+                
+                // 페이지 로드 시 호출하는 코드는 기존 코드 유지
                 let currentPage = 0;
                 let itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
 
                 document.addEventListener("DOMContentLoaded", function () {
-                    updateSchedule();
+                    // 서버에서 데이터 가져오기
+                    fetchScheduleData();
 
                     // 반응형 리사이징 감지
                     window.addEventListener("resize", function () {
-                        const newItemsPerPage = window.innerWidth <= 629 ? 3 : 7;
+                        const newItemsPerPage = window.innerWidth <= 629 ? 3 : 5;
                         if (newItemsPerPage !== itemsPerPage) {
                             itemsPerPage = newItemsPerPage;
                             currentPage = 0;
                             updateSchedule();
+                            // 셀 색상 다시 적용
+                            setTimeout(applyAvailabilityColors, 100);
                         }
                     });
                 });
@@ -313,3 +872,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
