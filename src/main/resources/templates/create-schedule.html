@@ -1011,37 +1011,6 @@ display: none;
 
         <!-- (2) JSON 데이터 및 초기화 로직 -->
         <script>
-            const jsonData = {
-                startTime: "09:00",
-                endTime: "16:00",
-                interval: 15,
-                days: [
-                    { label: "Sun", date: "Feb 9" },
-                    { label: "Mon", date: "Feb 10" },
-                    { label: "Tue", date: "Feb 11" },
-                    { label: "Wed", date: "Feb 12" },
-                    { label: "Thu", date: "Feb 13" },
-                    { label: "Fri", date: "Feb 14" },
-                    { label: "Sat", date: "Feb 15" },
-                    { label: "Sun", date: "Feb 16" },
-                    { label: "Mon", date: "Feb 17" },
-                    { label: "Tue", date: "Feb 18" },
-                    { label: "Wed", date: "Feb 19" },
-                    { label: "Thu", date: "Feb 20" },
-                    { label: "Fri", date: "Feb 21" },
-                    { label: "Sat", date: "Feb 22" },
-                    { label: "Wed", date: "Feb 12" },
-                    { label: "Thu", date: "Feb 13" },
-                    { label: "Fri", date: "Feb 14" },
-                    { label: "Sat", date: "Feb 15" },
-                    { label: "Sun", date: "Feb 16" },
-                    { label: "Mon", date: "Feb 17" },
-                    { label: "Tue", date: "Feb 18" },
-                    { label: "Wed", date: "Feb 19" },
-                    { label: "Thu", date: "Feb 20" },
-                    { label: "Fri", date: "Feb 21" }
-                ]
-            };
 
             let currentPage = 0;
             let itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
