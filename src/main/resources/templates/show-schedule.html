@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko">  
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -93,6 +93,46 @@
         /* 반응형 버튼 폰트: 뷰포트 너비가 320px에서는 12px, 640px 이상에서는 16px로 선형 보간 */
         .btn-responsive-font {
             font-size: clamp(12px, calc(12px + ((100vw - 320px) / 80)), 16px) !important;
+        }
+
+        /* 셀 내부 텍스트 색상 설정 */
+        .grid-cell {
+            color: white;
+        }
+        
+        /* 셀 내부의 모든 텍스트 요소에 대한 색상 설정 */
+        .grid-cell * {
+            color: white;
+        }
+        
+        /* 헤더 텍스트는 제외 (요일, 날짜 표시) */
+        .text-center .text-sm,
+        .text-center .text-lg {
+            color: inherit;
+        }
+
+        /* 모든 셀 내부 텍스트를 흰색으로 설정 */
+        .grid-cell span {
+            color: white !important;
+        }
+        
+        /* 셀 내부의 모든 텍스트 요소에 대해 흰색 적용 */
+        .grid-cell * {
+            color: white !important;
+        }
+
+        /* 선택된 셀 정보 영역의 스타일 */
+        #selectedCellInfo h3 {
+            color: #6B46C1 !important; /* text-purple-800 */
+        }
+        
+        #selectedCellInfo p {
+            color: #7C3AED !important; /* text-purple-600 */
+        }
+        
+        #selectedCellInfo span {
+            background-color: #F3E8FF !important; /* bg-purple-100 */
+            color: #6B46C1 !important; /* text-purple-800 */
         }
     </style>
     <script src="https://cdn.tailwindcss.com/3.3.2"></script>
@@ -531,8 +571,13 @@
                             document.getElementById('app').insertAdjacentElement('afterend', infoDiv);
                         }
                         
-                        // 기존 schedule.js의 updateSchedule 함수 호출
-                        updateSchedule();
+                        // 전역 변수 명시적 초기화 (window 객체에 추가)
+                        window.currentPage = 0;
+                        window.itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
+                        console.log(`초기화: 페이지=${window.currentPage}, 항목수=${window.itemsPerPage}`);
+                        
+                        // 스케줄 업데이트 (자체적으로 페이지네이션 처리)
+                        window.updateSchedule();
                         
                         // 셀에 색상 적용 및 툴팁 추가
                         setTimeout(applyAvailabilityColors, 100);
@@ -560,7 +605,7 @@
                             document.getElementById('scheduleLoader').classList.add('hidden');
                             
                             // 스케줄 업데이트
-                            updateSchedule();
+                            window.updateSchedule();
                     }
                 }
                 
@@ -571,30 +616,38 @@
                     const colors = window.jsonData.availabilityColors;
                     const participants = window.jsonData.participants || [];
                     
-                    document.querySelectorAll('.grid-cell').forEach(cell => {
-                        // 셀의 위치 정보 추출
-                        const days = window.jsonData.days;
-                        const startTimeObj = parseTimeString(window.jsonData.startTime);
-                        const startTotalMin = toTotalMinutes(startTimeObj.hour, startTimeObj.minute);
-                        
-                        // 이벤트 발생 셀 위치 파악
-                        const cellIndex = Array.from(cell.parentNode.children).indexOf(cell) - 1;
-                        if (cellIndex < 0) return; // 시간 열 제외
+                    // 현재 표시 중인 날짜 배열 계산
+                    const startIndex = window.currentPage * window.itemsPerPage;
+                    const endIndex = startIndex + window.itemsPerPage;
+                    const currentPageDays = window.jsonData.days.slice(startIndex, endIndex);
+                    
+                    console.log(`현재 표시 중인 날짜: ${JSON.stringify(currentPageDays.map(d => d.date))}`);
+                    
+                    document.querySelectorAll('.grid-cell').forEach((cell, cellIndex) => {
+                        // 시간 열 제외
+                        const dayIndex = Array.from(cell.parentNode.children).indexOf(cell) - 1;
+                        if (dayIndex < 0) return;
                         
                         const rowParent = cell.closest('div[class*="grid-cols-"]') || cell.parentNode;
-                        const dayIndex = cellIndex % days.length;
-                        if (dayIndex < 0 || dayIndex >= days.length) return;
                         
-                        const day = days[dayIndex].label;
+                        // 현재 표시 중인 페이지에서의 요일 인덱스
+                        if (dayIndex >= currentPageDays.length) return;
                         
-                        // 시간 계산: 셀의 행 인덱스에 간격을 곱하여 시작 시간부터 오프셋
+                        // 현재 페이지의 요일 정보
+                        const day = currentPageDays[dayIndex].label;
+                        
+                        // 시간 계산
                         const rowIndex = Math.floor(Array.from(rowParent.parentNode.children).indexOf(rowParent));
+                        const startTimeObj = parseTimeString(window.jsonData.startTime);
+                        const startTotalMin = toTotalMinutes(startTimeObj.hour, startTimeObj.minute);
                         const timeOffset = rowIndex * window.jsonData.interval;
                         const cellTimeMinutes = startTotalMin + timeOffset;
                         const formattedTime = formatTime24(cellTimeMinutes);
                         
                         // 셀 키 생성
                         const cellKey = `${day}_${formattedTime}`;
+                        
+                        console.log(`셀 키 생성: ${cellKey}, 요일=${day}, 시간=${formattedTime}`);
                         
                         // 가용성 색상 정보가 있으면 적용
                         if (colors[cellKey]) {
@@ -610,9 +663,7 @@
                             }
                             
                             const countText = document.createElement('span');
-                            // 텍스트 색상 설정
-                            const textColor = colors[cellKey].textColor || 'black';
-                            countText.className = `text-xs font-medium ${textColor === 'white' ? 'text-white' : 'text-gray-800'}`;
+                            countText.className = 'text-xs font-medium text-white';
                             countText.textContent = `${participantIds.length}/${participants.length}`;
                             cell.appendChild(countText);
                             
@@ -646,6 +697,23 @@
                                     showParticipantInfo(this);
                                 });
                             }
+                        } else {
+                            // 색상 정보가 없으면 기본 배경색 적용
+                            cell.style.backgroundColor = "rgb(229, 231, 235)"; // bg-gray-200
+                            
+                            // 기존 텍스트와 정보 제거
+                            const existingText = cell.querySelector('span');
+                            if (existingText) {
+                                cell.removeChild(existingText);
+                            }
+                            
+                            // 데이터 속성 초기화
+                            cell.dataset.day = "";
+                            cell.dataset.time = "";
+                            cell.dataset.participantIds = "[]";
+                            
+                            // 이벤트 리스너도 제거
+                            cell.replaceWith(cell.cloneNode(true));
                         }
                     });
                 }
@@ -697,23 +765,39 @@
                         return participant ? participant.name : "알 수 없음";
                     });
                     
-                    // HTML 구성
+                    // HTML 구성 수정
                     let html = `
                         <h3 class="font-bold text-lg text-purple-800">${day}요일 ${timeRange}</h3>
-                        <p class="mb-2 text-gray-600">참여 가능한 인원: ${participantIds.length}명</p>
+                        <p class="mb-2 text-purple-600">참여 가능한 인원: ${participantIds.length}명</p>
                         <div class="flex flex-wrap gap-2">
                     `;
                     
-                    // 참여자 태그 추가
+                    // 참여자 태그 스타일 수정
                     participantInfos.forEach(name => {
-                        html += `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm">${name}</span>`;
+                        html += `
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
+                                ${name}
+                            </span>
+                        `;
                     });
                     
                     html += `</div>`;
                     
-                    // 정보 표시 - 클래스도 업데이트하여 점선 테두리 제거
+                    // 정보 표시
                     infoDiv.innerHTML = html;
                     infoDiv.className = 'mt-4 p-6 bg-white rounded-lg shadow text-left';
+                    
+                    // 스타일 강제 적용
+                    const titleEl = infoDiv.querySelector('h3');
+                    const countEl = infoDiv.querySelector('p');
+                    const nameEls = infoDiv.querySelectorAll('span');
+                    
+                    if (titleEl) titleEl.style.color = '#6B46C1';  // purple-800
+                    if (countEl) countEl.style.color = '#7C3AED';  // purple-600
+                    nameEls.forEach(el => {
+                        el.style.backgroundColor = '#F3E8FF';  // purple-100
+                        el.style.color = '#6B46C1';  // purple-800
+                    });
                 }
                 
                 // 종료 시간 계산 함수 (시작 시간에서 minutes 분 후)
@@ -750,56 +834,127 @@
                     return `${hh}:${mm}`;
                 }
                 
-                // 원래 updateSchedule 함수 호출 전에 수정버전 사용을 위한 패치
+                // 페이지네이션 관련 코드를 완전히 재작성합니다
+                function updatePagination() {
+                    console.log(`페이지네이션 업데이트: 현재 페이지=${window.currentPage}`);
+                    
+                    // 현재 페이지에 표시할 날짜 계산
+                    const startIndex = window.currentPage * window.itemsPerPage;
+                    const currentPageDays = window.jsonData.days.slice(startIndex, startIndex + window.itemsPerPage);
+                    
+                    console.log(`현재 페이지 날짜:`, currentPageDays.map(d => d.date));
+                    
+                    // 사용자 정의 데이터로 스케줄 업데이트
+                    const scheduleData = {
+                        ...window.jsonData,
+                        days: currentPageDays,
+                        startIndex: startIndex,
+                        totalDays: window.jsonData.days.length
+                    };
+                    
+                    // 스케줄 테이블 새로 렌더링
+                    const app = document.getElementById("app");
+                    
+                    // 날짜 헤더 생성
+                    let dayHeaderHtml = `
+                        <div class="flex mb-2">
+                            <div class="w-16 mr-2"></div>
+                            <div class="flex-1">
+                                <div class="grid" style="grid-template-columns: repeat(${currentPageDays.length}, 1fr)">
+                                    ${currentPageDays.map((d, index) => `
+                                        <div class="text-center" 
+                                             style="${index !== currentPageDays.length - 1 ? 'border-right: 1px solid #d1d5db;' : ''}">
+                                            <div class="text-sm text-gray-500">${d.label}요일</div>
+                                            <div class="text-lg font-semibold">${d.date}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 시간표 HTML 생성
+                    const tableHTML = buildScheduleTable(scheduleData);
+                    
+                    // 앱 컨테이너 업데이트
+                    app.innerHTML = dayHeaderHtml + tableHTML;
+                    
+                    // 페이지 버튼 추가
+                    setTimeout(() => {
+                        const gridContainer = document.querySelector('.flex-1.relative');
+                        if (!gridContainer) return;
+                        
+                        // 기존 버튼 제거
+                        const existingPrevBtn = document.getElementById('prevPage');
+                        const existingNextBtn = document.getElementById('nextPage');
+                        if (existingPrevBtn) existingPrevBtn.remove();
+                        if (existingNextBtn) existingNextBtn.remove();
+                        
+                        // 이전 페이지 버튼
+                        if (window.currentPage > 0) {
+                            const btnPrev = document.createElement('button');
+                            btnPrev.id = 'prevPage';
+                            btnPrev.className = 'absolute left-[-20px] top-1/2 transform -translate-y-1/2 page-button';
+                            btnPrev.innerHTML = '←';
+                            btnPrev.onclick = function() {
+                                window.currentPage--;
+                                console.log('이전 페이지로 이동:', window.currentPage);
+                                updatePagination();
+                                setTimeout(() => {
+                                    adjustTimeBarPositions(window.jsonData.interval);
+                                    applyAvailabilityColors();
+                                }, 100);
+                            };
+                            gridContainer.appendChild(btnPrev);
+                        }
+                        
+                        // 최대 페이지 계산
+                        const maxPage = Math.ceil(window.jsonData.days.length / window.itemsPerPage) - 1;
+                        
+                        // 다음 페이지 버튼
+                        if (window.currentPage < maxPage) {
+                            const btnNext = document.createElement('button');
+                            btnNext.id = 'nextPage';
+                            btnNext.className = 'absolute right-[-20px] top-1/2 transform -translate-y-1/2 page-button';
+                            btnNext.innerHTML = '→';
+                            btnNext.onclick = function() {
+                                window.currentPage++;
+                                console.log('다음 페이지로 이동:', window.currentPage);
+                                updatePagination();
+                                setTimeout(() => {
+                                    adjustTimeBarPositions(window.jsonData.interval);
+                                    applyAvailabilityColors();
+                                }, 100);
+                            };
+                            gridContainer.appendChild(btnNext);
+                        }
+                    }, 0);
+                    
+                    // 시간바 위치 조정
+                    setTimeout(() => {
+                        adjustTimeBarPositions(window.jsonData.interval);
+                        applyAvailabilityColors();
+                    }, 100);
+                }
+                
+                // 기존 updateSchedule 함수 완전 대체
                 const originalUpdateSchedule = window.updateSchedule;
                 window.updateSchedule = function() {
-                    const result = originalUpdateSchedule.apply(this, arguments);
-                    
-                    // 요일 표시 수정 - label을 그대로 사용
-                    document.querySelectorAll('.text-sm.text-gray-500').forEach(el => {
-                        // undefined 요일 텍스트 처리
-                        if (el.textContent.includes('undefined')) {
-                            // 원본 데이터에서 요일 추출
-                            const dayIndex = Array.from(el.closest('.grid').querySelectorAll('.text-center')).indexOf(el.closest('.text-center'));
-                            if (dayIndex >= 0 && window.jsonData.days[dayIndex]) {
-                                el.textContent = `${window.jsonData.days[dayIndex].label}요일`;
-                            }
-                        }
-                    });
-                    
-                    // 날짜 표시 수정
-                    document.querySelectorAll('.text-lg.font-semibold').forEach(el => {
-                        // undefined 텍스트 처리
-                        if (el.textContent.includes('undefined')) {
-                            // 원본 데이터에서 날짜 추출
-                            const dayIndex = Array.from(el.closest('.grid').querySelectorAll('.text-center')).indexOf(el.closest('.text-center'));
-                            if (dayIndex >= 0 && window.jsonData.days[dayIndex]) {
-                                // 이미 "2월 12일" 형식으로 되어 있기 때문에 그대로 사용
-                                el.textContent = window.jsonData.days[dayIndex].date;
-                            }
-                        }
-                    });
-                    
-                    return result;
+                    // 페이지네이션 업데이트 함수 호출
+                    updatePagination();
+                    return true;
                 };
                 
-                // 페이지 로드 시 호출하는 코드는 기존 코드 유지
-                let currentPage = 0;
-                let itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
-
+                // 페이지 로드 및 리사이징 코드는 기존 코드 유지
                 document.addEventListener("DOMContentLoaded", function () {
-                    // 서버에서 데이터 가져오기
                     fetchScheduleData();
-
-                    // 반응형 리사이징 감지
+                    
                     window.addEventListener("resize", function () {
                         const newItemsPerPage = window.innerWidth <= 629 ? 3 : 5;
-                        if (newItemsPerPage !== itemsPerPage) {
-                            itemsPerPage = newItemsPerPage;
-                            currentPage = 0;
-                            updateSchedule();
-                            // 셀 색상 다시 적용
-                            setTimeout(applyAvailabilityColors, 100);
+                        if (newItemsPerPage !== window.itemsPerPage) {
+                            window.itemsPerPage = newItemsPerPage;
+                            window.currentPage = 0;  // 리사이징 시 첫 페이지로 초기화
+                            window.updateSchedule();
                         }
                     });
                 });
@@ -807,7 +962,7 @@
             <!-- 버튼 그룹 -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 md-[30px] mt-[15px]">
                 <button id="shareButton" class="bg-purple-700 text-white btn-responsive-font py-2 font-bold px-6 rounded hover:bg-purple-700 transition-colors">
-                    􀈂 공유하기
+                    공유하기
                 </button>
 
                 <button class="bg-[#FEE500] text-[#191919] btn-responsive-font py-2 px-6 font-bold rounded hover:bg-[#FEE500] transition-colors" id="kakao-login" onclick="redirectKakao()">

@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @RestController
-public class EventGroupController {
+public class EventController {
     private final EventService eventService;
     private final JwtUtil jwtUtil;
 
