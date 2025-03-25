@@ -1240,6 +1240,38 @@ display: none;
       // scheduleData를 콘솔에 출력하여 확인
       console.log('전송할 데이터:', scheduleData);
       
+      // 서버 전송 전에 24:00을 23:59로 변환하는 함수
+      function normalizeTimeData(dataObj) {
+        if (!dataObj) return dataObj;
+        
+        // 깊은 복사
+        const normalized = JSON.parse(JSON.stringify(dataObj));
+        
+        // 변환 전 데이터 기록
+        console.log('변환 전 데이터:', JSON.stringify(dataObj));
+        
+        // 최상위 endTime 정규화
+        if (normalized.endTime === "24:00") {
+          normalized.endTime = "23:59";
+          console.log('endTime 변환: 24:00 → 23:59');
+        }
+        
+        // 중첩된 creatorSelectedTimes 배열 처리
+        if (normalized.creatorSelectedTimes && Array.isArray(normalized.creatorSelectedTimes)) {
+          normalized.creatorSelectedTimes.forEach((timeSlot, index) => {
+            if (timeSlot.endTime === "24:00") {
+              console.log(`creatorSelectedTimes[${index}] 변환: ${timeSlot.endTime} → 23:59`);
+              timeSlot.endTime = "23:59";
+            }
+          });
+        }
+        
+        // 변환 후 데이터 기록
+        console.log('변환 후 데이터:', JSON.stringify(normalized));
+        
+        return normalized;
+      }
+      
       // fetch 요청 수정
       fetch('/api/schedules', {
         method: 'POST',
@@ -1248,7 +1280,7 @@ display: none;
           'Accept': 'application/json'
         },
         credentials: 'same-origin', // 쿠키 포함
-        body: JSON.stringify(scheduleData)
+        body: JSON.stringify(normalizeTimeData(scheduleData))
       })
       .then(response => {
         console.log(response);
