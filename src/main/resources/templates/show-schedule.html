@@ -1027,24 +1027,27 @@ window.location.href = kakaoAuthUrl;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-// 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
-        setTimeout(function() {
-            window.scrollTo(0, 0); // 스크롤을 최상단으로
-        }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
-    });
+    // 페이지가 로드된 후 잠시 지연을 주어 스크롤 이동
+    setTimeout(function() {
+        window.scrollTo(0, 0); // 스크롤을 최상단으로
+    }, 100); // 100ms 정도 지연시켜줌으로써 페이지 레이아웃 안정화 후 실행
+});
 
-    document.getElementById("shareButton").addEventListener("click", async () => {
-        try {
-            await navigator.share({
-                title: '김민구 멍청이',
-                text: '김민구바보멍청',
-                url: 'https://wormwlrm.github.io',
-            });
-            console.log('공유 성공');
-        } catch (e) {
-            console.log('공유 실패');
-        }
-    });
+document.getElementById("shareButton").addEventListener("click", async () => {
+    try {
+        // 현재 URL을 공유 URL로 사용
+        const currentUrl = window.location.href;
+        
+        await navigator.share({
+            title: 'OverLap 일정 공유 테스트', // JSON에서 받아온 title 사용
+            text: 'OverLap에서 생성한 일정입니다.',
+            url: currentUrl,
+        });
+        console.log('공유 성공');
+    } catch (e) {
+        console.log('공유 실패');
+    }
+});
 
 </script>
 </body>

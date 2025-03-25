@@ -12,8 +12,11 @@ window.selectedCells = window.selectedCells || {};
  * @returns {{hour: number, minute: number}} - 파싱된 시간 객체
  */
 function parseTimeString(str) {
+    console.log("[로그] 시간 파싱:", str);
     const [hh, mm] = str.split(":");
-    return { hour: parseInt(hh, 10), minute: parseInt(mm, 10) };
+    const result = { hour: parseInt(hh, 10), minute: parseInt(mm, 10) };
+    console.log("[로그] 파싱 결과:", result);
+    return result;
 }
 
 /**
@@ -65,41 +68,57 @@ function convert12to24(time12h) {
 
 /**
  * 시간표 테이블의 HTML을 생성합니다.
- * @param {Object} data - 시간표 데이터 (startTime, endTime, interval, days, startIndex, totalDays 등)
+ * @param {Object} data - 시간표 데이터
  * @returns {string} 생성된 HTML 문자열
  */
 function buildScheduleTable(data) {
+    console.log("[로그] buildScheduleTable 호출됨, 데이터:", JSON.stringify(data));
+    
     const start = parseTimeString(data.startTime);
     let end = parseTimeString(data.endTime);
 
     // 종료 시간이 00:00인 경우 24:00으로 처리
     if (end.hour === 0 && end.minute === 0) {
+        console.log("[로그] 종료 시간 00:00을 24:00으로 변경");
         end.hour = 24;
     }
 
     const startTotal = toTotalMinutes(start.hour, start.minute);
     const endTotal = toTotalMinutes(end.hour, end.minute);
+    console.log(`[로그] 시간 범위: ${startTotal}분(${data.startTime}) ~ ${endTotal}분(${data.endTime}), 간격: ${data.interval}분`);
+    
     const interval = data.interval;
     const totalBlocks = Math.floor((endTotal - startTotal) / interval);
+    console.log(`[로그] 총 블록 수: ${totalBlocks}`);
 
-    // 테두리 유무 판단
-    const hasPrevPage = data.startIndex > 0;
-    const hasNextPage = data.startIndex + data.days.length < data.totalDays;
-
-    // 왼쪽 시간 바 (날짜헤더와 좌측 여백 통일을 위해 w-16 사용)
+    // 왼쪽 시간 바 생성 로그
+    console.log(`[로그] 시간 바 생성 시작 - 시작 시간: ${start.hour}시 ${start.minute}분`);
+    
+    // 왼쪽 시간 바
     let timeBarHtml = `<div class="relative w-16 mr-2">`;
-    for (let h = start.hour; h <= end.hour; h++) {
-        const hourIndex = h - start.hour;
-        const topPos = hourIndex * (60 / interval * 32); // 32px는 셀의 기본 높이
-        const displayHour = h === 24 ? 0 : h;
+    
+    // 시간 간격 계산 (시작 시간부터 종료 시간까지)
+    for (let i = 0; i <= Math.ceil((endTotal - startTotal) / 60); i++) {
+        const currentMinutes = startTotal + (i * 60);
+        if (currentMinutes > endTotal) break; // 종료 시간을 넘어가면 중단
+        
+        // 현재 시간을 시:분 형식으로 변환
+        const currentHour = Math.floor(currentMinutes / 60) % 24;
+        const topPos = (i * (60 / interval) * 32); // 시간당 높이 계산
+        
+        console.log(`[로그] 시간 라벨 생성: ${currentHour}시, 위치: ${topPos}px, 인덱스: ${i}`);
+        
         timeBarHtml += `
             <div class="time-label absolute left-0 text-sm font-semibold"
-                 style="top: ${topPos}px; transform: translateY(-50%)">
-                ${displayHour}시발
+                 style="top: ${topPos}px; transform: translateY(-50%);"
+                 data-hour="${currentHour}"
+                 data-log="시간: ${currentHour}, 시작시간: ${start.hour}, 인덱스: ${i}">
+                ${currentHour}시
             </div>
         `;
     }
     timeBarHtml += `</div>`;
+    console.log("[로그] 시간 바 HTML 생성 완료");
 
     // 오른쪽 시간표 생성: grid 컨테이너에 relative 클래스 추가
     let timeGridHtml = `<div class="flex-1 relative">`;
@@ -610,13 +629,13 @@ function setupResizeObserver(interval) {
     // ResizeObserver가 지원되는 경우
     if (container && window.ResizeObserver) {
         const observer = new ResizeObserver(() => {
-            adjustTimeBarPositions(interval);
+            // 여기서 adjustTimeBarPositions 함수 사용 안함
         });
         observer.observe(container);
     } else {
-        // ResizeObserver 미지원 시, debouncing을 적용한 resize 이벤트 사용
+        // ResizeObserver 미지원 시도 함수 호출 안함
         window.addEventListener("resize", debounce(() => {
-            adjustTimeBarPositions(interval);
+            // 여기서 adjustTimeBarPositions 함수 사용 안함
         }, 100));
     }
 }
@@ -641,13 +660,24 @@ function debounce(fn, delay) {
  * 시간표 및 관련 UI를 업데이트합니다.
  */
 function updateSchedule() {
+    console.log("[로그] updateSchedule 함수 호출");
+    
     if (!window.jsonData) {
-        console.error('jsonData is not available');
+        console.error('[로그] jsonData가 없음!');
         return;
     }
 
+    console.log("[로그] 시간표 설정:", JSON.stringify({
+        startTime: window.jsonData.startTime,
+        endTime: window.jsonData.endTime,
+        interval: window.jsonData.interval
+    }));
+    
     const startIndex = currentPage * itemsPerPage;
+    console.log(`[로그] 현재 페이지: ${currentPage}, 페이지당 항목 수: ${itemsPerPage}, 시작 인덱스: ${startIndex}`);
+    
     const paginatedDays = window.jsonData.days.slice(startIndex, startIndex + itemsPerPage);
+    console.log(`[로그] 페이지네이션된 날짜 수: ${paginatedDays.length}`);
 
     // 요일, 월 한글 변환 객체는 그대로 유지
     const dayKorean = {
@@ -754,17 +784,8 @@ function updateSchedule() {
     // 드래그 이벤트 연결
     initDragEvents(paginatedDays.length);
 
-    // 테이블 렌더링 후 시간바 위치 조정
-    setTimeout(() => {
-        adjustTimeBarPositions(window.jsonData.interval);
-    }, 0);
-
-    // 창 크기 변화에 따른 시간바 조정
+    // 창 크기 변화에 따른 이벤트는 유지
     setupResizeObserver(window.jsonData.interval);
-
-    setTimeout(() => {
-        adjustTimeBarPositions(window.jsonData.interval);
-    }, 0);
 
     // 페이지 갱신 후 선택된 셀에 해당하는 오버레이를 다시 그리도록 호출합니다.
     setTimeout(() => {
@@ -772,28 +793,15 @@ function updateSchedule() {
             window.generateOverlaysGlobal();
         }
     }, 100);
-}
 
-/**
- * 각 시간별 셀의 높이를 기반으로 시간바의 위치를 조정합니다.
- * @param {number} interval - 시간 간격 (분)
- */
-function adjustTimeBarPositions(interval) {
-    const cell = document.querySelector(".grid-cell");
-    if (cell) {
-        const cellHeight = cell.offsetHeight;
-        const hourHeight = cellHeight * (60 / interval);
-        document.querySelectorAll(".time-label").forEach((label, index) => {
-            const hour = index;
-            // 시간 표시 로직 수정
-            let displayHour = hour;
-            if (hour === 24 || hour === 0) {
-                displayHour = "0";
-            }
-            label.textContent = `${displayHour}시`;
-            label.style.top = (hourHeight * index) + "px";
+    // setTimeout으로 확인
+    setTimeout(() => {
+        const timeLabels = document.querySelectorAll(".time-label");
+        console.log(`[로그] 렌더링 후 시간 라벨 개수: ${timeLabels.length}`);
+        timeLabels.forEach((label, i) => {
+            console.log(`[로그] 라벨 ${i}: 텍스트="${label.textContent}", top=${label.style.top}, data-hour=${label.getAttribute('data-hour')}, data-log=${label.getAttribute('data-log')}`);
         });
-    }
+    }, 100);
 }
 
 /**
@@ -835,11 +843,86 @@ function updateSelectedInfo() {
     localStorage.setItem("selectedCells", JSON.stringify(window.selectedCells));
 }
 
+/**
+ * 이전 슬라이드에서 선택된 시간 범위를 가져옵니다.
+ * @returns {{startTime: string, endTime: string} | null}
+ */
+function getPreviousSelectedTimeRange() {
+    const selectedCells = window.selectedCells || {};
+    if (Object.keys(selectedCells).length === 0) return null;
+
+    let minBlock = Infinity;
+    let maxBlock = -Infinity;
+
+    // 선택된 모든 셀을 순회하며 최소/최대 블록 인덱스 찾기
+    for (const key in selectedCells) {
+        if (!selectedCells[key]) continue;
+        const parts = key.split("-");
+        if (parts.length < 3) continue;
+        const blockIndex = parseInt(parts[2], 10);
+        minBlock = Math.min(minBlock, blockIndex);
+        maxBlock = Math.max(maxBlock, blockIndex);
+    }
+
+    if (minBlock === Infinity || maxBlock === -Infinity) return null;
+
+    // 기존 시작 시간을 기준으로 새로운 시작/종료 시간 계산
+    const startTimeObj = parseTimeString(window.jsonData.startTime);
+    const startTotalMin = toTotalMinutes(startTimeObj.hour, startTimeObj.minute);
+    
+    const newStartTime = formatTime24(startTotalMin + minBlock * window.jsonData.interval);
+    const newEndTime = formatTime24(startTotalMin + (maxBlock + 1) * window.jsonData.interval);
+
+    return {
+        startTime: newStartTime,
+        endTime: newEndTime
+    };
+}
+
+/**
+ * 시간표 초기화 및 업데이트
+ */
+function initializeSchedule() {
+    // 드롭다운에서 선택된 시작 시간 가져오기
+    const startTimeSelect = document.getElementById("startTime");
+    if (startTimeSelect) {
+        window.jsonData.startTime = startTimeSelect.value;
+    }
+    
+    updateSchedule();
+}
+
+// 드롭다운 변경 이벤트 리스너 추가
+document.addEventListener('DOMContentLoaded', function() {
+    const startTimeSelect = document.getElementById("startTime");
+    if (startTimeSelect) {
+        startTimeSelect.addEventListener('change', function() {
+            window.jsonData.startTime = this.value;
+            updateSchedule();
+        });
+    }
+    
+    initializeSchedule();
+});
+
 // 전역 노출 함수
 window.buildScheduleTable = buildScheduleTable;
 window.initDragEvents = initDragEvents;
 window.updateSchedule = updateSchedule;
 window.convert12to24 = convert12to24;
+
+// 추가: 초기화 시 시간 정보가 올바르게 설정되었는지 확인하는 함수
+function debugTimeInfo() {
+    console.log("현재 시간 설정:", window.jsonData);
+    const labels = document.querySelectorAll(".time-label");
+    console.log("시간 라벨 개수:", labels.length);
+    labels.forEach((label, i) => {
+        console.log(`라벨 ${i}: ${label.textContent} (top: ${label.style.top})`);
+    });
+}
+
+// 전역 함수로 등록하여 디버깅 가능하게
+window.debugTimeInfo = debugTimeInfo;
 
 
 

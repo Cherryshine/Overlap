@@ -44,11 +44,56 @@ function formatTime24(totalMin) {
  * @returns {string} "오전/오후 X시" 형식의 문자열
  */
 function formatHourLabel(hour24) {
-    console.log("This Time for Hour 24 : "+hour24);
+    // 원래 시간값을 콘솔에 로깅
+    console.log("formatHourLabel 호출: 시간값 = " + hour24);
+    
     let ampm = hour24 < 12 ? "오전" : "오후";
     let hour12 = hour24 % 12;
     if (hour12 === 0) hour12 = 12;
     return `${ampm} ${hour12}시`;
+}
+
+/**
+ * 서버 전송용 시간 형식 변환 유틸리티 함수
+ * - 24:00을 23:59로 변환
+ * - 기타 필요한 시간 형식 처리
+ */
+function normalizeTimeForServer(timeStr) {
+  if (!timeStr) return timeStr;
+  
+  // 24:00을 23:59로 변환
+  if (timeStr === "24:00") {
+    return "23:59";
+  }
+  return timeStr;
+}
+
+/**
+ * 객체의 모든 시간 필드를 정규화
+ * @param {Object} dataObj - 정규화할 데이터 객체
+ * @returns {Object} 정규화된 객체
+ */
+function normalizeTimeData(dataObj) {
+  if (!dataObj) return dataObj;
+  
+  // 기본 깊은 복사
+  const normalized = JSON.parse(JSON.stringify(dataObj));
+  
+  // 최상위 시간 필드 정규화
+  if (normalized.endTime) {
+    normalized.endTime = normalizeTimeForServer(normalized.endTime);
+  }
+  
+  // 중첩된 시간 배열 처리
+  if (normalized.creatorSelectedTimes && Array.isArray(normalized.creatorSelectedTimes)) {
+    normalized.creatorSelectedTimes.forEach(timeSlot => {
+      if (timeSlot.endTime) {
+        timeSlot.endTime = normalizeTimeForServer(timeSlot.endTime);
+      }
+    });
+  }
+  
+  return normalized;
 }
 
 /*****************************************
@@ -61,8 +106,15 @@ function formatHourLabel(hour24) {
  * @returns {string} 생성된 HTML 문자열
  */
 function buildScheduleTable(data) {
+    console.log("시간표 생성 시작 - 시간 범위:", data.startTime, "~", data.endTime);
+    
     const start = parseTimeString(data.startTime);
     const end = parseTimeString(data.endTime);
+    
+    // 디버깅용 로그 추가
+    console.log("파싱된 시작 시간:", start.hour, "시", start.minute, "분");
+    console.log("파싱된 종료 시간:", end.hour, "시", end.minute, "분");
+    
     const startTotal = toTotalMinutes(start.hour, start.minute);
     const endTotal = toTotalMinutes(end.hour, end.minute);
     const interval = data.interval;
@@ -72,14 +124,20 @@ function buildScheduleTable(data) {
     const hasPrevPage = data.startIndex > 0;
     const hasNextPage = data.startIndex + data.days.length < data.totalDays;
 
-    // 왼쪽 시간 바 (날짜헤더와 좌측 여백 통일을 위해 w-16 사용)
+    // 왼쪽 시간 바 (시작 시간부터 생성)
     let timeBarHtml = `<div class="relative w-16 mr-2">`;
+    
+    // 시간대별 로그와 명확한 시간값 설정
     for (let h = start.hour; h <= end.hour; h++) {
         const hourIndex = h - start.hour;
         const topPos = hourIndex * 160;
+        
+        console.log(`시간 라벨 생성: ${h}시, 인덱스=${hourIndex}, 위치=${topPos}px`);
+        
         timeBarHtml += `
             <div class="time-label absolute left-0 text-sm font-semibold"
-                 style="top: ${topPos}px; transform: translateY(-50%)">
+                 style="top: ${topPos}px; transform: translateY(-50%)"
+                 data-orig-hour="${h}">
                 ${formatHourLabel(h)}
             </div>
         `;
@@ -331,14 +389,16 @@ function updateSchedule() {
  * @param {number} interval - 시간 간격 (분)
  */
 function adjustTimeBarPositions(interval) {
-    // 우선 셀 중 하나를 선택하여 실제 높이를 측정 (h-10 클래스가 적용된 셀)
+    // 이 함수는 위치만 조정하고 시간 텍스트는 변경하지 않도록 수정
     const cell = document.querySelector(".grid-cell");
     if (cell) {
         const cellHeight = cell.offsetHeight;
-        // 1시간은 60분이므로, interval 당 셀 1개 높이에서 1시간 높이는 아래와 같이 계산합니다.
         const hourHeight = cellHeight * (60 / interval);
+        
+        // 위치만 조정하고 텍스트는 변경하지 않음
         document.querySelectorAll(".time-label").forEach((label, index) => {
             label.style.top = (hourHeight * index) + "px";
+            // 텍스트 변경 로직 제거 - 기존 텍스트 유지
         });
     }
 }
@@ -384,3 +444,5 @@ function updateSelectedInfo() {
 
 // 전역 노출 함수
 window.buildScheduleTable = buildScheduleTable;
+window.normalizeTimeForServer = normalizeTimeForServer;
+window.normalizeTimeData = normalizeTimeData;

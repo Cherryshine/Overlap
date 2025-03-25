@@ -2151,5 +2151,48 @@ display: none;
 
 
 </script>
+
+<!-- 두 번째 슬라이드에 추가 -->
+<script>
+  // 시간표 생성 후 시간 라벨을 강제로 수정하는 함수
+  function fixTimeLabels() {
+    // 드롭다운에서 선택한 시간 가져오기
+    const startTimeBtn = document.getElementById("dropdownMenu1Button").textContent.trim();
+    
+    if (startTimeBtn && startTimeBtn !== "시작 시간") {
+      // 12시간제를 24시간제로 변환
+      const [time, period] = startTimeBtn.split(' ');
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours);
+      
+      if (period === 'PM' && hours !== 12) {
+        hours += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      
+      console.log("스크립트 실행: 시작 시간 = " + hours + "시");
+      
+      // 모든 시간 라벨 강제 업데이트
+      const timeLabels = document.querySelectorAll(".time-label");
+      timeLabels.forEach((label, index) => {
+        const currentHour = (hours + index) % 24;
+        const ampm = currentHour < 12 ? "오전" : "오후";
+        const hour12 = currentHour % 12 === 0 ? 12 : currentHour % 12;
+        
+        label.textContent = `${ampm} ${hour12}시`;
+        console.log(`라벨 ${index} 수정: ${currentHour}시(24시간제) → ${ampm} ${hour12}시`);
+      });
+    }
+  }
+  
+  // 다음 버튼 클릭 이벤트에 연결
+  document.getElementById("nextButton").addEventListener("click", function(e) {
+    // 기존 이벤트 핸들러가 실행된 후
+    setTimeout(function() {
+      fixTimeLabels();
+    }, 500); // 시간표가 렌더링된 후 실행
+  });
+</script>
 </body>
 </html>
