@@ -1251,20 +1251,26 @@ display: none;
         body: JSON.stringify(scheduleData)
       })
       .then(response => {
-        if (!response.ok) {
+        console.log(response);
+        if (!response.redirected) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         // 성공 상태로 팝업 업데이트
         loadingState.style.display = 'none';
         successState.style.display = 'block';
-        
+
         // 성공 시에만 컨페티 효과 실행
         confetti({
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 }
         });
+        
+        // 2초 후에 리다이렉트
+        setTimeout(() => {
+          window.location.href = response.url;
+        }, 1500);
       })
       .catch(error => {
         console.error('일정 생성 오류:', error);

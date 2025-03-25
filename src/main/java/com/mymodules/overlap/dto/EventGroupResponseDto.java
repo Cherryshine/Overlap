@@ -23,6 +23,7 @@ public class EventGroupResponseDto {
 //    private LocalDate expiredAt;
     private boolean creatorParticipates;
     private List<SelectedTime> creatorSelectedTimes;
+    private String url;
 
     public EventGroupResponseDto(String username, EventGroupRequestDto req) {
         this.username = username;
@@ -32,6 +33,10 @@ public class EventGroupResponseDto {
         endTime = req.getEndTime();
         creatorParticipates = req.isCreatorParticipates();
         creatorSelectedTimes = req.getCreatorSelectedTimes();
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

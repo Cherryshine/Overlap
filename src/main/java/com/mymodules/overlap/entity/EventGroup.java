@@ -62,15 +62,13 @@ public class EventGroup {
     private TimeTable timeTable;
 
 
-    public EventGroup(EventGroupResponseDto res, User user) {
+    public EventGroup(User user, String title, String startTime, String endTime, List<LocalDate> dates) {
         this.user = user;
-        this.title = res.getTitle();
-        this.startTime = res.getStartTime().toString(); // LocalTime을 String으로 변환
-        this.endTime = res.getEndTime().toString();     // LocalTime을 String으로 변환
-        this.selectDates = convertDatesToString(res.getDates());
-        
-        // 고유한 URL 생성 로직 추가
-        this.url = generateUniqueUrl();
+        this.title = title;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.selectDates = convertDatesToString(dates);
+        // URL은 외부에서 setter로 설정
     }
 
     private String convertDatesToString(List<LocalDate> dates) {
@@ -80,12 +78,6 @@ public class EventGroup {
         return dates.stream()
                 .map(LocalDate::toString) // ISO-8601 포맷: 2024-03-14
                 .collect(Collectors.joining(","));
-    }
-
-    // URL 생성 메서드 추가
-    private String generateUniqueUrl() {
-        // 랜덤한 6자리 영숫자 조합 생성 (실제 구현에서는 중복 확인 로직 필요)
-        return UUID.randomUUID().toString().substring(0, 6);
     }
 
     @PrePersist

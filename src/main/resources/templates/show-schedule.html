@@ -358,7 +358,9 @@
     <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-[60px] pb-[50px] max-w-4xl">
         <div class="glass-effect rounded-3xl p-8 text-center">
             <!-- 일정 제목 -->
-            <p class="text-purple-800 mb-[15px] text-3xl"><a class="text-purple-800 mb-[15px] font-bold text-3xl">대면회의</a> 그룹 일정</p>
+            <p class="text-purple-800 mb-[15px] text-3xl">
+                <a class="text-purple-800 mb-[15px] font-bold text-3xl">{schedule.title}</a> 그룹 일정
+            </p>
             <!-- 타임 테이블 -->
             <div id="app" class="max-w-5xl w-full p-4 bg-purple-50 rounded-lg shadow relative">
                 <!-- 로딩 애니메이션 추가 -->
@@ -382,6 +384,13 @@
                         <!-- 그리드 스켈레톤 -->
                         <div class="loader-grid-container">
                             <!-- 반복되는 행 7개 (시간대별) -->
+                            <div class="loader-grid">
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                                <div class="loader-cell skeleton-loader"></div>
+                            </div>
                             <div class="loader-grid">
                                 <div class="loader-cell skeleton-loader"></div>
                                 <div class="loader-cell skeleton-loader"></div>
@@ -920,10 +929,23 @@
                             btnNext.onclick = function() {
                                 window.currentPage++;
                                 console.log('다음 페이지로 이동:', window.currentPage);
+                                
+                                // 디버깅: 현재 페이지에 표시될 날짜 출력
+                                const startIndex = window.currentPage * window.itemsPerPage;
+                                const debugDays = window.jsonData.days.slice(startIndex, startIndex + window.itemsPerPage);
+                                console.log('현재 페이지 날짜:', debugDays.map(d => d.label));
+                                console.log('가용성 데이터 키:', Object.keys(window.jsonData.availabilityColors));
+                                
                                 updatePagination();
                                 setTimeout(() => {
                                     adjustTimeBarPositions(window.jsonData.interval);
                                     applyAvailabilityColors();
+                                    
+                                    // 디버깅: 실제 표시된 셀 정보 확인
+                                    console.log('표시된 셀 수:', document.querySelectorAll('.grid-cell').length);
+                                    document.querySelectorAll('.grid-cell[data-day="목"]').forEach(cell => {
+                                        console.log('목요일 셀:', cell.dataset.time, cell.style.backgroundColor);
+                                    });
                                 }, 100);
                             };
                             gridContainer.appendChild(btnNext);
