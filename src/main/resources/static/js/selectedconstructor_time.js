@@ -1,6 +1,9 @@
 // 글로벌 변수: 선택된 셀을 저장하는 객체
 window.selectedCells = window.selectedCells || {};
 
+// 초기화 플래그와 재시도 방지 변수
+let isInitialized = false;
+let isWaitingForJsonData = false;
 
 /*****************************************
  * 시간 관련 유틸리티 함수
@@ -12,10 +15,8 @@ window.selectedCells = window.selectedCells || {};
  * @returns {{hour: number, minute: number}} - 파싱된 시간 객체
  */
 function parseTimeString(str) {
-    console.log("[로그] 시간 파싱:", str);
     const [hh, mm] = str.split(":");
     const result = { hour: parseInt(hh, 10), minute: parseInt(mm, 10) };
-    console.log("[로그] 파싱 결과:", result);
     return result;
 }
 
@@ -73,6 +74,10 @@ function convert12to24(time12h) {
  */
 function buildScheduleTable(data) {
     console.log("[로그] buildScheduleTable 호출됨, 데이터:", JSON.stringify(data));
+    
+    // 이전/다음 페이지 여부 계산 추가
+    const hasPrevPage = data.startIndex > 0;
+    const hasNextPage = data.startIndex + data.days.length < data.totalDays;
     
     const start = parseTimeString(data.startTime);
     let end = parseTimeString(data.endTime);
@@ -656,152 +661,124 @@ function debounce(fn, delay) {
     };
 }
 
+// jsonData가 준비되었는지 확인하는 함수
+function isJsonDataReady() {
+  return window.jsonData && window.jsonData.days && window.jsonData.days.length > 0;
+}
+
 /**
  * 시간표 및 관련 UI를 업데이트합니다.
  */
 function updateSchedule() {
-    console.log("[로그] updateSchedule 함수 호출");
-    
-    if (!window.jsonData) {
-        console.error('[로그] jsonData가 없음!');
-        return;
-    }
-
-    console.log("[로그] 시간표 설정:", JSON.stringify({
-        startTime: window.jsonData.startTime,
-        endTime: window.jsonData.endTime,
-        interval: window.jsonData.interval
-    }));
-    
-    const startIndex = currentPage * itemsPerPage;
-    console.log(`[로그] 현재 페이지: ${currentPage}, 페이지당 항목 수: ${itemsPerPage}, 시작 인덱스: ${startIndex}`);
-    
-    const paginatedDays = window.jsonData.days.slice(startIndex, startIndex + itemsPerPage);
-    console.log(`[로그] 페이지네이션된 날짜 수: ${paginatedDays.length}`);
-
-    // 요일, 월 한글 변환 객체는 그대로 유지
-    const dayKorean = {
-        'Sun': '일',
-        'Mon': '월',
-        'Tue': '화',
-        'Wed': '수',
-        'Thu': '목',
-        'Fri': '금',
-        'Sat': '토'
-    };
-
-    const monthKorean = {
-        'Jan': '1월',
-        'Feb': '2월',
-        'Mar': '3월',
-        'Apr': '4월',
-        'May': '5월',
-        'Jun': '6월',
-        'Jul': '7월',
-        'Aug': '8월',
-        'Sep': '9월',
-        'Oct': '10월',
-        'Nov': '11월',
-        'Dec': '12월'
-    };
-
-    let dayHeaderHtml = `
-        <div class="flex mb-2">
-            <div class="w-16 mr-2"></div>
-            <div class="flex-1">
-                <div class="grid" style="grid-template-columns: repeat(${paginatedDays.length}, 1fr)">
-                    ${paginatedDays.map((d, index) => {
-                        const [month, day] = d.date.split(" ");
-                        return `
-                            <div class="text-center" 
-                                 style="${index !== paginatedDays.length - 1 ? 'border-right: 1px solid #d1d5db;' : ''}">
-                                <div class="text-sm text-gray-500">${dayKorean[d.label]}요일</div>
-                                <div class="text-lg font-semibold">${monthKorean[month]} ${day}일</div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
+  // jsonData가 없으면 단순히 오류 로그만 남기고 종료
+  if (!isJsonDataReady()) {
+    console.error('[로그] jsonData가 없습니다. 업데이트를 중단합니다.');
+    return;
+  }
+  
+  // 현재 페이지 및 아이템 수 설정
+  window.currentPage = window.currentPage || 0;
+  window.itemsPerPage = window.innerWidth <= 629 ? 3 : 5;
+  
+  const startIndex = window.currentPage * window.itemsPerPage;
+  const paginatedDays = window.jsonData.days.slice(startIndex, startIndex + window.itemsPerPage);
+  
+  // 기존 페이지 버튼 제거
+  const prevPageBtn = document.getElementById("prevPage");
+  if (prevPageBtn) prevPageBtn.remove();
+  const nextPageBtn = document.getElementById("nextPage");
+  if (nextPageBtn) nextPageBtn.remove();
+  
+  // 요일 및 월 이름 변환
+  const dayKorean = {
+    'Sun': '일', 'Mon': '월', 'Tue': '화', 'Wed': '수', 
+    'Thu': '목', 'Fri': '금', 'Sat': '토'
+  };
+  
+  const monthKorean = {
+    'Jan': '1월', 'Feb': '2월', 'Mar': '3월', 'Apr': '4월', 'May': '5월', 'Jun': '6월',
+    'Jul': '7월', 'Aug': '8월', 'Sep': '9월', 'Oct': '10월', 'Nov': '11월', 'Dec': '12월'
+  };
+  
+  // 날짜 헤더 HTML 생성
+  let dayHeaderHtml = `
+    <div class="flex mb-2">
+      <div class="w-16 mr-2"></div>
+      <div class="flex-1">
+        <div class="grid" style="grid-template-columns: repeat(${paginatedDays.length}, 1fr)">
+          ${paginatedDays.map((d, index) => {
+            const [month, day] = d.date.split(" ");
+            return `
+              <div class="text-center" 
+                   style="${index !== paginatedDays.length - 1 ? 'border-right: 1px solid #d1d5db;' : ''}">
+                <div class="text-sm text-gray-500">${dayKorean[d.label]}요일</div>
+                <div class="text-lg font-semibold">${monthKorean[month]} ${day}일</div>
+              </div>
+            `;
+          }).join('')}
         </div>
-    `;
-
-    // 빌드된 시간표 HTML (시간 바 + 셀 영역)
-    const tableHTML = buildScheduleTable({
-        ...window.jsonData,
-        days: paginatedDays,
-        startIndex,
-        totalDays: window.jsonData.days.length
-    });
-
-    // 기존 페이지 버튼 컨테이너 제거하고, dayHeaderHtml과 tableHTML만 삽입
-    const app = document.getElementById("app");
-    if (!app) return;
-    app.innerHTML = dayHeaderHtml + tableHTML;
-
-    // 테이블 렌더링 후, 셀 영역(.flex-1.relative)에 이전/다음 버튼을 삽입합니다.
-    setTimeout(() => {
-        const gridContainer = document.querySelector('.flex-1.relative');
-        if (gridContainer) {
-            // 이전 페이지 버튼 (셀 영역의 왼쪽)
-            if (currentPage > 0) {
-                const btnPrev = document.createElement('button');
-                btnPrev.id = "prevPage";
-                btnPrev.className = "absolute left-[-20px] top-1/2 transform -translate-y-1/2 page-button";
-                btnPrev.innerText = "←";
-                gridContainer.appendChild(btnPrev);
-            }
-            // 다음 페이지 버튼 (셀 영역의 오른쪽)
-            if (startIndex + itemsPerPage < window.jsonData.days.length) {
-                const btnNext = document.createElement('button');
-                btnNext.id = "nextPage";
-                btnNext.className = "absolute right-[-20px] top-1/2 transform -translate-y-1/2 page-button";
-                btnNext.innerText = "→";
-                gridContainer.appendChild(btnNext);
-            }
-
-            // 버튼 클릭 이벤트 등록
-            const prevPageBtn = document.getElementById("prevPage");
-            const nextPageBtn = document.getElementById("nextPage");
-            if (prevPageBtn) {
-                prevPageBtn.addEventListener("click", function() {
-                    if (currentPage > 0) {
-                        currentPage--;
-                        updateSchedule();
-                    }
-                });
-            }
-            if (nextPageBtn) {
-                nextPageBtn.addEventListener("click", function() {
-                    if ((currentPage + 1) * itemsPerPage < window.jsonData.days.length) {
-                        currentPage++;
-                        updateSchedule();
-                    }
-                });
-            }
+      </div>
+    </div>
+  `;
+  
+  // 시간표 HTML 생성
+  const tableHTML = buildScheduleTable({
+    ...window.jsonData,
+    days: paginatedDays,
+    startIndex,
+    totalDays: window.jsonData.days.length
+  });
+  
+  // HTML 업데이트
+  const app = document.getElementById("app");
+  if (!app) return;
+  app.innerHTML = dayHeaderHtml + tableHTML;
+  
+  // 페이지 버튼 추가 (단일 setTimeout으로)
+  setTimeout(() => {
+    const gridContainer = document.querySelector('.flex-1.relative');
+    if (!gridContainer) return;
+    
+    // 이전 페이지 버튼
+    if (window.currentPage > 0) {
+      const btnPrev = document.createElement('button');
+      btnPrev.id = "prevPage";
+      btnPrev.className = "absolute left-[-20px] top-1/2 transform -translate-y-1/2 page-button";
+      btnPrev.innerText = "←";
+      gridContainer.appendChild(btnPrev);
+      
+      btnPrev.addEventListener("click", function() {
+        if (window.currentPage > 0) {
+          window.currentPage--;
+          updateSchedule();
         }
-    }, 0);
-
+      });
+    }
+    
+    // 다음 페이지 버튼
+    if (startIndex + window.itemsPerPage < window.jsonData.days.length) {
+      const btnNext = document.createElement('button');
+      btnNext.id = "nextPage";
+      btnNext.className = "absolute right-[-20px] top-1/2 transform -translate-y-1/2 page-button";
+      btnNext.innerText = "→";
+      gridContainer.appendChild(btnNext);
+      
+      btnNext.addEventListener("click", function() {
+        if ((window.currentPage + 1) * window.itemsPerPage < window.jsonData.days.length) {
+          window.currentPage++;
+          updateSchedule();
+        }
+      });
+    }
+    
     // 드래그 이벤트 연결
     initDragEvents(paginatedDays.length);
-
-    // 창 크기 변화에 따른 이벤트는 유지
-    setupResizeObserver(window.jsonData.interval);
-
-    // 페이지 갱신 후 선택된 셀에 해당하는 오버레이를 다시 그리도록 호출합니다.
-    setTimeout(() => {
-        if (window.generateOverlaysGlobal) {
-            window.generateOverlaysGlobal();
-        }
-    }, 100);
-
-    // setTimeout으로 확인
-    setTimeout(() => {
-        const timeLabels = document.querySelectorAll(".time-label");
-        console.log(`[로그] 렌더링 후 시간 라벨 개수: ${timeLabels.length}`);
-        timeLabels.forEach((label, i) => {
-            console.log(`[로그] 라벨 ${i}: 텍스트="${label.textContent}", top=${label.style.top}, data-hour=${label.getAttribute('data-hour')}, data-log=${label.getAttribute('data-log')}`);
-        });
-    }, 100);
+    
+    // 오버레이 업데이트
+    if (window.generateOverlaysGlobal) {
+      window.generateOverlaysGlobal();
+    }
+  }, 10);
 }
 
 /**
@@ -883,6 +860,9 @@ function getPreviousSelectedTimeRange() {
  * 시간표 초기화 및 업데이트
  */
 function initializeSchedule() {
+    // 이미 초기화 되었으면 중복 실행 방지
+    if (isInitialized) return;
+    
     // 드롭다운에서 선택된 시작 시간 가져오기
     const startTimeSelect = document.getElementById("startTime");
     if (startTimeSelect) {
@@ -892,8 +872,11 @@ function initializeSchedule() {
     updateSchedule();
 }
 
-// 드롭다운 변경 이벤트 리스너 추가
+// 문서 로드 완료 이벤트에서 중복 초기화 방지
 document.addEventListener('DOMContentLoaded', function() {
+    // HTML 파일에서 이미 updateSchedule을 호출했다면 여기서는 스킵
+    if (window.jsonData && isInitialized) return;
+    
     const startTimeSelect = document.getElementById("startTime");
     if (startTimeSelect) {
         startTimeSelect.addEventListener('change', function() {
@@ -902,7 +885,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    initializeSchedule();
+    // 첫 번째 슬라이드가 활성 상태일 때는 초기화하지 않음
+    const slide1 = document.getElementById("slide1");
+    if (slide1 && slide1.classList.contains("active")) {
+        return;
+    }
+    
+    // 필요한 경우에만 초기화
+    if (window.jsonData && !isInitialized) {
+        initializeSchedule();
+    }
 });
 
 // 전역 노출 함수
