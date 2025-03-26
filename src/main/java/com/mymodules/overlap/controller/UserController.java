@@ -3,6 +3,7 @@ package com.mymodules.overlap.controller;
 import com.mymodules.overlap.config.JwtUtil;
 import com.mymodules.overlap.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,15 @@ public class UserController {
 
         return userService.getProfile(oauthId);
     }
+
+    @GetMapping("/get_user/name")
+    public Map<String,String> getUserName(HttpServletRequest request){
+        String jwtToken = jwtUtil.getJwtFromCookies(request);
+        String oauthId = jwtUtil.getSubject(jwtToken);
+
+        return userService.getUserName(oauthId);
+    }
+
 
 
 }

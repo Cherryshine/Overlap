@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page</title>
+</head>
+<body>
+
+<button onclick="kakaoLogout()">카카오 로그아웃</button>
+
+<script>
+    function kakaoLogout() {
+        const clientId = 'e6c0d0aedffcb33efa50bd47deba9e3d'; // 카카오 앱 REST API 키
+        const redirectUri = 'https://localhost:8043/oauth/logout-success'; // 로그아웃 후 이동할 URL
+
+        window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${clientId}&logout_redirect_uri=${redirectUri}`;
+    }
+
+
+</script>
+
+
+<p id="welcome-msg"></p>
+
+<script>
+    // 페이지 로드 후 바로 실행
+    window.onload = function() {
+        fetch('/get_user/name', {
+            method: 'GET',
+            credentials: 'include' // 쿠키 인증 필요시
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('사용자 정보를 가져오지 못했습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const username = data.username;
+                document.getElementById('welcome-msg').innerText = `${username}님 안녕하세요!`;
+            })
+            .catch(error => {
+                console.error('❌ 오류:', error);
+            });
+    }
+</script>
+
+</body>
+</html>
