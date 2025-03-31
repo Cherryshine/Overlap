@@ -61,6 +61,13 @@ public class EventGroup {
     @JoinColumn(name = "timetable_id", referencedColumnName = "id", nullable = true)
     private TimeTable timeTable;
 
+    @Column
+    private String participants;
+
+    @Column
+    private String availability;
+
+
 
     public EventGroup(User user, String title, String startTime, String endTime, List<LocalDate> dates) {
         this.user = user;
