@@ -1,47 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>My Page</title>
+    <meta charset="UTF-8" />
+    <title>OverLap - 마이페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(to bottom right, #E9D5FF, #D8B4FE, #C084FC);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 80px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+            border-radius: 9999px;
+            transition: 0.3s;
+        }
+        .btn-purple {
+            background-color: #7C3AED;
+            color: white;
+        }
+        .btn-purple:hover {
+            background-color: #6D28D9;
+        }
+        .btn-yellow {
+            background-color: #FEE500;
+            color: #222;
+        }
+        .btn-yellow:hover {
+            background-color: #f5d000;
+        }
+    </style>
 </head>
 <body>
 
-<button onclick="kakaoLogout()">카카오 로그아웃</button>
+<div class="glass-effect text-center">
+    <h1 class="text-2xl font-bold mb-4" id="welcome-msg">Loading...</h1>
+
+    <div class="mb-6">
+        <img id="thumbnailImageUrl" src="/images/placeholder.png" alt="프로필 이미지" class="w-24 h-24 rounded-full mx-auto shadow-md" />
+    </div>
+
+    <div class="flex flex-col gap-4">
+        <button class="btn btn-purple" onclick="location.href='/create-schedule'">일정 생성하러 가기</button>
+        <button class="btn btn-yellow" onclick="kakaoLogout()">카카오 로그아웃</button>
+    </div>
+</div>
 
 <script>
-    function kakaoLogout() {
-        const clientId = 'e6c0d0aedffcb33efa50bd47deba9e3d'; // 카카오 앱 REST API 키
-        const redirectUri = 'https://localhost:8043/oauth/logout-success'; // 로그아웃 후 이동할 URL
-
-        window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${clientId}&logout_redirect_uri=${redirectUri}`;
-    }
-
-
-</script>
-
-
-<p id="welcome-msg"></p>
-
-<script>
-    // 페이지 로드 후 바로 실행
+    // 사용자 이름 가져오기
     window.onload = function() {
         fetch('/get_user/name', {
             method: 'GET',
-            credentials: 'include' // 쿠키 인증 필요시
+            credentials: 'include'
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('사용자 정보를 가져오지 못했습니다.');
-                }
+                if (!response.ok) throw new Error('사용자 정보를 가져오지 못했습니다.');
                 return response.json();
             })
             .then(data => {
-                const username = data.username;
-                document.getElementById('welcome-msg').innerText = `${username}님 안녕하세요!`;
+                document.getElementById('welcome-msg').innerText = `${data.username}님 안녕하세요!`;
             })
             .catch(error => {
+                document.getElementById('welcome-msg').innerText = '로그인된 사용자가 없습니다.';
                 console.error('❌ 오류:', error);
             });
+
+        // 프로필 썸네일 이미지도 가져오기
+        fetch('/get_user/profile', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('thumbnailImageUrl').src = data.thumbnailImageUrl || '/images/placeholder.png';
+            })
+            .catch(err => {
+                console.warn('프로필 이미지 불러오기 실패:', err);
+            });
+    }
+
+    function kakaoLogout() {
+        const clientId = 'e6c0d0aedffcb33efa50bd47deba9e3d';
+        const redirectUri = 'https://localhost:8043/oauth/logout-success';
+        window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${clientId}&logout_redirect_uri=${redirectUri}`;
     }
 </script>
 
