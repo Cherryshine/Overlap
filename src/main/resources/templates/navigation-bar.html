@@ -14,58 +14,255 @@
             animation: float 2s ease-in-out infinite;
         }
 
+        /* 오프캔버스 컴포넌트에 스코프된 스타일 */
+        .nav-component .offcanvas {
+            position: fixed;
+            bottom: 0;
+            z-index: 1045;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            visibility: hidden;
+            background-color: #fff;
+            background-clip: padding-box;
+            outline: 0;
+            transition: transform .3s ease-in-out;
+        }
+        
+        .nav-component .offcanvas-end {
+            top: 0;
+            right: 0;
+            width: 300px;
+            border-left: 1px solid rgba(0,0,0,.2);
+            transform: translateX(100%);
+        }
+        
+        .nav-component .offcanvas.show {
+            transform: none;
+            visibility: visible;
+        }
+        
+        .nav-component .offcanvas-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1rem;
+        }
+        
+        .nav-component .offcanvas-body {
+            flex-grow: 1;
+            padding: 1rem 1rem;
+            overflow-y: auto;
+        }
+        
+        .nav-component .btn-close {
+            box-sizing: content-box;
+            width: 1em;
+            height: 1em;
+            padding: .25em .25em;
+            color: #000;
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            border: 0;
+            border-radius: .25rem;
+            opacity: .5;
+        }
+        
+        .nav-component .btn-close:hover {
+            color: #000;
+            text-decoration: none;
+            opacity: .75;
+        }
+        
+        .nav-component .nav {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 0;
+            margin-bottom: 0;
+            list-style: none;
+        }
+        
+        .nav-component .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #0d6efd;
+            text-decoration: none;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+        }
+        
+        .nav-component .nav-link:hover, 
+        .nav-component .nav-link:focus {
+            color: #0a58ca;
+        }
+        
+        .nav-component .flex-column {
+            flex-direction: column!important;
+        }
+        
+        .nav-component .text-purple-800 {
+            color: #6b46c1;
+        }
+        
+        .nav-component .font-bold {
+            font-weight: 700;
+        }
+        
+        .nav-component .btn {
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            border-radius: 0.25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        
+        .nav-component .btn-link {
+            font-weight: 400;
+            color: #0d6efd;
+            text-decoration: none;
+            background-color: transparent;
+            border: 0;
+        }
+        
+        .nav-component .btn-link:hover {
+            color: #0a58ca;
+            text-decoration: underline;
+        }
+        
+        .nav-component .ml-2 {
+            margin-left: 0.5rem;
+        }
     </style>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.1/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          rel="stylesheet" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
 </head>
 <body>
 
 <!-- nav fragment 정의 -->
-<nav th:fragment="nav" class="fixed top-0 left-0 w-full px-6 py-4 flex items-center z-50" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
+<nav th:fragment="nav" class="fixed top-0 left-0 w-full px-6 py-4 flex items-center justify-between z-50 nav-component" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
     <a href="/">
         <img src="/images/overlap_logo.png" alt="OverLap" class="w-24 md:w-32 lg:w-40 h-auto logo-animation cursor-pointer">
     </a>
 
-    <div class="ml-auto">
-        <img id="thumbnailImageUrl" alt="Profile Thumbnail" class="w-10 h-10 rounded-full">
-    </div>
+    <!--  offCanvas Menu  -->
+    <button class="btn btn-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style="color: #6b46c1; transition: transform 0.2s; border: none; background: none;">
+        <i class="fas fa-bars fa-lg"></i>
+    </button>
 
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" style="width: 320px; background-color: #fdfdfd; box-shadow: -5px 0 15px rgba(0,0,0,0.1); border-left: none; height: 100vh;">
+        <div class="offcanvas-header" style="border-bottom: 1px solid #f0f0f0; padding: 1.5rem;">
+            <div style="display: flex; align-items: center; width: 100%;">
+                <img id="offcanvasProfileImage" alt="Profile" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #6b46c1;">
+                <div style="margin-left: 15px;">
+                    <h5 id="userName" style="margin: 0; font-weight: 600; color: #333; font-size: 1.1rem;">사용자</h5>
+                    <span style="font-size: 0.85rem; color: #666;">마이페이지</span>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: #666; opacity: 0.7; padding: 0.5rem; transition: opacity 0.2s;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="offcanvas-body" style="padding: 0;">
+            <div style="padding: 1rem 0;">
+                <h6 style="padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; color: #888; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">내 일정</h6>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li>
+                        <a href="/my-schedules" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-calendar-alt" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>내가 만든 일정</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/participating-schedules" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-users" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>내가 참여중인 일정</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div style="padding: 1rem 0; border-top: 1px solid #f0f0f0;">
+                <h6 style="padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; color: #888; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">기본 메뉴</h6>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li>
+                        <a href="/" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-home" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>홈</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/create-schedule" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-plus-circle" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>일정 생성하기</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/my-page" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-user" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>마이페이지</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="padding: 1rem 0; border-top: 1px solid #f0f0f0;">
+                <h6 style="padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; color: #888; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">지원</h6>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li>
+                        <a href="/support" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-heart" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>후원하기</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/report-bug" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-bug" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
+                            <span>버그 신고</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid #f0f0f0; text-align: center;">
+                <a href="/logout" style="display: flex; align-items: center; justify-content: center; padding: 0.8rem 1rem; color: #666; text-decoration: none; border-radius: 8px; border: 1px solid #ddd; transition: all 0.2s;">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i>
+                    <span>로그아웃</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
 </nav>
 
-<script defer>
-    function loadProfileImage() {
-        setTimeout(() => {
-            console.log("🔄 프로필 이미지 불러오기 시작...");
-
-            fetch('/get_user/profile')
-                .then(response => response.json())
-                .then(data => {
-                    console.log("✅ 서버 응답:", data);
-
-                    let rawUrl = data.thumbnailImageUrl;
-
-                    if (rawUrl && rawUrl.includes("?fname=")) {
-                        rawUrl = rawUrl.split("?fname=")[1];
-                    }
-
-                    console.log("🔍 최종 적용할 이미지 URL:", rawUrl);
-
-                    const profileImage = document.getElementById('thumbnailImageUrl');
-                    if (profileImage) {
-                        profileImage.src = rawUrl;
-                        console.log("✅ 적용된 이미지 URL:", profileImage.src);
-                    } else {
-                        console.error("❌ `thumbnailImageUrl` 요소를 찾을 수 없음");
-                    }
-                })
-                .catch(error => {
-                    console.error('❌ Error:', error);
-                });
-        }, 500);
-    }
-
-    // 🔥 페이지가 완전히 로드된 후 강제로 실행
-    window.onload = function() {
-        loadProfileImage();
-    };
+<script>
+    // 이미 layout.js에서 모든 기능을 처리하므로 간소화합니다
+    document.addEventListener('DOMContentLoaded', function() {
+        // 호버 효과 추가
+        const menuItems = document.querySelectorAll('.offcanvas-body a');
+        menuItems.forEach(item => {
+            item.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#f8f2ff';
+            });
+            item.addEventListener('mouseout', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+    });
 </script>
 
 

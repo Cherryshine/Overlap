@@ -18,11 +18,19 @@ public class UserController {
 
     @GetMapping("/get_user/profile")
     public Map<String,String> getUserProfile(HttpServletRequest request){
+        String jwtToken;
+        String oauthId;
+        if(jwtUtil.getJwtFromCookies(request) != "guest"){
+            jwtToken = jwtUtil.getJwtFromCookies(request);
+            oauthId = jwtUtil.getSubject(jwtToken);
+            return userService.getProfile(oauthId);
+        }
+        else{
+            return null;
+        }
 
-        String jwtToken = jwtUtil.getJwtFromCookies(request);
-        String oauthId = jwtUtil.getSubject(jwtToken);
 
-        return userService.getProfile(oauthId);
+
     }
 
 

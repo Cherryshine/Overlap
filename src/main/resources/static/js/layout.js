@@ -34,12 +34,18 @@ function loadProfileImage() {
 
             console.log("🔍 최종 적용할 이미지 URL:", rawUrl);
 
-            const profileImage = document.getElementById('thumbnailImageUrl');
-            if (profileImage) {
-                profileImage.src = rawUrl;
-                console.log("✅ 적용된 이미지 URL:", profileImage.src);
-            } else {
-                console.error("❌ `thumbnailImageUrl` 요소를 찾을 수 없음");
+            const offcanvasProfileImage = document.getElementById('offcanvasProfileImage');
+            if (offcanvasProfileImage) {
+                offcanvasProfileImage.src = rawUrl;
+                console.log("✅ 오프캔버스 프로필 이미지 적용 완료:", rawUrl);
+            }
+            
+            // 사용자 이름이 있으면 설정
+            if (data.name) {
+                const userName = document.getElementById('userName');
+                if (userName) {
+                    userName.textContent = data.name;
+                }
             }
         })
         .catch(error => {
@@ -47,4 +53,5 @@ function loadProfileImage() {
         });
 }
 
-window.onload = loadProfileImage;
+// DOM이 로드되면 프로필 이미지 로드
+document.addEventListener('DOMContentLoaded', loadProfileImage);

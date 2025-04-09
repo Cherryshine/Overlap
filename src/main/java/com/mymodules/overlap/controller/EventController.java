@@ -50,14 +50,16 @@ public class EventController {
         
         return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Found 상태코드로 리다이렉트
     }
+
+//    리다이렉트 url 맵핑
     @GetMapping("/schedules/{url}")
     public ModelAndView getScheduleTemplate(@PathVariable(required = false) String url) {
         return new ModelAndView("show-schedule");
     }
+
+//    각 url 별 상세스케쥴 페이지 - in develop
     @GetMapping("/api/schedules/timetable/{url}")
     public ResponseEntity<?> getTimeTable(@PathVariable String url) {
-//        eventService.
-
         return null;
     }
 }
