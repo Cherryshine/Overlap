@@ -39,6 +39,11 @@ public class MainController {
         return new ModelAndView("navigation-bar");
     }
 
+    @GetMapping("/mypage")
+    public ModelAndView mypage(){
+        return new ModelAndView("mypage");
+    }
+
 
 
 //    // Create Board

@@ -34,7 +34,7 @@ public class EventService {
             // 랜덤한 6자리 영숫자 조합 생성
             candidateUrl = UUID.randomUUID().toString().substring(0, 6);
         } while (eventRepository.existsByUrl(candidateUrl));
-        
+
         return candidateUrl;
     }
 
@@ -103,7 +103,7 @@ public class EventService {
                 req.getEndTime().toString(),
                 req.getDates()
             );
-            
+
             // URL 생성 및 설정
             String uniqueUrl = generateUniqueUrl();
             eventGroup.setUrl(uniqueUrl);
@@ -121,7 +121,7 @@ public class EventService {
         } else {
             System.out.println("일정생성요청 사용자 : "+ userId);
             User user = userRepository.findByUuid(userId);
-            
+
             // 개별 파라미터로 엔티티 생성
             EventGroup eventGroup = new EventGroup(
                 user,
@@ -130,7 +130,7 @@ public class EventService {
                 req.getEndTime().toString(),
                 req.getDates()
             );
-            
+
             // URL 생성 및 설정
             String uniqueUrl = generateUniqueUrl();
             eventGroup.setUrl(uniqueUrl);

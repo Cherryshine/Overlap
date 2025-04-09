@@ -36,4 +36,19 @@ public class UserService {
 
         return map;
     }
+
+    public Map<String,String> getUserName(String oauthId) {
+
+        User user = userRepository.findByUuid(oauthId);
+
+        Map<String,String> map = new HashMap<>();
+
+        map.put("username",user.getUsername());
+
+        return map;
+    }
+
+
+
+
 }
