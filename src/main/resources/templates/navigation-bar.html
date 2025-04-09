@@ -212,7 +212,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/my-page" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                        <a href="/mypage" style="display: flex; align-items: center; padding: 0.8rem 1.5rem; color: #333; text-decoration: none; transition: background-color 0.2s;">
                             <i class="fas fa-user" style="color: #6b46c1; width: 24px; text-align: center; margin-right: 10px;"></i>
                             <span>마이페이지</span>
                         </a>
@@ -239,7 +239,14 @@
             </div>
 
             <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid #f0f0f0; text-align: center;">
-                <a href="/logout" style="display: flex; align-items: center; justify-content: center; padding: 0.8rem 1rem; color: #666; text-decoration: none; border-radius: 8px; border: 1px solid #ddd; transition: all 0.2s;">
+                <script>
+                    function kakaoLogout() {
+                    const clientId = 'e6c0d0aedffcb33efa50bd47deba9e3d';
+                    const redirectUri = 'https://localhost:8043/oauth/logout-success';
+                    window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${clientId}&logout_redirect_uri=${redirectUri}`;
+                    }
+                </script>
+                <a href="javascript:void(0);" onclick="kakaoLogout()" style="display: flex; align-items: center; justify-content: center; padding: 0.8rem 1rem; color: #666; text-decoration: none; border-radius: 8px; border: 1px solid #ddd; transition: all 0.2s;">
                     <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i>
                     <span>로그아웃</span>
                 </a>
@@ -263,6 +270,7 @@
             });
         });
     });
+
 </script>
 
 
