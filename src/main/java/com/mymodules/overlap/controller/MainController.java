@@ -43,4 +43,9 @@ public class MainController {
     public ModelAndView mypage(){
         return new ModelAndView("mypage");
     }
+
+    @GetMapping("/report-bug")
+    public ModelAndView reportBug(){
+        return new ModelAndView("report-bug");
+    }
 }

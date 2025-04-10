@@ -26,7 +26,8 @@
             background-color: #fff;
             background-clip: padding-box;
             outline: 0;
-            transition: transform .3s ease-in-out;
+            transition: transform .3s ease-in-out, opacity .3s ease-in-out;
+            opacity: 0;
         }
 
         .nav-component .offcanvas-end {
@@ -40,6 +41,7 @@
         .nav-component .offcanvas.show {
             transform: none;
             visibility: visible;
+            opacity: 1;
         }
 
         .nav-component .offcanvas-header {
@@ -139,6 +141,11 @@
 
         .nav-component .ml-2 {
             margin-left: 0.5rem;
+        }
+
+        /* 오프캔버스 배경 스타일 수정 */
+        .offcanvas-backdrop {
+            transition: opacity .3s ease-in-out !important;
         }
     </style>
 
@@ -257,7 +264,6 @@
 </nav>
 
 <script>
-    // 이미 layout.js에서 모든 기능을 처리하므로 간소화합니다
     document.addEventListener('DOMContentLoaded', function() {
         // 호버 효과 추가
         const menuItems = document.querySelectorAll('.offcanvas-body a');
@@ -269,8 +275,59 @@
                 this.style.backgroundColor = 'transparent';
             });
         });
-    });
 
+        // 오프캔버스 이벤트 처리를 위한 설정
+        const offcanvasElement = document.getElementById('offcanvasRight');
+        
+        // 기존 부트스트랩 오프캔버스 객체 가져오기
+        if (offcanvasElement) {
+            // 백드롭 클릭 시 커스텀 닫기 동작 구현
+            document.addEventListener('click', function(e) {
+                const backdrop = document.querySelector('.offcanvas-backdrop');
+                if (backdrop && e.target === backdrop) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 커스텀 닫기 애니메이션 실행
+                    customHideOffcanvas();
+                }
+            });
+            
+            // 닫기 버튼 클릭 시 커스텀 닫기 동작 구현
+            const closeButton = offcanvasElement.querySelector('.btn-close');
+            if (closeButton) {
+                closeButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 커스텀 닫기 애니메이션 실행
+                    customHideOffcanvas();
+                });
+            }
+            
+            // 커스텀 닫기 함수
+            function customHideOffcanvas() {
+                const backdrop = document.querySelector('.offcanvas-backdrop');
+                
+                // 동시에 애니메이션 적용
+                offcanvasElement.style.opacity = '0';
+                offcanvasElement.style.transform = 'translateX(100%)';
+                if (backdrop) backdrop.style.opacity = '0';
+                
+                // 애니메이션 완료 후 요소 제거
+                setTimeout(function() {
+                    offcanvasElement.classList.remove('show');
+                    if (backdrop) {
+                        backdrop.classList.remove('show');
+                        setTimeout(() => backdrop.remove(), 50);
+                    }
+                    document.body.classList.remove('offcanvas-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 300);
+            }
+        }
+    });
 </script>
 
 
