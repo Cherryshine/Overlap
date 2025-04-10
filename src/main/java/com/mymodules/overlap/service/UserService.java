@@ -22,6 +22,14 @@ public class UserService {
     public Map<String,String> getProfile(String oauthId) {
 
         User user = userRepository.findByUuid(oauthId);
+        
+        // 사용자가 존재하지 않는 경우 게스트 응답 반환
+        if (user == null) {
+            log.warn("사용자 정보를 찾을 수 없음: {}", oauthId);
+            Map<String, String> guestResponse = new HashMap<>();
+            guestResponse.put("usertype", "guest");
+            return guestResponse;
+        }
 
 //         KakaoUserInfoDto 에서 가져오기
         KakaoUserInfoDto userInfo = oauthService.getUserInfo(user.getAccessToken());
@@ -40,6 +48,14 @@ public class UserService {
     public Map<String,String> getUserName(String oauthId) {
 
         User user = userRepository.findByUuid(oauthId);
+        
+        // 사용자가 존재하지 않는 경우 게스트 응답 반환
+        if (user == null) {
+            log.warn("사용자 정보를 찾을 수 없음: {}", oauthId);
+            Map<String, String> guestResponse = new HashMap<>();
+            guestResponse.put("usertype", "guest");
+            return guestResponse;
+        }
 
         Map<String,String> map = new HashMap<>();
 

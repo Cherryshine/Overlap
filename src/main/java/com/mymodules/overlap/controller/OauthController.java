@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -79,6 +81,17 @@ public class OauthController {
         return ResponseEntity.ok("success");
     }
 
+    @GetMapping("/logout-success")
+    public Map<String, String> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        
+        String token = jwtUtil.getJwtFromCookies(request);
+        oauthService.removeToken(token);
+        jwtUtil.removeCookie(response);
+        
+        response.sendRedirect("/");
 
-
+        Map<String, String> guestReturn = new HashMap<>();
+        guestReturn.put("usertype", "guest");
+        return guestReturn;
+    }
 }

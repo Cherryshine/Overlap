@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -21,17 +22,16 @@ public class UserController {
     public Map<String,String> getUserProfile(HttpServletRequest request){
         String jwtToken;
         String oauthId;
-        if(jwtUtil.getJwtFromCookies(request) != "guest"){
+        if("guest".equals(jwtUtil.getJwtFromCookies(request))){
+            Map<String, String> response = new HashMap<>();
+            response.put("usertype", "guest");
+            return response;
+        }
+        else{
             jwtToken = jwtUtil.getJwtFromCookies(request);
             oauthId = jwtUtil.getSubject(jwtToken);
             return userService.getProfile(oauthId);
         }
-        else{
-            return null;
-        }
-
-
-
     }
 
     @GetMapping("/get_user/name")

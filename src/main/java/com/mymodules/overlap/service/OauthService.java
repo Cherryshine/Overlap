@@ -212,4 +212,33 @@ public class OauthService {
         return "엑세스토큰 발급";
     }
 
+    @Transactional
+    public void removeToken(String token) {
+        if (token == null) {
+            log.warn("토큰이 null입니다. 로그아웃 처리를 진행할 수 없습니다.");
+            return;
+        }
+        
+        // JWT 토큰에서 oauthId 추출
+        String oauthId = jwtUtil.getSubject(token);
+        if (oauthId == null) {
+            log.warn("유효하지 않은 토큰입니다. oauthId를 추출할 수 없습니다.");
+            return;
+        }
+        
+        // oauthId로 사용자 찾기
+        User user = userRepository.findByUuid(oauthId);
+        if (user == null) {
+            log.warn("사용자 {}를 찾을 수 없습니다.", oauthId);
+            return;
+        }
+        
+        // 사용자의 토큰 정보 삭제
+        user.setAccessToken(null);
+        user.setRefreshToken(null);
+        userRepository.save(user);
+        
+        log.info("사용자 {} 토큰이 성공적으로 삭제되었습니다.", oauthId);
+    }
+
 }
